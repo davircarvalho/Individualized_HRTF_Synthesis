@@ -1,8 +1,5 @@
 # Funções auxiliares à sinteze de HRTF individualizadas
-Maior parte das funções são de autoria própria, mas algumas delas são de diversos autores, 
-os devidos créditos são dados em cada algoritmo. 
-
-Algumas da rotinas não estão sendo mais utilizadas nos códigos principais por terem sido encontrados melhores abordagens para o problema, mas foram de fundamental importancia para o desenvolvimento como um todo.
+Funções utilizadas pelas rotinas principais nas fases de pré e pós-processamento de HRTFs 
 
 
  ## Funções
