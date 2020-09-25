@@ -26,7 +26,7 @@
 
 
 
-Synthesis of individualized HRTFs based on Neural Networks, Principal Component Analysis and anthropometric data.
+**Synthesis of individualized HRTFs based on Neural Networks, Principal Component Analysis and anthropometric data.**
 
 
 ## General info 
