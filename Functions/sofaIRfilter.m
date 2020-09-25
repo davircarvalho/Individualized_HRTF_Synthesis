@@ -2,11 +2,10 @@ function Obj = sofaIRfilter(Obj, fmin, fmax)
 fs = Obj.Data.SamplingRate;
 IR = shiftdim(Obj.Data.IR,2);
 
-%% Filter Desing - minimal phase distortion
+%% Método 1
 % % d  = fdesign.bandpass('N,F3dB1,F3dB2', 6, fmin, fmax,fs);  %%% Especifica filtro
 % % Hd = design(d, 'butter');   %%% Especifica filtro
 % % IR_filtered = filter(Hd, IR, 1);  %% Sinal filtrado
-
 
 hpFilt  = fdesign.highpass('N,F3dB',4, fmin, fs);
 lpFilt  = fdesign.lowpass	('N,F3dB',6, fmax, fs);
@@ -17,7 +16,7 @@ IR_hp    = filter(Hdhigh, IR, 1);  %% Sinal filtrado
 IR_hp_lp = filter(Hdlow, IR_hp, 1);  %% Sinal filtrado
 
 
-%% Método 2 - no phase distortion
+%% Método 2 
 % hpFilt = designfilt('highpassiir','FilterOrder',4, ...
 %          'PassbandFrequency',fmin,'PassbandRipple',0.2, ...
 %          'SampleRate',fs);
