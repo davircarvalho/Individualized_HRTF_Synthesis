@@ -5,10 +5,10 @@
 
 ## Table of contents
 * [General info](#general-info)
-* [Individualized HRTF app](## Individualized HRTF app)
-* [Auraliza app](##Auraliza app)
-* [Main - (PCA based)](##Main - (PCA based))
-* [Functions](##Functions)
+* [Individualized HRTF app](#Individualized HRTF app)
+* [Auraliza app](#Auraliza app)
+* [Main - (PCA based)](#Main - (PCA based))
+* [Functions](#Functions)
 
 ## General info 
 - This repository was developed as part of a bachelor thesis project @ Federal University of Santa Maria - Brazil.\
