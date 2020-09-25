@@ -19,18 +19,10 @@
 
   </br>
 
-  <a href="https://standardjs.com" target="_blank">
-    <img alt="ESLint" src="https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square">
-  </a>
-
-
   <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis/blob/master/LICENSE" target="_blank">
     <img alt="LICENSE" src="https://img.shields.io/github/license/navendu-pottekkat/nsfw-filter?style=flat-square&color=yellow">
   <a/>
 
-  <a href="https://ctt.ac/4e4Jt" target="_blank">
-    <img src="https://img.shields.io/twitter/url?style=flat-square&logo=twitter&url=https://ctt.ac/4e4Jt" alt="GitHub tweet">
-  </a>
 </p>
 <hr>
 
