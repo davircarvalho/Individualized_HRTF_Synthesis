@@ -2,11 +2,11 @@
 
 <p align="center">
   <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis/releases/" target="_blank">
-    <img alt="GitHub release" src="https://img.shields.io/github/v/release/navendu-pottekkat/nsfw-filter?include_prereleases&style=flat-square">
+    <img alt="GitHub release" src="https://img.shields.io/github/v/release/davircarvalho/Individualized_HRTF_Synthesis?include_prereleases&style=flat-square">
   </a>
 
   <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis/commits/master" target="_blank">
-    <img src="https://img.shields.io/github/last-commit/navendu-pottekkat/nsfw-filter?style=flat-square" alt="GitHub last commit">
+    <img src="https://img.shields.io/github/last-commit/davircarvalho/Individualized_HRTF_Synthesis?style=flat-square" alt="GitHub last commit">
   </a>
 
   <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis/issues" target="_blank">
@@ -14,11 +14,11 @@
   </a>
 
   <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis/pulls" target="_blank">
-    <img src="https://img.shields.io/github/issues-pr/navendu-pottekkat/nsfw-filter?style=flat-square&color=blue" alt="GitHub pull requests">
+    <img src="https://img.shields.io/github/issues-pr/davircarvalho/Individualized_HRTF_Synthesis?style=flat-square&color=blue" alt="GitHub pull requests">
   </a>
 
   <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis/blob/master/LICENSE" target="_blank">
-    <img alt="LICENSE" src="https://img.shields.io/github/license/navendu-pottekkat/nsfw-filter?style=flat-square&color=yellow">
+    <img alt="LICENSE" src="https://img.shields.io/github/license/davircarvalho/Individualized_HRTF_Synthesis?style=flat-square&color=yellow">
   <a/>
 
 </p>
