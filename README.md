@@ -3,13 +3,6 @@
 - Synthesis of individualized HRTFs based on Neural Networks, Principal Component Analysis and anthropometric data.\
 - *Síntese de HRTFs individualizadas a partir de redes neurais, análise de componentes principais e dados antropométricos.*
 
-## Table of contents
-* [General info](#general-info)
-* [Individualized HRTF app](#Individualized-HRTF-app)
-* [Auraliza app](#Auraliza app)
-* [Main - (PCA based)](#Main---(PCA-based))
-* [Functions](#Functions)
-
 ## General info 
 - This repository was developed as part of a bachelor thesis project @ Federal University of Santa Maria - Brazil.\
 - *Este repositório foi desenvolvido como parte de um trabalho de conclusão de curso na Universidade Federeal de Santa Maria (UFSM) - Brasil.*\
