@@ -1,5 +1,41 @@
 # Individualized HRTF Synthesis
 
+<p align="center">
+  <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis/releases/" target="_blank">
+    <img alt="GitHub release" src="https://img.shields.io/github/v/release/navendu-pottekkat/nsfw-filter?include_prereleases&style=flat-square">
+  </a>
+
+  <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis/commits/master" target="_blank">
+    <img src="https://img.shields.io/github/last-commit/navendu-pottekkat/nsfw-filter?style=flat-square" alt="GitHub last commit">
+  </a>
+
+  <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis/issues" target="_blank">
+    <img src="https://img.shields.io/github/issues/navendu-pottekkat/nsfw-filter?style=flat-square&color=red" alt="GitHub issues">
+  </a>
+
+  <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis/pulls" target="_blank">
+    <img src="https://img.shields.io/github/issues-pr/navendu-pottekkat/nsfw-filter?style=flat-square&color=blue" alt="GitHub pull requests">
+  </a>
+
+  </br>
+
+  <a href="https://standardjs.com" target="_blank">
+    <img alt="ESLint" src="https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square">
+  </a>
+
+
+  <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis/blob/master/LICENSE" target="_blank">
+    <img alt="LICENSE" src="https://img.shields.io/github/license/navendu-pottekkat/nsfw-filter?style=flat-square&color=yellow">
+  <a/>
+
+  <a href="https://ctt.ac/4e4Jt" target="_blank">
+    <img src="https://img.shields.io/twitter/url?style=flat-square&logo=twitter&url=https://ctt.ac/4e4Jt" alt="GitHub tweet">
+  </a>
+</p>
+<hr>
+
+
+
 - Synthesis of individualized HRTFs based on Neural Networks, Principal Component Analysis and anthropometric data.
 - *Síntese de HRTFs individualizadas a partir de redes neurais, análise de componentes principais e dados antropométricos.*
 
