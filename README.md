@@ -31,7 +31,7 @@
 
 ## General info 
 
-This repository was developed as part of a bachelor thesis project @ Federal University of Santa Maria - Brazil.
+This repository was developed as part of a bachelor thesis project for Acoustic Engineering @ Federal University of Santa Maria - Brazil.
 
 
 ## Individualized HRTF app 
