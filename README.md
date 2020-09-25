@@ -5,9 +5,9 @@
 
 ## Table of contents
 * [General info](#general-info)
-* [Individualized HRTF app](#Individualized HRTF app)
+* [Individualized HRTF app](#Individualized-HRTF-app)
 * [Auraliza app](#Auraliza app)
-* [Main - (PCA based)](#Main - (PCA based))
+* [Main - (PCA based)](#Main---(PCA-based))
 * [Functions](#Functions)
 
 ## General info 
