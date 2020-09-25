@@ -18,7 +18,7 @@
   </a>
   
   <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis#contribute" target="_blank">
-    <img alt="Contributors" src="https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square">
+    <img alt="Contributors" src="https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square">
   </a>
 
   <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis/blob/master/LICENSE" target="_blank">
