@@ -31,7 +31,7 @@
 
 ## General info 
 - This repository was developed as part of a bachelor thesis project @ Federal University of Santa Maria - Brazil.
-- *Este repositório foi desenvolvido como parte de um trabalho de conclusão de curso na Universidade Federeal de Santa Maria (UFSM) - Brasil.*\
+- *Este repositório foi desenvolvido como parte de um trabalho de conclusão de curso na Universidade Federeal de Santa Maria (UFSM) - Brasil.*
 
 
 ## Individualized HRTF app 
