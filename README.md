@@ -16,10 +16,6 @@
   <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis/pulls" target="_blank">
     <img src="https://img.shields.io/github/issues-pr/davircarvalho/Individualized_HRTF_Synthesis?style=flat-square&color=blue" alt="GitHub pull requests">
   </a>
-  
-  <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis#contribute" target="_blank">
-    <img alt="Contributors" src="https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square">
-  </a>
 
   <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis/blob/master/LICENSE" target="_blank">
     <img alt="LICENSE" src="https://img.shields.io/github/license/davircarvalho/Individualized_HRTF_Synthesis?style=flat-square&color=yellow">
