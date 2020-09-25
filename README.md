@@ -21,7 +21,7 @@
 ## Main - (PCA based)
 - Contains the pre-processing and post-processing routines, regression model and HRTF reconstruction.\
 - *Contem as rotinas de pré e pós processamento, modelo de regressão e reconstrução das HRTFs*
-
+>>
 > It may be necessary to ajust paths for your local directories.
 >
 > *Pode ser preciso ajustar os caminhos da pastas locais especificados nas rotinas.*
