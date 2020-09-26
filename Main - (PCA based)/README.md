@@ -42,4 +42,4 @@ Generates individualized HRTFs for the HUTUBs dataset and performs analysis of t
 
 ## Model_test.m
 
-Virtuallly the same as Rebuild_HRTF.m, but you can write your own anthropometry. Can be used to test a new generated model.\ *Be careful to input the correct data at the right place - the use of the Individualization App is highly recomended instead of this routine.* 
+Virtuallly the same as Rebuild_HRTF.m, but you can write your own anthropometry. Can be used to test a new generated model./ *Be careful to input the correct data at the right place - the use of the Individualization App is highly recomended instead of this routine.* 
