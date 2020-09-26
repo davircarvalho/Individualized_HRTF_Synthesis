@@ -4,7 +4,7 @@ These are the main files used to build process the SOFA HRTFs, generate the PCA 
 
 ## Main routines
 
-*_ They are ordered in the recommended workflow._
+* *They are ordered in the recommended workflow.*
 
 
 ### Anthropometry_Datasets.m
