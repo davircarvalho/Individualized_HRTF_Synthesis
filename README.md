@@ -40,7 +40,7 @@ MATLAB app that can create real-time virtual auditory scenes using SOFA HRTFs an
 
 ## Main - (PCA based)
 
-Contains the pre-processing and post-processing routines, regression model and HRTF reconstruction.
+Contains the pre-processing and post-processing, regression model and HRTF reconstruction routines.
 
 
 > *It may be necessary to ajust paths for your local directories.*
