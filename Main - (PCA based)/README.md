@@ -10,7 +10,7 @@ These are the main files used to build process the SOFA HRTFs, generate the PCA 
 Select the morphological data used to train the regression model and remove subjects with incomplete or nonexistent measurements.
 
 
-### Preprocess_Datasets.m
+## Preprocess_Datasets.m
 
 Process all the SOFA HRTF to have the same signal properties, spatial resolution and remove the subjecs without anthropometric data across all the different dataset. 
 
@@ -30,7 +30,7 @@ Neural Network regression model to determine the relationship between the anthro
 Example of the reconstruction procedure for a subject removed from neural net training processing and some interesting graphs.
 
 
-## Error_Analysis.m
+### Error_Analysis.m
 
 Spectral and time domain error evaluated for the exemple case defined at the previous function. 
 
@@ -42,4 +42,4 @@ Generates individualized HRTFs for the HUTUBs dataset and performs analysis of t
 
 ## Model_test.m
 
-Virtuallly the same as Rebuild_HRTF.m. 
+Virtuallly the same as Rebuild_HRTF.m, but you can write your own anthropometry. Can be used to test a new generated model. *Becareful to input the correct data at the right place - the use of the Individualization App is highly recomended instead of this routine.* 
