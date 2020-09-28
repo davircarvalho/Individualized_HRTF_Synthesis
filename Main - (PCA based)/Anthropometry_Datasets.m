@@ -4,10 +4,11 @@ addpath(genpath([pwd, '\..\EAC-Toolbox']));
 
 %% GENERAL INFO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ~ ASSEMBLE ANTHROPOMETRY FROM CIPC, ARI AND ITS DATABASES
+addpath([pwd, '\..\DADOS_TREINAMENTO']);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Options 
 % Defina quais datasets usar: {'cipic', 'ari', '3d3a', 'ita', 'riec', 'tub_sim'}
-Datasets = {'tub_sim'};
+Datasets = {'cipic', 'ari', '3d3a', 'ita'};
 % Defina quais parametros de saida (Tabela CIPIC e valida para todos*)
 head_torso = [1,3]; % aplicado a cipic e ari
 
@@ -141,32 +142,32 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% SAVE
-path_save = 'DADOS_TREINAMENTO\input';
+path_save = [pwd '\..\DADOS_TREINAMENTO\input'];
 if any(strcmp('cipic', Datasets))
     path_save = append(path_save, '_CIPIC');
-    save('DADOS_TREINAMENTO\remove_CIPIC.mat', 'remove_CIPIC')
+    save([pwd '\..\DADOS_TREINAMENTO\remove_CIPIC.mat'], 'remove_CIPIC')
 end
 if any(strcmp('ari', Datasets))
     path_save = append(path_save, '_ARI');
-    save('DADOS_TREINAMENTO\remove_ARI.mat', 'remove_ARI')
+    save([pwd '\..\DADOS_TREINAMENTO\remove_ARI.mat'], 'remove_ARI')
 end
 if any(strcmp('ita', Datasets))
     path_save = append(path_save, '_ITA');
 end
 if any(strcmp('3d3a', Datasets))
     path_save = append(path_save, '_3D3A');
-    save('DADOS_TREINAMENTO\remove_D3A.mat', 'remove_D3A')
+    save([pwd '\..\DADOS_TREINAMENTO\remove_D3A.mat'], 'remove_D3A')
 end
 if any(strcmp('riec', Datasets))
     path_save = append(path_save, '_RIEC');
 end
 if any(strcmp('tub_meas', Datasets))
     path_save = append(path_save, '_TUBMEAS');
-    save('DADOS_TREINAMENTO\remove_TUB.mat', 'remove_TUB')
+    save([pwd '\..\DADOS_TREINAMENTO\remove_TUB.mat'], 'remove_TUB')
 end
 if any(strcmp('tub_sim', Datasets))
     path_save = append(path_save, '_TUBSIM');
-    save('DADOS_TREINAMENTO\remove_TUB.mat', 'remove_TUB')
+    save([pwd '\..\DADOS_TREINAMENTO\remove_TUB.mat'], 'remove_TUB')
 end
 save(path_save, 'anthro')
 disp('Dados Salvos!')

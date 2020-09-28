@@ -8,6 +8,7 @@ clear all; clc; tic
 % ~Dados "remove_*.mat" vem da rotina "Anthropometry_Datasets.m"
 %% PATHs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 addpath([pwd, '\..\Functions']);
+addpath([pwd, '\..\DADOS_TREINAMENTO']);
 addpath(genpath([pwd, '\..\EAC-Toolbox']));
 local = 'B:\Documentos\#3 - TCC\EAC-TCC-Davi\HRTF-datasets\';
 
@@ -70,7 +71,7 @@ if any(strcmp('cipic', Datasets))
     end  
     DTF_CIPIC = permute(DTF_CIPIC, [3,4,1,2]);
     % remover dados sem antropometria e teste
-    load('DADOS_TREINAMENTO\remove_CIPIC.mat');
+    load('remove_CIPIC.mat');
     DTF_CIPIC(:,remove_CIPIC,:,:) = [];
     toc
 end
@@ -95,7 +96,7 @@ if any(strcmp('ari', Datasets))
     end
 
     % Remover HRTFs com antropometria INCOMPLETA
-    load('DADOS_TREINAMENTO\remove_ARI.mat');
+    load('remove_ARI.mat');
     ARI(remove_ARI) = [];
 
     % Process
@@ -166,7 +167,7 @@ if any(strcmp('3d3a', Datasets))
         DTF_D3A(:,:,:,k) = 20*log10(abs(fft(D3A_ok.Data.IR, no_samples, 3)));       
     end  
     DTF_D3A = permute(DTF_D3A, [3,4,1,2]);  
-    load('DADOS_TREINAMENTO\remove_D3A.mat');
+    load('remove_D3A.mat');
     DTF_D3A(:,remove_D3A,:,:) = []; % remover por inconsistencias
     toc
 end
@@ -200,7 +201,7 @@ if any(strcmp('tub_meas', Datasets))
         DTF_TUBmeas(:,:,:,k) = 20*log10(abs(fft(TUBmeas_ok.Data.IR, no_samples, 3)));  
     end  
     DTF_TUBmeas = permute(DTF_TUBmeas, [3,4,1,2]);
-    load('DADOS_TREINAMENTO\remove_TUB.mat');
+    load('remove_TUB.mat');
     DTF_TUBmeas(:,remove_TUB,:,:) = [];
     toc 
 end
@@ -218,7 +219,7 @@ if any(strcmp('tub_sim', Datasets))
         DTF_TUBsim(:,:,:, k) = 20*log10(abs(fft(TUBsim_ok.Data.IR, no_samples, 3)));
     end  
     DTF_TUBsim = permute(DTF_TUBsim, [3,4,1,2]);
-    load('DADOS_TREINAMENTO\remove_TUB.mat');
+    load('remove_TUB.mat');
     DTF_TUBsim(:,remove_TUB,:,:) = [];
     toc
 end
@@ -226,7 +227,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% PFT Assembly %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 DTF = [];% inicialização parcial
-path_save = 'DADOS_TREINAMENTO\DTF';
+path_save = [pwd '\..\DADOS_TREINAMENTO\DTF'];
 if any(strcmp('cipic', Datasets))
     DTF = cat(2, [DTF, DTF_CIPIC]);
     path_save = append(path_save, '_CIPIC');

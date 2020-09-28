@@ -10,8 +10,8 @@ Datasets = {'cipic', 'ari', 'ita', '3d3a'};
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% LOAD
-target_file = 'DADOS_TREINAMENTO\target_pca';
-input_file  = 'DADOS_TREINAMENTO\input';
+target_file = [pwd, '\..\DADOS_TREINAMENTO\target_pca'];
+input_file  = [pwd, '\..\DADOS_TREINAMENTO\input'];
 
 if any(strcmp('cipic', Datasets)) 
     target_file = append(target_file, '_CIPIC');
@@ -115,7 +115,7 @@ disp('Treinamento completo.')
 toc
 close(wait)
 %% SAVE DATA
-path_save = 'DADOS_TREINAMENTO\net_treinada';
+path_save = [pwd, '\..\DADOS_TREINAMENTO\net_treinada'];
 if any(strcmp('cipic', Datasets))
     path_save = append(path_save, '_CIPIC');
 end

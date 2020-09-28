@@ -13,7 +13,7 @@ fs = 44100;
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load networks
-DTF_file = 'DADOS_TREINAMENTO\DTF';
+DTF_file = [pwd, '\..\DADOS_TREINAMENTO\DTF'];
 if any(strcmp('cipic', Datasets)) 
     DTF_file = append(DTF_file, '_CIPIC');
 end
@@ -93,7 +93,7 @@ set(gca, 'FontSize', 12)
 
 
 %% SAVE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-path_save = 'DADOS_TREINAMENTO\target_pca';
+path_save = [pwd, '\..\DADOS_TREINAMENTO\target_pca'];
 if any(strcmp('cipic', Datasets)) 
     path_save = append(path_save, '_CIPIC');
 end
