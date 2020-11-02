@@ -1,15 +1,13 @@
 clear all; clc; 
-% DAVI ROCHA CARVALHO; ENG. ACUSTICA - UFSM; FEVEREIRO/2020
+% DAVI ROCHA CARVALHO; ENG. ACUSTICA - UFSM; NOVEMBRO/2020
 % Analise de componentes principais 
 addpath(genpath([pwd, '\..\Functions'])); 
-addpath(genpath([pwd, '\..\EAC-Toolbox\exportfig']));
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Datasets: {'cipic', 'ari', 'ita', '3d3a', 'riec', 'tub_meas', 'tub_sim'}
 
 Datasets = {'cipic', 'ari', 'ita', '3d3a'};
-fs = 44100;
-
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load networks
@@ -68,7 +66,7 @@ for m = 1:no_channels
         data_mtx = DTF_ok(:, :, n, m) - med_vec2(:,n,m);
          
         [coeff, score, ~,~,explained,mu] = pca(data_mtx,'NumComponents', no_PC, ...
-                                                         'Centered', false, ...
+                                                         'Centered', true, ...
                                                          'Algorith', 'svd');      
         coeffs(:,:, n, m) = coeff;
         % Scores are the representations of X in the principal component space
@@ -162,13 +160,20 @@ end
 
 
 %% Mapa projeção
-color_range = [1 3.5];
+ch = 2;
 SD_recon_PCA = squeeze(mean(SD,2));
+color_range = [1, (max(SD_recon_PCA(:, ch))*0.99)];
 
 % Simulada 
 hFigure = figure('Renderer', 'painters', 'Position', [10 10 600 460]);
-scatter(out_pos(:,1), out_pos(:,2), 30, SD_recon_PCA(:,2), 'filled', 'square')
-title('Erro espectral da compressão ACP (direita)')
+scatter(out_pos(:,1), out_pos(:,2), 30, SD_recon_PCA(:,ch), 'filled', 'square')
+if ch == 1
+    title('Erro espectral da compressão ACP (esquerda)') 
+    filename = [pwd, '\Images\MAP_PCAerror_L.pdf'];
+else
+    title('Erro espectral da compressão ACP (direita)')
+    filename = [pwd, '\Images\MAP_PCAerror_R.pdf'];
+end
 xlabel('Azimute [°]')
 ylabel('Elevação [°]')
 axis tight
@@ -183,13 +188,19 @@ filename = [pwd, '\Images\MAP_PCAerror_R.pdf'];
 
 %% Probabilidade 
 hFigure = figure('Renderer', 'painters', 'Position', [10 10 600 460]);
-histogram(SD_recon_PCA(:,1), 'Normalization','probability', 'NumBins', 13)
+histogram(SD_recon_PCA(:,ch), 'Normalization','probability', 'NumBins', 13)
 ytix = get(gca, 'YTick');
 set(gca, 'YTick',ytix, 'YTickLabel',ytix*100);
 
 xlabel('Distorção espectral [dB]')
 ylabel('Probabilidade [%]')
-title('Distribuição da distorção espectral (esquerda)')
+if ch == 1
+    title('Distribuição da distorção espectral (esquerda)')
+    filename = [pwd, '\Images\Prob_PCAerror_L.pdf'];
+else
+    title('Distribuição da distorção espectral (direita)')
+    filename = [pwd, '\Images\Prob_PCAerror_R.pdf'];
+end
 set(gca,'FontSize',12)
 filename = [pwd, '\Images\Prob_PCAerror_L.pdf'];
 % exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')

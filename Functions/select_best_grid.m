@@ -1,26 +1,26 @@
 function out_pos = select_best_grid(Datasets)
 %% Paths 
-local = 'B:\Documentos\#3 - TCC\EAC-TCC-Davi\HRTF-datasets\';
+local = [pwd, '\..\Datasets\'];
 % CIPIC
-pathcipic = dir([local 'Banco CIPIC\SOFA\*.sofa']);
+pathcipic = dir([local 'CIPIC\*.sofa']);
 
 % ARI
-pathari = dir([local '\Banco ARI\HRTF_DTF\database\ari\hrtf b_nh*.sofa']);
+pathari = dir([local 'ARI\hrtf b_nh*.sofa']);
 
 % ITA
-pathita = dir([local '\Banco ITA\SOFA\*.sofa']);
+pathita = dir([local 'AACHEN\*.sofa']);
 
 % 3D3A
-path3d3a = dir([local '\Banco 3D3A lab\Public-Data\Subject*\Subject*_HRIRs.sofa']);
+path3d3a = dir([local '3D3A\Public-Data\Subject*\Subject*_HRIRs.sofa']);
 
 % RIEC
 pathriec = dir([local '\Banco RIEC\HRIRs\*.sofa']);
 
 % TU Berlim Measured
-pathtub_meas = dir([local '\Banco TU Berlim\HRIRs\pp*_HRIRs_measured.sofa']);
+pathtubmeas = dir([local 'HUTUBS\pp*_HRIRs_measured.sofa']);
 
 % TU Berlim Simulated
-pathtub_sim = dir([local '\Banco TU Berlim\HRIRs\pp*_HRIRs_simulated.sofa']);
+pathtubsim = dir([local 'HUTUBS\pp*_HRIRs_simulated.sofa']);
 
 % Chedar
 % pathchedar = dir('C:\Users\rdavi\Desktop\cheddar\sofacoustics.org\data\database\chedar\chedar_*_UV1m.sofa');
@@ -36,7 +36,7 @@ if any(strcmp('ari', Datasets))
 end
 if any(strcmp('ita', Datasets))  
     ITA = SOFAload([pathita(1).folder '\' pathita(1).name], 'nochecks');
-    POS{3} = ITA.SourcePosition;                         
+    POS{3} = ITA2sph(ITA.SourcePosition);                         
 end
 if any(strcmp('3d3a', Datasets))  
     D3A = SOFAload([path3d3a(10).folder '\' path3d3a(10).name], 'nochecks');
@@ -67,4 +67,22 @@ end
 len(len==0) = inf; %evitar escolher datasets que não estão em uso 
 [~,idx] = min(len);
 out_pos = POS{idx};
+
+
+%% Convert ITA to sph 
+function pos = ITA2sph(ori_pos) 
+    for l = 1:length(ori_pos)
+        x = ori_pos(l, 1);  
+        y = ori_pos(l, 2); 
+        z = ori_pos(l, 3);
+        % new coordinates
+        [az,elev,r] = cart2sph(x,y,z);
+        azi=rad2deg(az); elev=rad2deg(elev);
+        [azi,ele]   = nav2sph(azi,elev);
+        % update coordinates
+        pos(l, 1) = azi;
+        pos(l, 2) = ele; 
+        pos(l, 3) = round(r);           
+    end       
+end
 end

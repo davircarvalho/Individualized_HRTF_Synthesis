@@ -125,7 +125,7 @@ Obj_sim = SOFAupdateDimensions(Obj_sim);
 
 % plot(new_itd); hold on; plot(sofaGetITD(Obj_sim));
 % Preprocessamento do database para comparação
-pathcipic = dir('B:\Documentos\#3 - TCC\EAC-TCC-Davi\HRTF-datasets\Banco CIPIC\SOFA\*.sofa');
+pathcipic = dir([pwd '\..\Datasets\CIPIC\*.sofa']);
 CIPIC = SOFAload([pathcipic(subj).folder '\' pathcipic(subj).name], 'nochecks');
 % HRTF -> DTF
 Obj_med = sofaFit2Grid(CIPIC, out_pos);   
@@ -138,8 +138,9 @@ Obj_med = SOFAhrtf2dtf(Obj_med);
 itdori = sofaGetITD(Obj_med);
 res = mean(abs(itdori - sofaGetITD(Obj_sim)))
 
+
 %% % SAVE %%%
-file = 'DADOS_TREINAMENTO/rebuilt_data';
+file = [pwd '\..\DADOS_TREINAMENTO\rebuilt_data'];
 if any(strcmp('cipic', Datasets)) 
     file = append(file, '_CIPIC');
 end

@@ -15,13 +15,15 @@ function Obj = sofaResample(Obj, Fs, Nintp)
 % Matlab 2020a
 %% Resample
 N = ceil( (Fs/Obj.Data.SamplingRate) * size(Obj.Data.IR, 3) ); % length after resample
-if nargin == 3 && Nintp < N
-    Nintp = 2^nextpow2(N); % output length
+if nargin == 3 && Nintp < N || nargin<3
+    Nintp = 2^nextpow2(N); % output length 
 else
-    Nintp = N; % doesn't zero pad 
+    N = Nintp;
 end
 zpad = zeros((Nintp - N), 1);
-% options
+tx = 0:1/Obj.Data.SamplingRate:size(Obj.Data.IR, 3)/Obj.Data.SamplingRate;
+tx(end) = [];
+%% options
 [p,q] = rat(Fs / Obj.Data.SamplingRate);
 normFc = .98 / max(p,q);
 order = 256 * max(p,q);
@@ -36,11 +38,13 @@ lpFilt = p * lpFilt;
 for k = 1:size(Obj.Data.IR, 1)
     for l = 1:size(Obj.Data.IR, 2)
         IRpre(k, l, :) = resample(Obj.Data.IR(k, l, :),p,q,lpFilt);
+%         IRpre(k, l, :) = resample(Obj.Data.IR(k, l, :),tx, Fs, p,q, 'spline');
         IR(k, l, :) = [squeeze(IRpre(k, l, :)); zpad];
     end 
 end
 %% Output
-Obj.Data.IR = IR;
+norm = max(abs(Obj.Data.IR(:)));
+Obj.Data.IR = IR ./ max(abs(IR(:) ))*norm; % make sure the level is constant
 % update sampling rate
 Obj.Data.SamplingRate = Fs;
 end
