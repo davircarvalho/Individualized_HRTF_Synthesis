@@ -37,14 +37,14 @@ pathriec = dir([local 'RIEC\*.sofa']);
 pathriec =  pathriec(idx_riec, :);
 
 % TU Berlim 
-pathtubmeas = dir([local 'HUTUBS\pp*_HRIRs_measured.sofa']);
-[~,idx_tubmeas] = natsortfiles({pathtubmeas.name});
-pathtubmeas = pathtubmeas(idx_tubmeas, :);
+pathtub_meas = dir([local 'HUTUBS\pp*_HRIRs_measured.sofa']);
+[~,idx_tubmeas] = natsortfiles({pathtub_meas.name});
+pathtub_meas = pathtub_meas(idx_tubmeas, :);
 
 
-pathtubsim = dir([local 'HUTUBS\pp*_HRIRs_simulated.sofa']);
-[~,idx_tubsim] = natsortfiles({pathtubsim.name});
-pathtubsim = pathtubsim(idx_tubsim, :);
+pathtub_sim = dir([local 'HUTUBS\pp*_HRIRs_simulated.sofa']);
+[~,idx_tubsim] = natsortfiles({pathtub_sim.name});
+pathtub_sim = pathtub_sim(idx_tubsim, :);
 
 
 %% Options
@@ -189,9 +189,9 @@ end
 %% TU Berlim MEDIDO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if any(strcmp('tub_meas', Datasets))  
     disp('Processando TU Berlim (medido) Dataset ...'); tic
-    DTF_TUBmeas = zeros( size(out_pos,1), 2, no_samples, length(pathtubmeas));
-    for k = 1 : length(pathtubmeas)
-        TUBmeas = SOFAload([pathtubmeas(k).folder '\' pathtubmeas(k).name], 'nochecks');                
+    DTF_TUBmeas = zeros( size(out_pos,1), 2, no_samples, length(pathtub_meas));
+    for k = 1 : length(pathtub_meas)
+        TUBmeas = SOFAload([pathtub_meas(k).folder '\' pathtub_meas(k).name], 'nochecks');                
         
         % Process
         TUBmeas_ok = process2unite(TUBmeas, out_pos, fs, fmin, fmax);
@@ -207,9 +207,9 @@ end
 %% TU Berlim SIMULADO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if any(strcmp('tub_sim', Datasets))  
     disp('Processando TU Berlim (simulado) Dataset ...'); tic
-    DTF_TUBsim = zeros( size(out_pos,1), 2, no_samples, length(pathtubsim));
-    for k = 1 : length(pathtubsim)
-        TUBsim = SOFAload([pathtubsim(k).folder '\' pathtubsim(k).name], 'nochecks');
+    DTF_TUBsim = zeros( size(out_pos,1), 2, no_samples, length(pathtub_sim));
+    for k = 1 : length(pathtub_sim)
+        TUBsim = SOFAload([pathtub_sim(k).folder '\' pathtub_sim(k).name], 'nochecks');
 
         % Process
         TUBsim_ok = process2unite(TUBsim, out_pos, fs, fmin, fmax);
@@ -274,8 +274,6 @@ function Obj = process2unite(Obj, out_pos, fs, fmin, fmax)
     Obj = sofaIRfilter(Obj, fmin, fmax);
     % HRTF -> DTF
     [Obj, ~] = SOFAhrtf2dtf(Obj);    
-   
-
 end
 
 

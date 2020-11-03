@@ -8,7 +8,7 @@ addpath([pwd, '\..\DADOS_TREINAMENTO']);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Options 
 % Defina quais datasets usar: {'cipic', 'ari', '3d3a', 'ita', 'riec', 'tub_sim'}
-Datasets = {'cipic', 'ari', 'ita', '3d3a'};
+Datasets = {'tub_sim'};
 % Defina quais parametros de saida (Tabela CIPIC e valida para todos*)
 head_torso = [1,3]; % aplicado a cipic e ari
 

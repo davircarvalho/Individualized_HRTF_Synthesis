@@ -1,12 +1,11 @@
 clear all; clc
 % Avaliação de performance do modelo a partir de HRTFs do HUTUBS database
-addpath(genpath([pwd, '\..\EAC-Toolbox']));
 addpath(genpath([pwd, '\..\Functions']));
 
 %% LOAD FILES 
 % Network
-load('DADOS_TREINAMENTO/net_treinada_CIPIC_ARI_ITA_3D3A');
-load('DADOS_TREINAMENTO/target_pca_CIPIC_ARI_ITA_3D3A');
+load('DADOS_TREINAMENTO\net_treinada_CIPIC_ARI_ITA_3D3A');
+load('DADOS_TREINAMENTO\target_pca_CIPIC_ARI_ITA_3D3A');
 
 %% Load Antropometria 
 load('DADOS_TREINAMENTO\input_TUBSIM.mat');
@@ -20,14 +19,14 @@ fmin = 250; fmax = 18000;
 
 %% LOAD TEST DATA 
 %%% HRIRs ORIGINAIS
-local = 'B:\Documentos\#3 - TCC\EAC-TCC-Davi\HRTF-datasets\';
-pathtub_sim = dir([local '\Banco TU Berlim\HRIRs\pp*_HRIRs_simulated.sofa']);
+local = [pwd, '\..\Datasets\'];
+pathtub_sim = dir([local 'HUTUBS\pp*_HRIRs_simulated.sofa']);
 [~,idx_tubsim] = natsortfiles({pathtub_sim.name});
 pathtub_sim = pathtub_sim(idx_tubsim, :);
 pathtub_sim(remove_TUB) = []; %remover individuos sem antropometria
 
 %%% HRIRs GENERICAS
-addpath('B:\Documentos\#3 - TCC\EAC-TCC-Davi\HRTF-datasets\Cabecas\');
+addpath([pwd '\..\Datasets\Generic HRTFs']);
 %Fabian
 Obj_gen(1).SF = SOFAload('FABIAN_HRIR_measured_HATO_0.sofa');
 
@@ -454,9 +453,11 @@ set(gca,'fontsize', 12)
 %% LOCAL FUCTIONS 
 function Obj = process2unite(Obj, out_pos, fs, fmin, fmax)
     % Make same grid
-    Obj = sofaFit2Grid(Obj, out_pos, 'Fs', fs);  
-    % band filter
-%     Obj = sofaIRfilter(Obj, fmin, fmax);
+    Obj = sofaFit2Grid(Obj, out_pos, 'Fs', fs);     
+    % Normalize L/R balance and IR levels
+    Obj = sofaNormalize(Obj);
+    % filter
+    Obj = sofaIRfilter(Obj, fmin, fmax);
     % HRTF -> DTF
     [Obj, ~] = SOFAhrtf2dtf(Obj);    
 end

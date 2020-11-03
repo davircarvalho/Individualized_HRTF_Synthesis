@@ -57,6 +57,12 @@ DTF_ok = DTF((1:no_samples/2),:,:,:);
 % set(gca,'FontSize',13)
 
 
+%% PCA input structure
+
+data(:,:,1) = reshape(DTF_ok, []);
+
+
+
 
 %% Principal Component Analysis (PCA)
 no_PC = 12; %número de principais componentes de interesse
