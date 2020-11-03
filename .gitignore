@@ -2,3 +2,4 @@ DADOS_TREINAMENTO
 Datasets
 test_resample.m
 sofaSHinterpolate.m
+*.asv
