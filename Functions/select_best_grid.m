@@ -14,13 +14,13 @@ pathita = dir([local 'AACHEN\*.sofa']);
 path3d3a = dir([local '3D3A\Public-Data\Subject*\Subject*_HRIRs.sofa']);
 
 % RIEC
-pathriec = dir([local '\Banco RIEC\HRIRs\*.sofa']);
+pathriec = dir([local 'Banco RIEC\HRIRs\*.sofa']);
 
 % TU Berlim Measured
-pathtubmeas = dir([local 'HUTUBS\pp*_HRIRs_measured.sofa']);
+pathtub_meas = dir([local 'HUTUBS\pp*_HRIRs_measured.sofa']);
 
 % TU Berlim Simulated
-pathtubsim = dir([local 'HUTUBS\pp*_HRIRs_simulated.sofa']);
+pathtub_sim = dir([local 'HUTUBS\pp*_HRIRs_simulated.sofa']);
 
 % Chedar
 % pathchedar = dir('C:\Users\rdavi\Desktop\cheddar\sofacoustics.org\data\database\chedar\chedar_*_UV1m.sofa');

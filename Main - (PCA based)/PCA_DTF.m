@@ -37,31 +37,9 @@ load(DTF_file)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Pre-processsamento
-[no_samples, no_subj, no_directions, no_channels] = size(DTF);
-DTF_ok = DTF((1:no_samples/2),:,:,:);
-
-% % plot % %
-% fs =44100;
-% N = 200;
-% freq = linspace(0, fs-fs/N, N);
-% ns = 1:size(DTF, 2);
-% figure()
-% surf(ns, freq(1:N/2), DTF_ok(:,:,225,1), 'linestyle', 'none');
-% a = colorbar;
-% a.Label.String = '[dB]';
-% view([90 90])
-% axis tight
-% 
-% ylabel('Frequência [Hz]')
-% xlabel('Individuos')
-% set(gca,'FontSize',13)
-
-
-%% PCA input structure
-
-data(:,:,1) = reshape(DTF_ok, []);
-
-
+no_samples = size(DTF, 1);
+DTF_ok = DTF((1:no_samples/2),:,:,:); % take 1/2 the magnitude spectra
+[no_samples, no_subj, no_directions, no_channels] = size(DTF_ok);
 
 
 %% Principal Component Analysis (PCA)

@@ -49,7 +49,7 @@ pathtub_sim = pathtub_sim(idx_tubsim, :);
 
 %% Options
 % Defina quais datasets usar: {'cipic', 'ari', 'ita', '3d3a', 'riec', 'tub_meas', 'tub_sim'}, o
-Datasets = {'cipic', 'ari', 'ita', '3d3a'};
+Datasets = {'3d3a', 'tub_meas'};
 no_samples = 200; % Tamanho do vetor na saída (pós fft)
 fs   = 44100;     % Taxa de amostragem 
 fmin = 250;       % Frequencia min de corte para RI 
@@ -246,8 +246,8 @@ if any(strcmp('riec', Datasets))
     path_save = append(path_save, '_RIEC');
 end
 if any(strcmp('tub_meas', Datasets))
-    DTF = cat(2, [DTF, DTF_TUBmeas]);
-    path_save = append(path_save, '_TUBMEAS');
+%     DTF = cat(2, [DTF, DTF_TUBmeas]);
+%     path_save = append(path_save, '_TUBMEAS');
 end
 if any(strcmp('tub_sim', Datasets))
     DTF = cat(2, [DTF, DTF_TUBsim]);
@@ -261,7 +261,7 @@ disp('Dados Salvos!')
 
 %% plot
 figure()
-surf(DTF(:,:,600,2),'linestyle', 'none')
+surf(DTF(:,:,10,2),'linestyle', 'none')
 
 
 %% LOCAL FUCTIONS 
