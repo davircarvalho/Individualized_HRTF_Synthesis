@@ -116,9 +116,9 @@ end
 
 
 %%
-% save('DADOS_TREINAMENTO\workspace_Simulation_Erro_adapt.mat')
+save([pwd '\..\DADOS_TREINAMENTO\workspace_Simulation_Erro_ITDadapt.mat'])
 % clear all
-% load('DADOS_TREINAMENTO\workspace_Simulation_Erro_adapt.mat')
+% load('DADOS_TREINAMENTO\workspace_Simulation_Erro_ITDadapt.mat')
 
 %% Plot erro ESPECTRAL (Todas as posições)
 % hFigure = figure('Renderer', 'painters', 'Position', [10 10 2000 450]);
@@ -270,7 +270,7 @@ end
 
 
 %% Distribuição da SD por posição 
-% 
+
 % hFigure = figure();
 % histogram(mean(sd_sim, 2),'Normalization','probability',...
 %                                  'NumBins', 17,'orientation','horizontal')
@@ -285,7 +285,7 @@ end
 % yticks(0:2:100)
 % set(gca,'FontSize',12)
 % filename = [pwd, '\Images\Prob_SD_sim.pdf'];
-% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+% % exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
 % 
 % 
 % %%% Genericas
@@ -312,67 +312,67 @@ end
 % yticks(0:2:100)
 % set(gca,'FontSize',12)
 % filename = [pwd, '\Images\Prob_SD_gen_' num2str(i) '.pdf'];
-% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+% % exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
 % end
 
 
 
 
 %% Plot erro ILD 
-% hFigure = figure('Renderer', 'painters', 'Position', [10 10 2000 450]);
-% hold on 
-% 
-% % Selecionar posições
-% elev = 0;
-% idx_pos = find(out_pos(:,2)==elev);
-% 
-% 
-% % plotar em ordem 
-% yild = cat(1, mean(ILDE(1).gen(idx_pos,:)),...
-%               mean(ILDE(2).gen(idx_pos,:)),...
-%               mean(ILDE(3).gen(idx_pos,:)),...
-%               mean(ILDE_sim(idx_pos,:)));
-% [ysort, idx_sort] = sort(yild, 1, 'descend');
-% 
-% % Cores
-% N=9;
-% C = linspecer(N);
-% 
-% hold on 
-% for k = 1:size(ysort, 2)
-%     for l = 1:size(ysort, 1)
-%         if idx_sort(l,k) == 1
-%             h(1) = bar(k, ysort(l,k), 'BarWidth', 1, 'FaceAlpha',1, 'FaceColor', 'c');
-%         elseif idx_sort(l,k) == 2
-%             h(2) = bar(k, ysort(l,k), 'BarWidth', 1, 'FaceAlpha',1, 'FaceColor', C(6,:));
-%         elseif idx_sort(l,k) == 3
-%             h(3) = bar(k, ysort(l,k), 'BarWidth', 1, 'FaceAlpha',1, 'FaceColor', 'y');
-%         elseif idx_sort(l,k) == 4
-%             h(4) = bar(k, ysort(l,k), 'BarWidth', 1, 'FaceAlpha',1, 'FaceColor', [0.4940 0.1840 0.5560]);
-%         end
-%     end
-% end
-% 
-% % plotar medias 
-% yline(mean(mean(ILDE(1).gen(idx_pos,:))), '--', 'Média', 'color', 'c', 'linewidth', 1.5);
-% yline(mean(mean(ILDE(2).gen(idx_pos,:))), '--', 'Média', 'color', C(6,:),'linewidth', 1.5);
-% yline(mean(mean(ILDE(3).gen(idx_pos,:))), '--', 'color', 'y','linewidth', 1.5);
-% yline(mean(mean(ILDE_sim(idx_pos,:))),'--', 'Média', 'color', [0.4940 0.1840 0.5560],'linewidth', 1.5); 
-% hold off
-% 
-% % general 
-% yticks(sort([3, mean(mean(ILDE_sim(idx_pos,:))), mean(mean(ILDE(3).gen(idx_pos,:))),...
-%            mean(mean(ILDE(1).gen(idx_pos,:))), mean(mean(ILDE(2).gen(idx_pos,:))), 8]));
-% arruma_fig('% 4.0f','% 2.2f','virgula')
-% axis([0 97, 3.5, 8.3])
-% title('Erro médio do ILD no plano horizontal')
-% xlabel('Indivíduo')
-% ylabel('Erro Médio Absoluto')
-% legend(h, 'Fabian','Kemar Small','Kemar Large','Simulada','location','southwest')
-% set(gca,'fontsize', 12)
-% 
-% filename = [pwd, '\Images\Overall_ILD_error.pdf' ];
-% % % exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+hFigure = figure('Renderer', 'painters', 'Position', [10 10 2000 450]);
+hold on 
+
+% Selecionar posições
+elev = 0;
+idx_pos = find(out_pos(:,2)==elev);
+
+
+% plotar em ordem 
+yild = cat(1, mean(ILDE(1).gen(idx_pos,:)),...
+              mean(ILDE(2).gen(idx_pos,:)),...
+              mean(ILDE(3).gen(idx_pos,:)),...
+              mean(ILDE_sim(idx_pos,:)));
+[ysort, idx_sort] = sort(yild, 1, 'descend');
+
+% Cores
+N=9;
+C = linspecer(N);
+
+hold on 
+for k = 1:size(ysort, 2)
+    for l = 1:size(ysort, 1)
+        if idx_sort(l,k) == 1
+            h(1) = bar(k, ysort(l,k), 'BarWidth', 1, 'FaceAlpha',1, 'FaceColor', 'c');
+        elseif idx_sort(l,k) == 2
+            h(2) = bar(k, ysort(l,k), 'BarWidth', 1, 'FaceAlpha',1, 'FaceColor', C(6,:));
+        elseif idx_sort(l,k) == 3
+            h(3) = bar(k, ysort(l,k), 'BarWidth', 1, 'FaceAlpha',1, 'FaceColor', 'y');
+        elseif idx_sort(l,k) == 4
+            h(4) = bar(k, ysort(l,k), 'BarWidth', 1, 'FaceAlpha',1, 'FaceColor', [0.4940 0.1840 0.5560]);
+        end
+    end
+end
+
+% plotar medias 
+yline(mean(mean(ILDE(1).gen(idx_pos,:))), '--', 'Média', 'color', 'c', 'linewidth', 1.5);
+yline(mean(mean(ILDE(2).gen(idx_pos,:))), '--', 'Média', 'color', C(6,:),'linewidth', 1.5);
+yline(mean(mean(ILDE(3).gen(idx_pos,:))), '--', 'color', 'y','linewidth', 1.5);
+yline(mean(mean(ILDE_sim(idx_pos,:))),'--', 'Média', 'color', [0.4940 0.1840 0.5560],'linewidth', 1.5); 
+hold off
+
+% general 
+yticks(sort([3, mean(mean(ILDE_sim(idx_pos,:))), mean(mean(ILDE(3).gen(idx_pos,:))),...
+           mean(mean(ILDE(1).gen(idx_pos,:))), mean(mean(ILDE(2).gen(idx_pos,:))), 8]));
+arruma_fig('% 4.0f','% 2.2f','virgula')
+axis([0 97, 3.5, 8.3])
+title('Erro médio do ILD no plano horizontal')
+xlabel('Indivíduo')
+ylabel('Erro Médio Absoluto')
+legend(h, 'Fabian','Kemar Small','Kemar Large','Simulada','location','southwest')
+set(gca,'fontsize', 12)
+
+filename = [pwd, '\Images\Overall_ILD_error.pdf' ];
+% % exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
 
 %% Plot polar ITD
 % Selecionar posições
