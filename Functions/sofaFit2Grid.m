@@ -33,7 +33,7 @@ function Obj_out = sofaFit2Grid(Obj_in, out_pos, varargin)
 %% Parse Arguments
 % Método de processamento
 defaultMethod = 'adapt';
-validMethods = {'adapt','hybrid', 'vbap', 'bilinear'};
+validMethods = {'adapt','hybrid', 'vbap', 'bilinear', 'spherical_harmonics'};
 checkMethod = @(x) any(validatestring(x,validMethods));
 
 % Opções de taxa de amostragem
@@ -101,8 +101,8 @@ switch p.Results.method
 
 %% Interpolar por harmonicos esféricos
     case {validMethods{5}}
-        IR_interp = sofa_SphInterp(Obj_in, out_pos(:, [1,2]));
-        meta.fittedIR = IR_interp;
+        IR_interp = sofaSHinterpolate(Obj_in, out_pos(:, [1,2]));
+        meta.fittedIR = IR_interp.Data.IR;
         meta.fittedPOS = out_pos;
 end 
 

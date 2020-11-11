@@ -269,7 +269,7 @@ end
 
 
 
-%% Distribuição da SD por posição 
+%% Histograma da SD por posição 
 
 % hFigure = figure();
 % histogram(mean(sd_sim, 2),'Normalization','probability',...

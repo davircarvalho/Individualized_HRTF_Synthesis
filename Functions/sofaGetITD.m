@@ -28,10 +28,11 @@ parse(p, Obj, varargin{:})
     for k = 1:size(IR, 2)
         A.time = IR(:,k,1); % L
         B.time = IR(:,k,2); % R    
-%         ponto de chegada 
+         % ponto de chegada 
         OnSetL = ita_start_IR(A, 'correlation', false, 'threshold', 10);
         OnSetR = ita_start_IR(B, 'correlation', false, 'threshold', 10);
-%         diferenca interaural
+        
+         % diferenca interaural
         itd(k) = abs(OnSetL - OnSetR);
     end
 

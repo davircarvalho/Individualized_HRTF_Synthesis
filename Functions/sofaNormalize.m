@@ -6,7 +6,7 @@ elev = 0; azim = 0;
 posi = round(Obj.SourcePosition);
 idx_pos = dsearchn(posi(:,[1,2]),  [azim, elev]);
 
-% normalize balance
+% normalize L/R balance
 norm =  max(abs(Obj.Data.IR(idx_pos, :,:)),[],3);
 IR(:,1,:) = Obj.Data.IR(:,1,:)./norm(1);
 IR(:,2,:) = Obj.Data.IR(:,2,:)./norm(2);
