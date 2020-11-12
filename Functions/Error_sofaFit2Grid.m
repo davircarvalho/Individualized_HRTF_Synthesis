@@ -19,18 +19,16 @@ no_posi = size(dataset(1).dados.SourcePosition,1)-10; % numero total de posições
 
 
 %% 
-n=0;
-no_readpt = 50:50:350;
+n=0; cont=0;
+no_readpt = 50:100:350;
 for k = no_readpt % número de posições "objetivo" (removidas pro teste)
     n=n+1;
     %%% Index de posições a serem removidas
     rng(0) % reset random generator
     idx = randperm(no_posi, k); 
-
     %%% Create new SOFA objects
     for ks = 1:length(dataset)  % numero de individuos sob analise 
-        clc; disp(['Iteração: ' num2str(n) ' de ' num2str(length(no_readpt)), ....
-                  '    Subject: ' num2str(ks), ' de ' num2str(length(dataset))]);
+        tic
         % HRIRs
         src_IR   = dataset(ks).dados.Data.IR;
         des_IR   = src_IR(idx,:,:); % RI objetivo
@@ -69,6 +67,12 @@ for k = no_readpt % número de posições "objetivo" (removidas pro teste)
                                         EvaluateDistortions(Obj_stdy, REAL, 'bilinear');
         [HSPH, sd(n).hsph(:,ks), ITD_error(n).hsph(:,ks), ILD_error(n).hsph(:,ks)] = ...
                                         EvaluateDistortions(Obj_stdy, REAL, 'spherical_harmonics');
+        
+        clc; disp(['Iteração: ' num2str(n) ' de ' num2str(length(no_readpt)), ....
+                  '    Subject: ' num2str(ks), ' de ' num2str(length(dataset))]); 
+        cont = cont+1;
+        ETA = toc*(length(no_readpt)*length(dataset)-cont)/3600;
+        disp(['ETA: ' num2str(ETA),'h' ])      
     end
 end
 
