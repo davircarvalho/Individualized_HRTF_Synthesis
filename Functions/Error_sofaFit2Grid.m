@@ -5,8 +5,6 @@ clear all; clc
 %% LOAD 
 local = [pwd '\..\Datasets\'];    
 path = dir([local 'HUTUBS\pp*_HRIRs_simulated.sofa']);
-[~,idx_dataset] = natsortfiles({path.name});
-path = path(idx_dataset, :);
 for k = 1:length(path)
    dataset(k).dados = SOFAload([path(k).folder, '\',path(k).name], 'nochecks');
 end
@@ -15,7 +13,7 @@ end
 %% General 
 % dataset([1:10]) = [];
 fs = dataset(1).dados.Data.SamplingRate;
-no_posi = size(dataset(1).dados.SourcePosition,1)-10; % numero total de posições
+no_posi = size(dataset(1).dados.SourcePosition,1); % numero total de posições
 
 
 %% 
@@ -23,10 +21,8 @@ n=0; cont=0;
 no_readpt = 50:100:350;
 for k = no_readpt % número de posições "objetivo" (removidas pro teste)
     n=n+1;
-    %%% Index de posições a serem removidas
     rng(0) % reset random generator
-    idx = randperm(no_posi, k); 
-    %%% Create new SOFA objects
+    idx = randperm(no_posi, k); % Index de posições a serem removidas
     for ks = 1:length(dataset)  % numero de individuos sob analise 
         tic
         % HRIRs
@@ -39,6 +35,7 @@ for k = no_readpt % número de posições "objetivo" (removidas pro teste)
         inpt_pos = dataset(ks).dados.SourcePosition;
         des_pos  = inpt_pos(idx,:); % Posicoes objetivo
         inpt_pos(idx,:)  = [];      % Posicoes de entrada    
+       
         %save para plot
         plt(n).des  = des_pos;
         plt(n).inpt = inpt_pos;
@@ -54,11 +51,12 @@ for k = no_readpt % número de posições "objetivo" (removidas pro teste)
         REAL.Data.IR = des_IR;
         REAL.Data.SamplingRate = fs;
         REAL.SourcePosition = des_pos;
+        
         % update metadata
         REAL = SOFAupgradeConventions( SOFAupdateDimensions(REAL));    
         Obj_stdy = SOFAupgradeConventions( SOFAupdateDimensions(Obj_stdy));   
 
-        
+        % error
         [ADPT, sd(n).adpt(:,ks), ITD_error(n).adpt(:,ks), ILD_error(n).adpt(:,ks)] = ...
                                         EvaluateDistortions(Obj_stdy, REAL, 'adapt');
         [VBAP, sd(n).vbap(:,ks), ITD_error(n).vbap(:,ks), ILD_error(n).vbap(:,ks)] = ...
@@ -77,9 +75,9 @@ for k = no_readpt % número de posições "objetivo" (removidas pro teste)
 end
 
 %% SAVE THEM ALL
-save([pwd '\..\DADOS_TREINAMENTO\workspace_Error_sofaFit2Grid.mat'])
-% clear all
-% load('workspace_Error_sofaFit2Grid.mat')
+% save([pwd '\..\DADOS_TREINAMENTO\workspace_Error_sofaFit2Grid.mat'])
+clear all
+load([pwd '\..\DADOS_TREINAMENTO\workspace_Error_sofaFit2Grid.mat'])
 
 
 
@@ -216,7 +214,7 @@ filename = [pwd, '\Images\ShadedError_sofaFit2Grid.pdf'];
 lim_colorbar = [1 8.5];
 n_idx = 4; % 
 plt_pos = plt(n_idx).des;
-plt_inp =  plt(n_idx).inpt;
+plt_inp = plt(n_idx).inpt;
 
 % ADPT
 hFigure = figure();
@@ -367,7 +365,7 @@ filename = [pwd, '\Images\removedPos_sofaFit2Grid.pdf'];
 
 
 %% PLOT PER POSITION
-azi = 270; 
+azi = 90; 
 elev = 0;
 idx_pos = dsearchn(des_pos(:,[1, 2]), [azi, elev]);
 N = size(REAL.Data.IR,3);
@@ -386,7 +384,7 @@ plot(freq, ff(1:N/2), '--','LineWidth', 1.4)
 ff = db(abs(fft(squeeze(ADPT.Data.IR(idx_pos, ch, :)), N)));
 plot(freq, ff(1:N/2), '--','LineWidth', 1.4)
 
-legend('Ground truth', 'Spherical Harmonics', 'VBAP','Bilinear', 'Adptation', 'Location', 'Best')
+legend('Ground truth', 'Spherical harmonics', 'VBAP','Bilinear', 'Nearest', 'Location', 'Best')
 arruma_fig('% 4.0f','% 2.0f','virgula')
 xlabel('Frequency (Hz)')
 ylabel('Amplitude (dB)')
@@ -399,10 +397,6 @@ else
 end
 set(gca,'FontSize',12)
 axis tight
-
-
-
-
 
 
 
@@ -426,7 +420,7 @@ function [Obj, SD, ITD_error, ILD_error]= EvaluateDistortions(Obj_stdy, Obj_real
 
 %%% Estimar posicoes objetivo a partir das posicoes de entrada
     des_pos = Obj_real.SourcePosition;
-    Obj = sofaFit2Grid(Obj_stdy, des_pos, method);    
+    Obj = sofaFit2Grid(Obj_stdy, des_pos, method); % interpolation
 %%% Erro espectral
     fmin = 400; fmax = 20000;
     SD = sofaSpecDist(Obj, Obj_real, fmin,fmax);

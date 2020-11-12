@@ -21,9 +21,9 @@ function Obj_out = sofaFit2Grid(Obj_in, out_pos, varargin)
 %    'hybrid':   Faz a adaptação como em 'adapt', mas posições do grid
 %                original escolhidas para mais de uma posição objetivo 
 %                são determinadas por interpolação (Metodo Padrao).
-%    'vbap':     Interpolação vbap caso selecionado 'interp' ou 'hybrid'.
-%    'bilinear': Interpolação bilinear caso selecionado 'interp' ou 'hybrid'
-%
+%    'vbap':     Interpolação vbap
+%    'bilinear': Interpolação bilinear 
+%    'spherical_harmonics': Interpolação por meio de harmonicos esféricos
 %    'Fs':       Transformação da taxa de amostragem no objeto de saída 
 %                (Padrao: original do objeto).
 
@@ -54,7 +54,7 @@ if Obj_in.Data.SamplingRate ~= p.Results.Fs
 end
 
 
-%% Find new grid positions ('ADAPT')
+%% "Interpolation" by nearest position ('ADAPT')
 switch p.Results.method
     case {validMethods{1}, validMethods{2}}              
         meta.pos = Obj_in.SourcePosition;
@@ -91,7 +91,7 @@ switch p.Results.method
              end
         end
 
-%% Interpolar posicoes ('INTERP')
+%% Interpolar por 'VBAP' ou 'BILINEAR'
     case {validMethods{3}, validMethods{4}}
         meta.fittedIR = zeros(length(out_pos), 2, size(Obj_in.Data,3));
         meta.pos = Obj_in.SourcePosition;
@@ -99,7 +99,7 @@ switch p.Results.method
                                        'Algorithm', p.Results.method);   
         meta.fittedPOS = out_pos;
 
-%% Interpolar por harmonicos esféricos
+%% Interpolar por harmonicos esféricos 'spherical_harmonics'
     case {validMethods{5}}
         IR_interp = sofaSHinterpolate(Obj_in, out_pos(:, [1,2]));
         meta.fittedIR = IR_interp.Data.IR;
@@ -114,7 +114,7 @@ Obj_out.Data.IR = meta.fittedIR;
 Obj_out.SourcePosition = meta.fittedPOS;
 Obj_out.Data.SamplingRate = p.Results.Fs;
 
-warning('off','SOFA:upgrade');
+% warning('off','SOFA:upgrade');
 Obj_out = SOFAupgradeConventions(Obj_out);
 Obj_out = SOFAupdateDimensions(Obj_out);
 

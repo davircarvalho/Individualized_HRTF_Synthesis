@@ -140,10 +140,14 @@ function obj = getReferenceSourceBL(obj,desiredPosition)
     sEl = obj.SourcePosition(sortedID,2);
 
     % Point B            
-    % Point A and B should have same El (are you sure?)
-    id = ( (obj.pRefSources.Az(1) ~= sAz));
+    % Point A and B should have same El 
+    id = (obj.pRefSources.El(1) == sEl & (obj.pRefSources.Az(1) ~= sAz));
     idB = find(id);
-
+    if(isempty(idB)) %%%% (MOD: allow A and B to have different elevations sometimes)
+        id = (obj.pRefSources.Az(1) ~= sAz);
+        idB = find(id);
+    end
+    
     if(isempty(idB))
         % If the appropriate references sources cannot be found,
         % throw an error
@@ -386,7 +390,7 @@ function interpolatedIR =  performVBAPInterpolation(obj,hrtfData,desiredAz,desir
     % g = p^T * l^-1
     % gL = p -> g = mrdivide(p,L) or g = p/l;                                        
 %     g = p/l;     % FUNÇÂO ORIGINAL 
-    g = p*pinv(l); % ALTERAÇÂO EM RELAÇÂO A FUNÇÂO ORIGINAL 
+    g = p*pinv(l); % ALTERAÇÂO EM RELAÇÂO A FUNÇÂO ORIGINAL (r2020b works likes this now)
     
     % Normalize the gains
     g = g/(sqrt(sum(g.^2)));            

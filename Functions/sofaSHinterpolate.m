@@ -1,8 +1,13 @@
 % SOFA HRTF INTERPOLATATION USING SPHERICAL HARMONICS
 function  Obj = sofaSHinterpolate(IR, pos)
+% close all; clear all; clc
+
 ele = pos(:,2);
 azi = pos(:,1);
-% close all; clear all; clc
+
+% res = .5;
+% ele=[-90:res:90 89:-res:-90 zeros(1,length(1:res:355))]';
+% azi=[zeros(length(-90:res:90),1); 180*ones(length(89:-res:-90),1); (1:res:355)'];
 
 %% Import
 % IR=SOFAload('D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Datasets\HUTUBS\pp90_HRIRs_simulated.sofa');
@@ -88,12 +93,6 @@ SH = SOFAupdateDimensions(SH);
 
 %% interpolate for the horizontal and median planes to SimpleFreeFieldHRTF (TF)
 TFint=TF;
-
-% res = 1;
-% ele=[-90:res:90 89:-res:-90 zeros(1,length(1:res:355))]';
-% azi=[zeros(length(-90:res:90),1); 180*ones(length(89:-res:-90),1); (1:res:355)'];
-
-
 radius=IR.SourcePosition(1,3)*ones(size(ele));
 TFint.SourcePosition=[azi ele radius];
 Sint = sph2SH(TFint.SourcePosition(:,1:2), sqrt(SH.API.E)-1);
@@ -107,16 +106,15 @@ for ii=1:TFint.API.R
   end
 end
 
-
 TFint = SOFAupdateDimensions(TFint);
 Obj   = SOFAconvertConventions(TFint);
 end
 %% compare
 % figure;
-% SOFAplotHRTF(Obj,'MagHorizontal'); title('SimpleFreeFieldHRTF (TF): Interpolated');
+% SOFAplotHRTF(Obj,'MagHorizontal'); title('Interpolated (SH)');
 % axis tight
 % figure;
-% SOFAplotHRTF(IR,'MagHorizontal'); title('SimpleFreeFieldHRIR (FIR) for reference');
+% SOFAplotHRTF(IR,'MagHorizontal'); title('Reference');
 % axis tight
 
 % SOFAplotHRTF(TFint,'etchorizontal'); title('SimpleFreeFieldHRTF (TF): Interpolated');
