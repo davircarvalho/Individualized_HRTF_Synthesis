@@ -85,7 +85,7 @@ switch p.Results.method
                 meta.fittedIR(idx_hybrid(:,2),:,:) = NaN; % to be filled later           
                 % interpolar valores limpos
                 des_hybrid = out_pos(idx_hybrid(:,2),:);
-                IR_temp = miinterpolateHRTF(Obj_in.Data.IR, meta.pos(:,[1,2]), des_hybrid(:,[1,2]), ...
+                IR_temp = interpolateHRTF(Obj_in.Data.IR, meta.pos(:,[1,2]), des_hybrid(:,[1,2]), ...
                                           'Algorithm','bilinear');   
                 meta.fittedIR(idx_hybrid(:,2),:,:) = IR_temp;
              end

@@ -11,23 +11,26 @@ for k = 1:length(path)
    dataset(k).dados = SOFAload([path(k).folder, '\',path(k).name], 'nochecks');
 end
 
+
 %% General 
 % dataset([1:10]) = [];
 fs = dataset(1).dados.Data.SamplingRate;
-fmin=100; fmax=19000; 
 no_posi = size(dataset(1).dados.SourcePosition,1)-10; % numero total de posições
-n=0;
 
-%%
-for no_readpt = 50:100:350 % número de posições "objetivo" (removidas pro teste)
+
+%% 
+n=0;
+no_readpt = 50:50:350;
+for k = no_readpt % número de posições "objetivo" (removidas pro teste)
     n=n+1;
-    disp(['Iteração: ' num2str(n) ' de ' num2str(length(50:100:650)) ])
     %%% Index de posições a serem removidas
     rng(0) % reset random generator
-    idx = randperm(no_posi, no_readpt); 
+    idx = randperm(no_posi, k); 
 
-    %% Create new SOFA objects
+    %%% Create new SOFA objects
     for ks = 1:length(dataset)  % numero de individuos sob analise 
+        clc; disp(['Iteração: ' num2str(n) ' de ' num2str(length(no_readpt)), ....
+                  '    Subject: ' num2str(ks), ' de ' num2str(length(dataset))]);
         % HRIRs
         src_IR   = dataset(ks).dados.Data.IR;
         des_IR   = src_IR(idx,:,:); % RI objetivo
@@ -57,37 +60,19 @@ for no_readpt = 50:100:350 % número de posições "objetivo" (removidas pro teste)
         REAL = SOFAupgradeConventions( SOFAupdateDimensions(REAL));    
         Obj_stdy = SOFAupgradeConventions( SOFAupdateDimensions(Obj_stdy));   
 
-    %% Estimar posicoes objetivo a partir das posicoes de entrada
-        ADPT = sofaFit2Grid(Obj_stdy, des_pos, 'adapt'); 
-        HYBR = sofaFit2Grid(Obj_stdy, des_pos, 'hybrid');
-        VBAP = sofaFit2Grid(Obj_stdy, des_pos, 'vbap');
-        BLIN = sofaFit2Grid(Obj_stdy, des_pos, 'bilinear');
-        HSPH = sofaFit2Grid(Obj_stdy, des_pos, 'spherical_harmonics');
-
-    %% Erro espectral
-        sd(n).adpt(:,ks) = sofaSpecDist(ADPT, REAL, fmin,fmax);
-        sd(n).vbap(:,ks) = sofaSpecDist(VBAP, REAL, fmin,fmax);
-        sd(n).blin(:,ks) = sofaSpecDist(BLIN, REAL, fmin,fmax);
-        sd(n).hybr(:,ks) = sofaSpecDist(HYBR, REAL, fmin,fmax);
-        sd(n).hsph(:,ks) = sofaSpecDist(HSPH, REAL, fmin,fmax);
-
-    %% ERRO ITD e ILD 
-        [ITD_error(n).adpt(:,ks), ILD_error(n).adpt(:,ks)] = sofa_ITD_ILD_error(ADPT, REAL);
-        [ITD_error(n).hybr(:,ks), ILD_error(n).hybr(:,ks)] = sofa_ITD_ILD_error(HYBR, REAL);
-        [ITD_error(n).vbap(:,ks), ILD_error(n).vbap(:,ks)] = sofa_ITD_ILD_error(VBAP, REAL);
-        [ITD_error(n).blin(:,ks), ILD_error(n).blin(:,ks)] = sofa_ITD_ILD_error(BLIN, REAL);
-        [ITD_error(n).hsph(:,ks), ILD_error(n).hsph(:,ks)] = sofa_ITD_ILD_error(HSPH, REAL);        
-
+        
+        [ADPT, sd(n).adpt(:,ks), ITD_error(n).adpt(:,ks), ILD_error(n).adpt(:,ks)] = ...
+                                        EvaluateDistortions(Obj_stdy, REAL, 'adapt');
+        [VBAP, sd(n).vbap(:,ks), ITD_error(n).vbap(:,ks), ILD_error(n).vbap(:,ks)] = ...
+                                        EvaluateDistortions(Obj_stdy, REAL, 'vbap');
+        [BLIN, sd(n).blin(:,ks), ITD_error(n).blin(:,ks), ILD_error(n).blin(:,ks)] = ...
+                                        EvaluateDistortions(Obj_stdy, REAL, 'bilinear');
+        [HSPH, sd(n).hsph(:,ks), ITD_error(n).hsph(:,ks), ILD_error(n).hsph(:,ks)] = ...
+                                        EvaluateDistortions(Obj_stdy, REAL, 'spherical_harmonics');
     end
 end
 
-
-
-
-
-
-
-%%
+%% SAVE THEM ALL
 save([pwd '\..\DADOS_TREINAMENTO\workspace_Error_sofaFit2Grid.mat'])
 % clear all
 % load('workspace_Error_sofaFit2Grid.mat')
@@ -98,52 +83,83 @@ save([pwd '\..\DADOS_TREINAMENTO\workspace_Error_sofaFit2Grid.mat'])
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 %%%%%%%%%%%%%% PLOTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Simplicação do erro para comparação (ITD, ILD)
-% for k = 1:n
-%     media_itd(k).adpt = mean(mean([ITD_error(k).adpt], 2));
-%     media_itd(k).vbap = mean(mean([ITD_error(k).vbap], 2));
-%     media_itd(k).blin = mean(nanmean([ITD_error(k).blin], 2));
+for k = 1:n
+    media_itd(k).adpt = mean(mean([ITD_error(k).adpt], 2));
+    media_itd(k).vbap = mean(mean([ITD_error(k).vbap], 2));
+    media_itd(k).blin = mean(nanmean([ITD_error(k).blin], 2));
 %     media_itd(k).hybr = mean(mean([ITD_error(k).hybr], 2));
-%     std_itd(k).adpt = std(mean([ITD_error(k).adpt], 2));
-%     std_itd(k).vbap = std(mean([ITD_error(k).vbap], 2));
-%     std_itd(k).blin = std(nanmean([ITD_error(k).blin], 2));
+    media_itd(k).hsph = mean(mean([ITD_error(k).hsph], 2));
+    std_itd(k).adpt = std(mean([ITD_error(k).adpt], 2));
+    std_itd(k).vbap = std(mean([ITD_error(k).vbap], 2));
+    std_itd(k).blin = std(nanmean([ITD_error(k).blin], 2));
 %     std_itd(k).hybr = std(mean([ITD_error(k).hybr], 2));
-% 
-%     
-%     media_ild(k).adpt = mean(mean([ILD_error(k).adpt], 2));
-%     media_ild(k).vbap = mean(mean([ILD_error(k).vbap], 2));
-%     media_ild(k).blin = mean(nanmean([ILD_error(k).blin], 2));
+    std_itd(k).hsph = std(mean([ITD_error(k).hsph], 2));
+    
+    media_ild(k).adpt = mean(mean([ILD_error(k).adpt], 2));
+    media_ild(k).vbap = mean(mean([ILD_error(k).vbap], 2));
+    media_ild(k).blin = mean(nanmean([ILD_error(k).blin], 2));
 %     media_ild(k).hybr = mean(mean([ILD_error(k).hybr], 2));
-%     std_ild(k).adpt = std(mean([ILD_error(k).adpt], 2));
-%     std_ild(k).vbap = std(mean([ILD_error(k).vbap], 2));
-%     std_ild(k).blin = std(nanmean([ILD_error(k).blin], 2));
+    media_ild(k).hsph = mean(mean([ILD_error(k).hsph], 2));
+    std_ild(k).adpt = std(mean([ILD_error(k).adpt], 2));
+    std_ild(k).vbap = std(mean([ILD_error(k).vbap], 2));
+    std_ild(k).blin = std(nanmean([ILD_error(k).blin], 2));
 %     std_ild(k).hybr = std(mean([ILD_error(k).hybr], 2));
-% 
-% end
-% 
-% plot([media_itd.adpt], 'linewidth', 1.7);hold on
-% plot([media_itd.vbap], 'linewidth', 1.7);
-% plot([media_itd.blin], 'linewidth', 1.7);
-% plot([media_itd.hybr], 'linewidth', 1.7);
-% xticks(1:n);
-% legend('adapt', 'vbap', 'blin', 'hybr', 'location', 'best')
-% 
-% 
+    std_ild(k).hsph = std(mean([ILD_error(k).hsph], 2));
+
+end
+
+figure()
+plot([media_itd.adpt]*1e6, 'linewidth', 1.7);hold on
+plot([media_itd.vbap]*1e6, 'linewidth', 1.7);
+plot([media_itd.blin]*1e6, 'linewidth', 1.7);
+% plot([media_itd.hybr]*1e6, 'linewidth', 1.7);
+plot([media_itd.hsph]*1e6, 'linewidth', 1.7);
+xticks(1:n);
+title('ITD error')
+xticklabels(no_readpt)
+xlabel('Número de posições estimadas')
+ylabel('Erro medio (\mus)')
+legend('Adaptation', 'VBAP', 'Bilinear',  'Spherical harmonics','location', 'best')
+
+
 % figure()
 % plot([media_ild.adpt], 'linewidth', 1.7);hold on
 % plot([media_ild.vbap], 'linewidth', 1.7);
 % plot([media_ild.blin], 'linewidth', 1.7);
-% plot([media_ild.hybr], 'linewidth', 1.7);
+% % plot([media_ild.hybr], 'linewidth', 1.7);
+% plot([media_ild.hsph], 'linewidth', 1.7);
 % xticks(1:n);
-% legend('adapt', 'vbap', 'blin', 'hybr', 'location', 'best')
+% title('ild')
+% legend('adapt', 'vbap', 'blin',  'hsph','location', 'best')
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Simplicação do erro para comparação (LSD)
 for l = 1:n
     % média do erro de todas as posições para cada individuo
     pos_sd(l).adpt = nanmean(sd(l).adpt);
-    pos_sd(l).hybr = nanmean(sd(l).hybr);
+%     pos_sd(l).hybr = nanmean(sd(l).hybr);
     pos_sd(l).vbap = nanmean(sd(l).vbap);
     pos_sd(l).blin = nanmean(sd(l).blin);
     pos_sd(l).hsph = nanmean(sd(l).hsph);
@@ -152,8 +168,8 @@ for l = 1:n
     media_sd(l).adpt = mean(pos_sd(l).adpt);
     stdev(l).adpt    = std(pos_sd(l).adpt); %std entre media de cada indivíduo
 
-    media_sd(l).hybr = mean(pos_sd(l).hybr);
-    stdev(l).hybr    = std(pos_sd(l).hybr);
+%     media_sd(l).hybr = mean(pos_sd(l).hybr);
+%     stdev(l).hybr    = std(pos_sd(l).hybr);
 
     media_sd(l).vbap = mean(pos_sd(l).vbap);
     stdev(l).vbap    = std(pos_sd(l).vbap);
@@ -165,7 +181,8 @@ for l = 1:n
     stdev(l).hsph    = std(pos_sd(l).hsph);
 end
 
-%% Media do erro para todas as posições e todos os individuos com desvio
+
+%% Media e desvio da SD para todas as posições e todos os individuos 
 % padrao entre individuos 
 hFigure = figure();
 set(0,'DefaultLineLineWidth',1.5)
@@ -173,27 +190,27 @@ set(0,'DefaultLineLineWidth',1.5)
 fig1 = shadedErrorBar(1:n, [media_sd.adpt], [stdev.adpt],{'Color',colors(0),'LineWidth', 1.7},1,0.2,'lin', 0);hold on
 fig2 = shadedErrorBar(1:n, [media_sd.vbap], [stdev.vbap],{'Color',colors(1),'LineWidth', 1.7},1,0.2,'lin', 0);
 fig3 = shadedErrorBar(1:n, [media_sd.blin], [stdev.blin],{'Color',colors(2),'LineWidth', 1.7},1,0.2,'lin', 0);
-fig4 = shadedErrorBar(1:n, [media_sd.hybr], [stdev.hybr],{'Color',colors(7),'LineWidth', 1.7},1,0.2,'lin', 0);
-fig5 = shadedErrorBar(1:n, [media_sd.hsph], [stdev.hsph],{'Color',colors(9),'LineWidth', 1.7},1,0.2,'lin', 0);hold off
+% fig4 = shadedErrorBar(1:n, [media_sd.hybr], [stdev.hybr],{'Color',colors(7),'LineWidth', 1.7},1,0.2,'lin', 0);
+fig5 = shadedErrorBar(1:n, [media_sd.hsph], [stdev.hsph],{'Color',colors(6),'LineWidth', 1.7},1,0.2,'lin', 0);hold off
 
 %metadata
-axis tight
 h = get(gca,'Children');
-legendstr = {'', 'Adaptação', '', 'VBAP', '', 'Bilinear', '', 'Híbrido', '', 'Spherical Harmonics'};
-legend(h([1 3 5 7 9]), legendstr{[10 8 6 4 2]}, 'Location', 'Best')
+legendstr = {'', 'Adaptação', '', 'VBAP', '', 'Bilinear', '', 'Spherical Harmonics'};
+legend(h([1 3 5 7 ]), legendstr{[ 8 6 4 2]}, 'Location', 'Best')
 xticks(1:n)
-xticklabels(50:100:750)
+xticklabels(no_readpt)
 title('')
 xlabel('Número de posições estimadas')
-ylabel('Erro espectral [dB]')
+ylabel('Erro espectral (dB)')
 set(gca,'FontSize',12)
-
+ylim([-1 10])
 filename = [pwd, '\Images\ShadedError_sofaFit2Grid.pdf'];
 % exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
 
+
 %% Mapa de ERRO por posição 
-lim_colorbar = [1 8];
-n_idx = 6; % 
+lim_colorbar = [1 8.5];
+n_idx = 4; % 
 plt_pos = plt(n_idx).des;
 plt_inp =  plt(n_idx).inpt;
 
@@ -274,82 +291,141 @@ filename = [pwd, '\Images\removedPos_sofaFit2Grid.pdf'];
 
 
 %% Probabilidade distribuição 
-n_idx = 4; % 
-hFigure = figure();
-histogram(mean(sd(n_idx).adpt,2),'Normalization','probability', 'NumBins', 13)
-ylim([0 .35])
-ytix = get(gca, 'YTick');
-set(gca, 'YTick',ytix, 'YTickLabel',ytix*100);
-
-xlabel('Distorção espectral [dB]')
-ylabel('Probabilidade [%]')
-title('Distribuição da distorção espectral (Adaptação)')
-xlim([0 22.5])
-xticks(0:2:100)
-set(gca,'FontSize',12)
-filename = [pwd, '\Images\Prob_fit2grid_ADPT.pdf'];
-% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
-
-
-
-% VBAP
-hFigure = figure();
-histogram(mean(sd(n_idx).vbap,2),'Normalization','probability', 'NumBins', 13)
-ylim([0 .35])
-ytix = get(gca, 'YTick');
-set(gca, 'YTick',ytix, 'YTickLabel',ytix*100);
-
-xlabel('Distorção espectral [dB]')
-ylabel('Probabilidade [%]')
-title('Distribuição da distorção espectral (VBAP)')
-xlim([0 22.5])
-xticks(0:2:100)
-set(gca,'FontSize',12)
-filename = [pwd, '\Images\Prob_fit2grid_VBAP.pdf'];
-% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
-
-
-
-% BILINEAR
-hFigure = figure();
-histogram(mean(sd(n_idx).blin,2),'Normalization','probability', 'NumBins', 13)
-ylim([0 .35])
-ytix = get(gca, 'YTick');
-set(gca, 'YTick',ytix, 'YTickLabel',ytix*100);
-
-xlabel('Distorção espectral [dB]')
-ylabel('Probabilidade [%]')
-title('Distribuição da distorção espectral (Bilinear)')
-xlim([0 22.5])
-xticks(0:2:100)
-set(gca,'FontSize',12)
-filename = [pwd, '\Images\Prob_fit2grid_BLIN.pdf'];
-% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
-
-
-
-% SPHERICAL HARMONICS
-hFigure = figure();
-histogram(mean(sd(n_idx).hsph,2),'Normalization','probability', 'NumBins', 13)
-ylim([0 .35])
-ytix = get(gca, 'YTick');
-set(gca, 'YTick',ytix, 'YTickLabel',ytix*100);
-
-xlabel('Distorção espectral [dB]')
-ylabel('Probabilidade [%]')
-title('Distribuição da distorção espectral (Spherical Harmonics)')
-xlim([0 22.5])
-xticks(0:2:100)
-set(gca,'FontSize',12)
-filename = [pwd, '\Images\Prob_fit2grid_BLIN.pdf'];
-% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+% n_idx = 4; % 
+% hFigure = figure();
+% histogram(mean(sd(n_idx).adpt,2),'Normalization','probability', 'NumBins', 13)
+% ylim([0 .35])
+% ytix = get(gca, 'YTick');
+% set(gca, 'YTick',ytix, 'YTickLabel',ytix*100);
+% 
+% xlabel('Distorção espectral [dB]')
+% ylabel('Probabilidade [%]')
+% title('Distribuição da distorção espectral (Adaptação)')
+% xlim([0 22.5])
+% xticks(0:2:100)
+% set(gca,'FontSize',12)
+% filename = [pwd, '\Images\Prob_fit2grid_ADPT.pdf'];
+% % exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+% 
+% 
+% 
+% % VBAP
+% hFigure = figure();
+% histogram(mean(sd(n_idx).vbap,2),'Normalization','probability', 'NumBins', 13)
+% ylim([0 .35])
+% ytix = get(gca, 'YTick');
+% set(gca, 'YTick',ytix, 'YTickLabel',ytix*100);
+% 
+% xlabel('Distorção espectral [dB]')
+% ylabel('Probabilidade [%]')
+% title('Distribuição da distorção espectral (VBAP)')
+% xlim([0 22.5])
+% xticks(0:2:100)
+% set(gca,'FontSize',12)
+% filename = [pwd, '\Images\Prob_fit2grid_VBAP.pdf'];
+% % exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+% 
+% 
+% 
+% % BILINEAR
+% hFigure = figure();
+% histogram(mean(sd(n_idx).blin,2),'Normalization','probability', 'NumBins', 13)
+% ylim([0 .35])
+% ytix = get(gca, 'YTick');
+% set(gca, 'YTick',ytix, 'YTickLabel',ytix*100);
+% 
+% xlabel('Distorção espectral [dB]')
+% ylabel('Probabilidade [%]')
+% title('Distribuição da distorção espectral (Bilinear)')
+% xlim([0 22.5])
+% xticks(0:2:100)
+% set(gca,'FontSize',12)
+% filename = [pwd, '\Images\Prob_fit2grid_BLIN.pdf'];
+% % exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+% 
+% 
+% 
+% % SPHERICAL HARMONICS
+% hFigure = figure();
+% histogram(mean(sd(n_idx).hsph,2),'Normalization','probability', 'NumBins', 13)
+% ylim([0 .35])
+% ytix = get(gca, 'YTick');
+% set(gca, 'YTick',ytix, 'YTickLabel',ytix*100);
+% 
+% xlabel('Distorção espectral [dB]')
+% ylabel('Probabilidade [%]')
+% title('Distribuição da distorção espectral (Spherical Harmonics)')
+% xlim([0 22.5])
+% xticks(0:2:100)
+% set(gca,'FontSize',12)
+% filename = [pwd, '\Images\Prob_fit2grid_BLIN.pdf'];
+% % exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
 
 
 %% PLOT PER POSITION
-dir = dsearchn(des_pos(:,[1,2]), [0, 0]);
-SOFAplotHRTF(HSPH,'magspectrum', 'dir', round(des_pos(dir,:)));
+azi = 270; 
+elev = 0;
+idx_pos = dsearchn(des_pos(:,[1, 2]), [azi, elev]);
+N = size(REAL.Data.IR,3);
+freq = (0:N/2-1)*fs/N;
+ch = 1;
 
+figure()
+ff = db(abs(fft(squeeze(REAL.Data.IR(idx_pos, ch, :)), N)));
+plot(freq, ff(1:N/2), 'LineWidth', 3.5); hold on
+ff = db(abs(fft(squeeze(HSPH.Data.IR(idx_pos, ch, :)), N)));
+plot(freq, ff(1:N/2), '--r','LineWidth', 1.4);
+ff = db(abs(fft(squeeze(VBAP.Data.IR(idx_pos, ch, :)), N)));
+plot(freq, ff(1:N/2), '--','LineWidth', 1.4)
+ff = db(abs(fft(squeeze(BLIN.Data.IR(idx_pos, ch, :)), N)));
+plot(freq, ff(1:N/2), '--','LineWidth', 1.4)
+ff = db(abs(fft(squeeze(ADPT.Data.IR(idx_pos, ch, :)), N)));
+plot(freq, ff(1:N/2), '--','LineWidth', 1.4)
 
-% title('SimpleFreeFieldHRIR (FIR) for reference'); hold on
-SOFAplotHRTF(ADPT,'magspectrum', 'dir', des_pos(dir,:)); 
+legend('Ground truth', 'Spherical Harmonics', 'VBAP','Bilinear', 'Adptation', 'Location', 'Best')
+arruma_fig('% 4.0f','% 2.0f','virgula')
+xlabel('Frequency (Hz)')
+ylabel('Amplitude (dB)')
+if ch == 1
+    title(['Azimuth ' num2str(round(des_pos(idx_pos,1))) '°',...
+           '  Elevation ' num2str(round(des_pos(idx_pos,2))) '°', ',  left ear'])
+else
+    title(['Azimuth ' num2str(round(des_pos(idx_pos,1))) '°',...
+           '  Elevation ' num2str(round(des_pos(idx_pos,2))) '°', ',  right ear'])
+end
+set(gca,'FontSize',12)
 axis tight
+
+
+
+
+
+
+
+
+
+
+
+
+
+%% %%%% INTERNAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function [Obj, SD, ITD_error, ILD_error]= EvaluateDistortions(Obj_stdy, Obj_real, method)
+% methods:  'adapt', 'hybrid', 'vbap', 'bilinear', 'spherical_harmonics'
+% des_pos: desired positions to interpolate [azi, ele, rad]
+% Obj_stdy: SOFA object with input positions only 
+% Obj_real: SOFA object with real postions (to be determined)
+% Obj: SOFA object with the interpolated positions
+% SD: Spectral distortions between the real and the interpolated HRTFs
+% ITD_error: ITD diference between real and interpolated HRTF
+% ILD_error: ILD diference between real and interpolated HRTF
+
+%%% Estimar posicoes objetivo a partir das posicoes de entrada
+    des_pos = Obj_real.SourcePosition;
+    Obj = sofaFit2Grid(Obj_stdy, des_pos, method);    
+%%% Erro espectral
+    fmin = 400; fmax = 20000;
+    SD = sofaSpecDist(Obj, Obj_real, fmin,fmax);
+%%% ERRO ITD e ILD 
+    [ITD_error, ILD_error] = sofa_ITD_ILD_error(Obj, Obj_real, 'time');
+end
