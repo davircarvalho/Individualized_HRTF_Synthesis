@@ -27,7 +27,7 @@ function Obj_out = sofaFit2Grid(Obj_in, out_pos, varargin)
 %    'Fs':       Transformação da taxa de amostragem no objeto de saída 
 %                (Padrao: original do objeto).
 
-% Exemplo: Obj_out = sofaFit2Grid(Obj_in, out_pos, 'bilinear', 'Fs', 48000)
+% Exemplo: Obj_out = sofaFit2Grid(Obj_in, out_pos, 'spherical_harmonics', 'Fs', 48000)
 %
 % Matlab R2020a
 %% Parse Arguments
@@ -96,7 +96,7 @@ switch p.Results.method
         meta.fittedIR = zeros(length(out_pos), 2, size(Obj_in.Data,3));
         meta.pos = Obj_in.SourcePosition;
         meta.fittedIR = miinterpolateHRTF(Obj_in.Data.IR, meta.pos(:,[1,2]), out_pos(:,[1,2]),...
-                                       'Algorithm', p.Results.method);   
+                                          'Algorithm', p.Results.method);   
         meta.fittedPOS = out_pos;
 
 %% Interpolar por harmonicos esféricos 'spherical_harmonics'

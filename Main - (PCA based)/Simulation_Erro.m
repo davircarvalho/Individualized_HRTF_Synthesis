@@ -1,6 +1,7 @@
 clear all; clc
 % Avaliação de performance do modelo a partir de HRTFs do HUTUBS database
 addpath(genpath([pwd, '\..\Functions']));
+addpath(genpath([pwd, '\..\DADOS_TREINAMENTO']));
 
 %% LOAD FILES 
 % Network
@@ -38,6 +39,8 @@ Obj_gen(3).SF = SOFAload('mit_kemar_normal_pinna.sofa');
 
 % Procesamento
 for k = 1:length(Obj_gen)
+    % Make same grid
+    Obj_gen(k).SF = sofaFit2Grid(Obj_gen(k).SF, out_pos, 'adapt', 'Fs', fs);     
     Obj_gen(k).SF = process2unite(Obj_gen(k).SF, out_pos, fs, fmin, fmax);
 end
 
@@ -77,6 +80,8 @@ for subj = 1:size(pathtub_sim, 1)% Numero de indivíduos
     
     % Medido Processamento %%% 
     Obj_med = SOFAload([pathtub_sim(subj).folder '\' pathtub_sim(subj).name], 'nochecks');
+   % Make same grid
+    Obj_med = sofaFit2Grid(Obj_med, out_pos, 'spherical_harmonics', 'Fs', fs);
     Obj_med = process2unite(Obj_med, out_pos, fs, fmin, fmax);
     
     %% Erro espectral 
@@ -452,8 +457,8 @@ set(gca,'fontsize', 12)
 
 %% LOCAL FUCTIONS 
 function Obj = process2unite(Obj, out_pos, fs, fmin, fmax)
-    % Make same grid
-    Obj = sofaFit2Grid(Obj, out_pos, 'Fs', fs);     
+%     % Make same grid
+%     Obj = sofaFit2Grid(Obj, out_pos, 'Fs', fs);     
     % Normalize L/R balance and IR levels
     Obj = sofaNormalize(Obj);
     % filter

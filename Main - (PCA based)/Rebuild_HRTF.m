@@ -3,7 +3,7 @@ clear all; close all; clc
 % Simulação de HRTF individualizada, a partir da RNA treinada e uso de dados
 % antropométricos
 addpath(genpath([pwd, '\..\Functions'])); 
-addpath(genpath([pwd, '\..\EAC-Toolbox\exportfig']));
+addpath(genpath([pwd, '\..\DADOS_TREINAMENTO'])); 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Options 
 % Defina quais datasets usar: {'cipic', 'ari', 'ita', '3d3a', 'riec'}

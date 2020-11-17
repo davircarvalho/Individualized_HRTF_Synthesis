@@ -2,8 +2,8 @@
 function  Obj = sofaSHinterpolate(IR, pos)
 % close all; clear all; clc
 
-ele = pos(:,2);
 azi = pos(:,1);
+ele = pos(:,2);
 
 % res = .5;
 % ele=[-90:res:90 89:-res:-90 zeros(1,length(1:res:355))]';
@@ -71,7 +71,7 @@ TFE=SOFAupdateDimensions(TFE);
 SH=TFE;
 SH.GLOBAL_SOFAConventions = 'FreeFieldHRTF';
 
-Lmax=floor(sqrt(size(SH.EmitterPosition,1))-1); % Max SH order
+Lmax=floor(sqrt(size(SH.EmitterPosition,1)/4)-1); % Max SH order
 L=Lmax; % actual SH order
 [S, SH.API.E]=sph2SH(SH.EmitterPosition(:,1:2), L);
 

@@ -420,7 +420,7 @@ function [Obj, SD, ITD_error, ILD_error]= EvaluateDistortions(Obj_stdy, Obj_real
 
 %%% Estimar posicoes objetivo a partir das posicoes de entrada
     des_pos = Obj_real.SourcePosition;
-    Obj = sofaFit2Grid(Obj_stdy, des_pos, method); % interpolation
+    Obj = 	(Obj_stdy, des_pos, method); % interpolation
 %%% Erro espectral
     fmin = 400; fmax = 20000;
     SD = sofaSpecDist(Obj, Obj_real, fmin,fmax);

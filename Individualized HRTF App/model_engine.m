@@ -81,6 +81,7 @@ Obj.Data.IR = shiftdim(hrir_final, 1);
 Obj.Data.SamplingRate = Fs_sim; % valor atual 
 Obj.SourcePosition = out_pos;
 Obj = SOFAupdateDimensions(Obj);
+Obj = sofaALFE(Obj);
 
 %%% save HeSuVi %%%%%%%
 if hesuvi_flag 
@@ -152,7 +153,7 @@ function HeSuViExport(Obj_in, FileName, Fs_out, angles)
         if Fs_out ~= Obj_in.Data.SamplingRate
             Obj_out = sofaResample(Obj_out, Fs_out, 4096); %tamanho do vetor de saida pra permitir low freq
         end
-        Obj_out = sofaAddLowFrequency(Obj_out);
+%         Obj_out = sofaALFE(Obj_out);
 
         % prepare for hesuvi export
         IR = squeeze(Obj_out.Data.IR).'; 

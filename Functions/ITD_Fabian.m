@@ -1,9 +1,14 @@
 clear all; clc; 
-% DAVI ROCHA CARVALHO; ENG. ACUSTICA - UFSM; MARÇO/2020
+% DAVI ROCHA CARVALHO; ENG. ACUSTICA - UFSM; NOVEMBRO/2020
 % Calculo do ITD para HRIRs Fabian 
 %% Load HRIRs
-path = 'B:\Documentos\#3 - TCC\EAC-TCC-Davi\HRTF-datasets\Cabecas\';
+path = [pwd '\..\Datasets\Generic HRTFs\'];
 Fabian = SOFAload([path 'FABIAN_HRIR_measured_HATO_0.sofa']);
+
+%% Select desired positions
+addpath(genpath([pwd, '\..\DADOS_TREINAMENTO'])); 
+load('DADOS_TREINAMENTO\target_pca_CIPIC_ARI_ITA_3D3A.mat');
+Fabian = sofaFit2Grid(Fabian, out_pos, 'spherical_harmonics');
 
 %% ITD estimate
 ref_itd = sofaGetITD(Fabian, 'time');
