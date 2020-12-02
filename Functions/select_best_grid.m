@@ -1,6 +1,7 @@
 function out_pos = select_best_grid(Datasets)
 %% Paths 
-local = [pwd, '\..\Datasets\'];
+filepath = fileparts(which('select_best_grid.m'));
+local = [filepath, '\..\Datasets\'];
 % CIPIC
 pathcipic = dir([local 'CIPIC\*.sofa']);
 

@@ -50,8 +50,8 @@ for m = 1:no_channels
         data_mtx = DTF_ok(:, :, n, m) - med_vec2(:,n,m);
          
         [coeff, score, ~,~,explained,mu] = pca(data_mtx,'NumComponents', no_PC, ...
-                                                         'Centered', true, ...
-                                                         'Algorith', 'svd');      
+                                                        'Centered', true, ...
+                                                        'Algorith', 'svd');      
         coeffs(:,:, n, m) = coeff;
         % Scores are the representations of X in the principal component space
         PCWs(:,:, n, m) = score;
@@ -64,11 +64,14 @@ disp('PCA calculada!')
 %% PLOT DO NUMERO DE PC NECESSÀRIOS 
 
 figure()
-plot(cumsum(mean(explain(:,:,:,1),3)), 'LineWidth', 2.0)
+y = cumsum(mean(explain(:,:,1),3));
+h = plot(y, 'LineWidth', 2.0);
 axis tight
 ylabel('Recuperação de variância total [%]')
 xlabel('Número de Componentes Principais [~]')
 grid on 
+idx_tip = dsearchn(y, 90);
+datatip(h, idx_tip, y(idx_tip));
 set(gca, 'FontSize', 12)
 
 % export_fig([pwd, '\Images\no_PC'], '-pdf', '-transparent');

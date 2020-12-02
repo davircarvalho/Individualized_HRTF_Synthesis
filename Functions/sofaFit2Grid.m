@@ -116,7 +116,7 @@ Obj_out.Data.SamplingRate = p.Results.Fs;
 
 % warning('off','SOFA:upgrade');
 Obj_out = SOFAupgradeConventions(Obj_out);
-Obj_out = SOFAupdateDimensions(Obj_out);
+% Obj_out = SOFAupdateDimensions(Obj_out);
 
 
 %% Plots

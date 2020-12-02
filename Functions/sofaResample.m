@@ -21,8 +21,8 @@ else
     N = Nintp;
 end
 zpad = zeros((Nintp - N), 1);
-tx = 0:1/Obj.Data.SamplingRate:size(Obj.Data.IR, 3)/Obj.Data.SamplingRate;
-tx(end) = [];
+% tx = 0:1/Obj.Data.SamplingRate:size(Obj.Data.IR, 3)/Obj.Data.SamplingRate;
+% tx(end) = [];
 %% options
 [p,q] = rat(Fs / Obj.Data.SamplingRate);
 normFc = .98 / max(p,q);

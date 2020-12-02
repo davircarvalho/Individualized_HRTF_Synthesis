@@ -49,7 +49,7 @@ pathtub_sim = pathtub_sim(idx_tubsim, :);
 
 %% Options
 % Defina quais datasets usar: {'cipic', 'ari', 'ita', '3d3a', 'riec', 'tub_meas', 'tub_sim'}, o
-Datasets = {'3d3a', 'tub_meas'};
+Datasets = {'ari','3d3a', 'ita', 'tub_sim'};
 no_samples = 200; % Tamanho do vetor na saída (pós fft)
 fs   = 44100;     % Taxa de amostragem 
 fmin = 250;       % Frequencia min de corte para RI 
@@ -57,6 +57,8 @@ fmax = 18000;     % Frequencia max de corte para IR
 % Grid objetivo selecionado a partir do grid com menor número de posições
 out_pos = select_best_grid(Datasets);
 freq = linspace(0, fs-fs/no_samples, no_samples);
+
+Datasets = {'ari', 'ita', 'tub_sim'};
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CIPIC %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -267,7 +269,7 @@ surf(DTF(:,:,10,2),'linestyle', 'none')
 %% LOCAL FUCTIONS 
 function Obj = process2unite(Obj, out_pos, fs, fmin, fmax)
     % Make same grid
-    Obj = sofaFit2Grid(Obj, out_pos, 'Fs', fs);     
+    Obj = sofaFit2Grid(Obj, out_pos, 'spherical_harmonics', 'Fs', fs);     
     % Normalize L/R balance and IR levels
     Obj = sofaNormalize(Obj);
     % filter

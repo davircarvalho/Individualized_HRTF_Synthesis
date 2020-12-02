@@ -50,6 +50,8 @@ target = coeffs;
 [no_PC, no_subjects, no_directions, no_channels] = size(target);
 
 %% Pré-processamento INPUT (normalize)
+% A arquitetura definida na célula abaixo automaticamente aplica mapminmax
+% o que torna a normalização prévia redundante
 % [xinpt, sig1, mu1] = nn_preprocess(anthro);
 
 %% Setting up Feed Forward Neural Network with BP

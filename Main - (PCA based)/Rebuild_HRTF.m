@@ -51,12 +51,12 @@ disp('Network carregada!')
 
 %% Definir INPUTs PRO TESTE
 % indivíduos para VALIDAÇÃO: 1('003') .
-subj = 1;
+subj = 42;
 % nome do individuo dentro do banco de dados
-subject = '003';
+subject = '001';
 
-% separando os 8 parametros necessários para a ann
-anthro = load('anthro_CIPIC.mat');
+% Tenha certeza de que a rede foi treinada com a mesma antropometria
+anthro = load('anthro_TUB.mat');
 % d1, d3 : d6
 d1 = anthro.D(subj, [1,2,3,5,7,8]);      % L
 % d1 = anthro.D(subj, [1,3,5,6,7,8]);      % L
@@ -124,14 +124,15 @@ Obj_sim = SOFAupdateDimensions(Obj_sim);
 
 
 % plot(new_itd); hold on; plot(sofaGetITD(Obj_sim));
-% Preprocessamento do database para comparação
-pathcipic = dir([pwd '\..\Datasets\CIPIC\*.sofa']);
-CIPIC = SOFAload([pathcipic(subj).folder '\' pathcipic(subj).name], 'nochecks');
+%% Preprocessamento do database para comparação
+path_hutubs = dir([pwd '\..\Datasets\HUTUBS\*.sofa']);
+Obj_med = SOFAload([path_hutubs(subj).folder '\' path_hutubs(subj).name], 'nochecks');
 % HRTF -> DTF
-Obj_med = sofaFit2Grid(CIPIC, out_pos);   
-
+clc
+Obj_med = sofaFit2Grid(Obj_med, out_pos, 'spherical_harmonics', 'Fs', fs);   
 fmin = 250; fmax = 18000;
 Obj_med = sofaIRfilter(Obj_med, fmin, fmax);
+Obj = sofaNormalize(Obj_med);
 Obj_med = SOFAhrtf2dtf(Obj_med); 
 
 
@@ -237,8 +238,6 @@ h_simR = fft(hrtf_simR, nfft);
 h_simR = h_simR./h_simR(f_1000hz); %normalizar em 1000Hz
 h_simR = 20*log10(abs(h_simR));
 
-
-
 %%%% PLOT %%%%
 figure()
 semilogx(freq(1:N/2), g_L(1:N/2), 'lineWidth', 1.5,  'Color', 'blue'); hold on
@@ -275,20 +274,21 @@ xlim([250 17000])
 set(gca, 'YLimSpec', 'Tight');
 % axis tight
 set(gca,'FontSize',13)
-
-
 % export_fig([pwd, '\Images\English\hrtf' num2str(azimute(i))], '-pdf', '-transparent');
 end
+
+
+
 %% PLOT - HRIR [Simulada vs Medida]
 figure()
 
 % DEFINA A DIREÇÃO DA RI
-azim = 270; 
+azim = 90; 
 elev = 0;
+
 
 % Get index of measurements with the same directions
 pos=find(round(Obj_med.SourcePosition(:,1))==azim & round(Obj_med.SourcePosition(:,2))==elev);
-
 
 %%% ESQUERDA --------------------------------------------------------------
 subplot(2,1,1)
@@ -351,109 +351,30 @@ filename = [pwd, '\Images\hrtf_horizontal_sim.pdf'];
 
 
 %% PLOT plano vertical
-% figure
-% type = 'MagSagittal';
-% subplot(211)
-% SOFAplotHRTF(Obj_med, type);
-% title('DTFs medidas')
-% xlabel('Frequência [Hz]')
-% ylabel('Azimute')
-% % axis([250 19000, -175 180])
-% % yticks([-90, 0, 90])
-% % yticklabels({'270°', '0°', '90°'})
-% set(gca,'FontSize',11)
-% 
-% subplot(212)
-% SOFAplotHRTF(Obj_sim, type);
-% title('DTFs simuladas')
-% xlabel('Frequência [Hz]')
-% ylabel('Azimute')
-% % axis([250 19000, -175 180])
-% % yticks([-90, 0, 90])
-% % yticklabels({'270°', '0°', '90°'})
-% set(gca,'FontSize',11)
-% export_fig([pwd, '\Images\hrtf_vertical'], '-pdf', '-transparent');
+hFigure = figure;
+type = 'MagSagittal';
+subplot(211)
+SOFAplotHRTF(Obj_med, type);
+title('DTFs medidas')
+xlabel('Frequência [Hz]')
+ylabel('Azimute')
+% axis([250 19000, -175 180])
+% yticks([-90, 0, 90])
+% yticklabels({'270°', '0°', '90°'})
+set(gca,'FontSize',11)
+
+subplot(212)
+SOFAplotHRTF(Obj_sim, type);
+title('DTFs simuladas')
+xlabel('Frequência [Hz]')
+ylabel('Azimute')
+% axis([250 19000, -175 180])
+% yticks([-90, 0, 90])
+% yticklabels({'270°', '0°', '90°'})
+set(gca,'FontSize',11)
+filename = [pwd, '\Images\hrtf_vertical.pdf'];
+% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%% Low Frequeny Extension [LFE] (TO DO)
-
-% fs = 44100;
-% Ni = 4096;  
-% fmax = 315;
-% freq = linspace(0, fs-fs/Ni, Ni);
-% LFE_mag = ones(Ni/2, 1); 
-% LFE_time = ifft(LFE_mag);
-% % LFE minimum phased 
-% phi_min = imag(hilbert(-log(abs(LFE_mag))));
-% Hmin = LFE_mag.*exp(1i*phi_min);
-% LFE_time = real(ifft(Hmin, Ni, 'nonsymmetric'));
-% 
-% lfe_time = db(abs(fft(LFE_time)));
-% % figure()
-% % semilogx(freq(2:Ni/2), lfe_time(2:Ni/2)); hold on
-% 
-% % FILTRAGEM 
-% % d  = fdesign.bandpass('N,F3dB1,F3dB2',2, 5, fmax,fs);  %%% Especifica filtro
-% d  = fdesign.lowpass('N,F3dB',2, fmax, fs);
-% Hdlow = design(d, 'butter');   %%% Especifica filtro
-% LFE = filter(Hdlow, LFE_time, 1);  %% Sinal filtrado
-% % lfe = db(abs(fft(LFE)));
-% % semilogx(freq(2:Ni/2), lfe(2:Ni/2)); hold off
-% % axis([0 1000 -10 -5])
-% 
-% 
-% % ajustar nivel da LFE de acordo com low freq do input
-% irf = DTF_sim(:,1,1);
-% 
-% lfe_freq = abs(fft(LFE));
-% lfe_freq(1) = lfe_freq(2);
-% 
-% f_cross = dsearchn(freq', 200); % cross over freq
-% 
-% novo_nivel = irf(f_cross+40);
-% 
-% lfe_freq = (lfe_freq./(max(lfe_freq(:)))).*novo_nivel;
-% 
-% comb = [lfe_freq(1:f_cross); irf(f_cross:end)];
-% 
-% 
-% % interpolate
-% X = [1:f_cross-10, f_cross+20:f_cross+50];
-% V = comb(X);
-% Xq = (f_cross-10 : f_cross+25);
-% Vq = interp1(X,V,Xq, 'spline');
-% comb(Xq) = Vq; 
-% 
-% % MAGNITUDE
-% figure()
-% semilogx(freq(2:Ni/2), db(irf(2:Ni/2)), 'linewidth', 2); hold on 
-% semilogx(freq(2:Ni/2), db(lfe_freq(2:Ni/2)), '--r', 'linewidth', 1); 
-% semilogx(freq(2:Ni/2), db(comb(2:Ni/2)), 'linewidth', 2);  
-% axis([0 20000 -50 -15 ])
-% legend('Original', 'LFE', 'Original + LFE', 'Location', 'Southwest')
-% 
-% 
-% %% PHASE
-% figure()
-% combt = ifft(comb);
-% plot(unwrap(phase(ir)), 'linewidth', 2); hold on 
-% plot(unwrap(phase(combt)), 'linewidth', 2);  
-% % axis([0 20000 -50 -15 ])
-% legend('Original', 'Original + LFE', 'Location', 'Southwest')
