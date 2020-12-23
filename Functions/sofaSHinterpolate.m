@@ -1,5 +1,11 @@
 % SOFA HRTF INTERPOLATATION USING SPHERICAL HARMONICS
 function  Obj = sofaSHinterpolate(IR, pos, varargin)
+% INTERPOLATION BASED ON SPHERICAL HARMONICS 
+% MAKE SURE YOU HAVE INSTALLED THE SUpDEq API OR THE SOFA API
+
+% Refereces:
+% https://github.com/AudioGroupCologne/SUpDEq
+% https://github.com/sofacoustics/API_MO
 
 defaultMethod = 'SUPDEQ_api';
 validMethods = {'SOFA_api', 'SUPDEQ_api'};
@@ -125,10 +131,8 @@ switch p.Results.method
 
         %% (3) - Get equalization dataset (SH-coefficients)
         %The eqDataset describes the sound pressure distribution on a sphere 
-        %Use defaults: N = 35, earDistance = 0.165m, NFFT = 512, fs = 48000;
         NFFT=(length(sparseHRTFdataset.HRTF_L(1,:))-1)*2;
         eqDataset = supdeq_getEqDataset(35, [], NFFT, IR.Data.SamplingRate);
-
 
         %% (4) - Perform equalization
         %Here, the sparse HRTF dataset is equalized with the eqDataset. The
@@ -139,7 +143,6 @@ switch p.Results.method
         Nsparse = sparseHRTFdataset.Nmax;
 
         eqHRTFdataset = supdeq_eq(sparseHRTFdataset,eqDataset,Nsparse,sparseSamplingGrid);
-
 
         % (5) - Perform de-equalization 
         %Here, the sparse equalized HRTF dataset is de-equalized with the
@@ -161,7 +164,6 @@ switch p.Results.method
 
 
         % (6) - Optional: Save as SOFA object
-        %Use defaults: fs = 48000, earDistance = 0.165m, sourceDistance = 3.0m
         Obj = supdeq_writeSOFAobj(denseHRIRdataset.HRIR_L,...
                                   denseHRIRdataset.HRIR_R,...
                                   denseSamplingGrid);

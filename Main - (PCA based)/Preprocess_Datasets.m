@@ -263,7 +263,7 @@ disp('Dados Salvos!')
 
 %% plot
 figure()
-surf(DTF(:,:,10,2),'linestyle', 'none')
+surf(DTF(:,:,500,2),'linestyle', 'none')
 
 
 %% LOCAL FUCTIONS 
