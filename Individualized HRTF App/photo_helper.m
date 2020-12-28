@@ -31,7 +31,6 @@ figure()
 hIm = imshow(im);
     
 %%% Inicializar função de desenho sobre a imagem 
-% warning('off')
 hIm.ButtonDownFcn = @(~,~) startDrawing(hIm.Parent,myData);
 
 
@@ -104,8 +103,8 @@ function updateUnits(src,evt)
 if strcmp(evt.SelectionType,'double') && strcmp(evt.SelectedPart,'label')
 
     % Display the popup dialog box.
-    answer = inputdlg({'Known distance','Units'},...
-        'Specify known distane',[1 20],{'10','mm'});
+    answer = inputdlg({'Distancia conhecida','Unidades'},...
+        'Especifique a distancia conhecida',[1 20],{'10','mm'});
 
     % Determine the scale factor based on the inputs.
     num = str2double(answer{1});
