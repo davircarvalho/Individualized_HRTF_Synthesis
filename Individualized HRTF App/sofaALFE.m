@@ -1,23 +1,33 @@
-function Obj = sofaALFE(Obj)
+function Obj = sofaALFE(Obj, fmin, fmax)
 % Adaptative Low frequency extention
 % DAVI ROCHA CARVALHO @ UFSM NOVEMBER/2020
+% Inputs:
+%      ~ Obj:   SOFA HRTF
+%      ~ fmin:  minimal frequency to be extended (default: 15Hz)
+%      ~ fmax:  reference frequency value to be extended until fmin 
+%                considering HRTFs are linear on low frequencies (default: 500Hz) 
 
-%% preprocess
+%% Preprocess
 fs = Obj.Data.SamplingRate;
 IR = shiftdim(Obj.Data.IR, 2);
 N = size(IR, 1);
 freq_vec = (0:N/2-1)*fs/N;
 
 %%% prepare extension
-fmin = 15; % minimum freq
-N_ext = ceil(fs/fmin); % minimum length to have the fmin
+if nargin < 3
+    fmax = 500;
+end
+if nargin < 2
+    fmin = 15; % minimum freq
+end
+N_ext = ceil(fs/fmin); % minimum length necessary to contain fmin
 if N_ext <= N
     N_ext = N;
     freq_vec_ext = freq_vec;
 else
     freq_vec_ext = (0:N_ext/2-1)*fs/N_ext;
 end
-f500Hz = dsearchn(freq_vec_ext.', 500); % idx at 500Hz (linear part of HRTFs)
+f500Hz = dsearchn(freq_vec_ext.', fmax); % idx at 500Hz (linear part of HRTFs)
 
 
 %% interp 
@@ -32,9 +42,7 @@ for k = 1:size(IR, 2)
         % interp baixas freqs
         x = [freq_vec_ext(2),    freq_vec_ext(f500Hz:f500Hz+1)];
         xq = freq_vec_ext(2:f500Hz);
-
         y_mag = [mag(f500Hz); mag(f500Hz:f500Hz+1)];
-        
         mag_interp(2:f500Hz) = interp1(x, y_mag, xq, 'makima');
 
         % back to time domain
@@ -59,7 +67,6 @@ Obj_out = Obj;
 Obj_out.Data.IR = ir_interp;
 
 end
-
 
 
 %% Plot time                       

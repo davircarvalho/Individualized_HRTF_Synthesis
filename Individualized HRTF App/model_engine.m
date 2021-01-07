@@ -81,7 +81,7 @@ Obj.Data.IR = shiftdim(hrir_final, 1);
 Obj.Data.SamplingRate = Fs_sim; % valor atual 
 Obj.SourcePosition = out_pos;
 Obj = SOFAupdateDimensions(Obj);
-Obj = sofaALFE(Obj);
+Obj = sofaALFE(Obj, 15, 500);
 
 %%% save HeSuVi %%%%%%%
 if hesuvi_flag 

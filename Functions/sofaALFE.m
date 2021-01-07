@@ -1,4 +1,4 @@
-function Obj = sofaALFE(Obj, fmin, fmax)
+function Obj_out = sofaALFE(Obj, fmin, fmax)
 % Adaptative Low frequency extention
 % DAVI ROCHA CARVALHO @ UFSM NOVEMBER/2020
 % Inputs:

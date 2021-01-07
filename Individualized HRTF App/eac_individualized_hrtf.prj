@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="2816184570" file="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Individualized HRTF App\eac_individualized_hrtf.prj" location="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Individualized HRTF App" name="eac_individualized_hrtf" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="4206393330" file="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Individualized HRTF App\eac_individualized_hrtf.prj" location="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Individualized HRTF App" name="eac_individualized_hrtf" target="target.mlapps" target-name="Package App">
     <param.appname>eac_individualized_hrtf</param.appname>
     <param.authnamewatermark />
     <param.email />
@@ -12,8 +12,8 @@
     </param.icons>
     <param.summary />
     <param.description>Generate individualized head related transfer functions based on anthropometric dimensions.</param.description>
-    <param.screenshot>C:\Users\rdavi\AppData\Local\Temp\tp73b8d001_dad8_435f_9db5_6fcd4da52823.png</param.screenshot>
-    <param.version>1.0</param.version>
+    <param.screenshot>C:\Users\rdavi\AppData\Local\Temp\tpb0dd77c4_7e13_44f9_aebc_f75d2a86c322.png</param.screenshot>
+    <param.version>1.01.07</param.version>
     <param.products.name>
       <item>MATLAB</item>
       <item>Deep Learning Toolbox</item>
@@ -34,7 +34,6 @@
       <param.email />
       <param.company />
       <param.summary />
-      <param.version />
       <param.platforms />
       <param.output />
     </unset>
