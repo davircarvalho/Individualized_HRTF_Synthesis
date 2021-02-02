@@ -5,6 +5,7 @@ HRTF_interpolation_in_3D
 
 *.sofa
 *.asv
+*.wav
 
 sofaSHinterpolate.m
 PCA_experimental.m
