@@ -121,7 +121,7 @@ end
 
 
 %%
-save([pwd '\..\DADOS_TREINAMENTO\workspace_Simulation_Erro_ITDadapt.mat'])
+save([pwd '\..\DADOS_TREINAMENTO\workspace_Simulation_Erro.mat'])
 % clear all
 % load('DADOS_TREINAMENTO\workspace_Simulation_Erro_ITDadapt.mat')
 

@@ -72,11 +72,8 @@ InptMtx(:,:,2) = [x, d2]';  % R
 
 [no_samples, no_PC, no_directions, no_channels] = size(PCWs);
 
-%% Preprocessamento input
-% O desvio e a média utilizados são oriundos do dataset de treinamento
-% [xinpt, ~, ~] = nn_preprocess(InptMtx, 'apply', 'sig', sig1, 'mu', mu1);
-xinpt = InptMtx;
-%% Simulação do modelo
+
+%% Simulação do model
 disp('...')
 disp('Simulação iniciada')
 % computar valores de saida para dada entrada na ann
@@ -85,7 +82,7 @@ wait = waitbar(0,'Processando Novas Componentes Principais');
 cont = 0;
 for n = 1:no_channels
     for i = 1:no_directions
-        result = net_pca{i, n}(xinpt(:,:, n));
+        result = net_pca{i, n}(InptMtx(:,:, n));
         DTF_sim(:, i, n) = (PCWs(:, :, i, n) * result) + med_vec2(:, i, n); 
         
         cont = cont+1;
@@ -105,7 +102,7 @@ new_itd = itd_synthesis(x(1), x(2), out_pos, fs, 'adapt');
 % Aplicando fase minima e de excesso 
 for k = 1:no_directions
     itd = new_itd(k);
-    offset = 20;  
+    offset = 3;  
     [IR_minL, IR_minR] = phase_job(DTF_sim(:, k, 1), DTF_sim(:, k, 2), ...
                                    itd, out_pos(k,:), offset); 
     %save no formato CIPIC
@@ -114,7 +111,7 @@ for k = 1:no_directions
 end
 
 
-%% Export para SOFA
+% Export para SOFA
 % SIMULATED DATA
 Obj_sim = SOFAgetConventions('SimpleFreeFieldHRIR');
 Obj_sim.Data.IR = shiftdim(hrir_final, 1);
@@ -123,7 +120,7 @@ Obj_sim.SourcePosition = out_pos;
 Obj_sim = SOFAupdateDimensions(Obj_sim);
 
 
-% plot(new_itd); hold on; plot(sofaGetITD(Obj_sim));
+plot(new_itd); hold on; plot(sofaGetITD(Obj_sim));
 %% Preprocessamento do database para comparação
 path_hutubs = dir([pwd '\..\Datasets\HUTUBS\*.sofa']);
 Obj_med = SOFAload([path_hutubs(subj).folder '\' path_hutubs(subj).name], 'nochecks');

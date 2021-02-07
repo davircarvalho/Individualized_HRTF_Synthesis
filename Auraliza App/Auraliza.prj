@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="2072302335" file="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App\Auraliza.prj" location="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App" name="Auraliza" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="395109920" file="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App\Auraliza.prj" location="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App" name="Auraliza" target="target.mlapps" target-name="Package App">
     <param.appname>Auraliza</param.appname>
     <param.authnamewatermark />
     <param.email />
@@ -12,7 +12,7 @@
     </param.icons>
     <param.summary />
     <param.description>Módulo de auralização SOFA multicanal</param.description>
-    <param.screenshot>C:\Users\rdavi\AppData\Local\Temp\tp715b0813_e7a0_4f05_bcd7_c7bb90d0164c.png</param.screenshot>
+    <param.screenshot>C:\Users\rdavi\AppData\Local\Temp\tp6f0fcc0b_5cbe_4ac3_841d_a837695529ec.png</param.screenshot>
     <param.version>1.02.02</param.version>
     <param.products.name />
     <param.products.id />
