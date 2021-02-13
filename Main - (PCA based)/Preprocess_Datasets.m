@@ -269,7 +269,7 @@ surf(DTF(:,:,500,2),'linestyle', 'none')
 %% LOCAL FUCTIONS 
 function Obj = process2unite(Obj, out_pos, fs, fmin, fmax)
     % Make same grid
-    Obj = sofaFit2Grid(Obj, out_pos, 'spherical_harmonics', 'Fs', fs);     
+    Obj = sofaFit2Grid(Obj, out_pos, 'adapt', 'Fs', fs);     
     % Normalize L/R balance and IR levels
     Obj = sofaNormalize(Obj);
     % filter

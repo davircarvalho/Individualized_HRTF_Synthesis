@@ -32,6 +32,20 @@ function sd = sofaSpecDist(Obj_sim, Obj_ref, fmin, fmax, varargin)
 %% Distorção espectral ----------------------------------------------------
     fs = Obj_ref.Data.SamplingRate;
     % chama calculo por posicoes
+    if length(Obj_ref.SourcePosition) ~= length(Obj_sim.SourcePosition)
+        warning(['Mismatch -- Number of source positions is different! ', ...
+                  'It will be evaluated only the positions corresponding to the '...
+                  'coordinates in the object', ...
+                  'with the least number of measurements. '...
+                  'It will be applied nearest interpolation method to the ',...
+                  'other SOFA file.'])
+        
+       if length(Obj_ref.SourcePosition) > length(Obj_sim.SourcePosition)
+           Obj_ref = sofaFit2Grid(Obj_ref, Obj_sim.SourcePosition, 'adapt');
+       else
+           Obj_sim = sofaFit2Grid(Obj_sim, Obj_ref.SourcePosition, 'adapt');
+       end
+    end
     for k = 1:size(Obj_ref.Data.IR,1) % numero de posições 
         sim = squeeze(Obj_sim.Data.IR(k, 2, :));
         ref = squeeze(Obj_ref.Data.IR(k, 2, :));
@@ -66,12 +80,14 @@ function sd = spec_dist(msrd,ref,fs,fmin,fmax, method)
     end
 %% Create frequency vector to find value in 1000 Hz
     f = linspace(0, fs-fs/N, N);
-    f_1000hz = dsearchn(f',500);
+    f_500hz = dsearchn(f',500);
     fmin = dsearchn(f',fmin);
     fmax = dsearchn(f',fmax);
 %% Normalizes vectors in frequency domain
-    msrd = 2*fft(msrd, N); msrd = msrd/msrd(f_1000hz);
-    ref  = 2*fft(ref, N);   ref = ref/ref(f_1000hz);
+    msrd = fft(msrd, N);
+    msrd = msrd./msrd(f_500hz); % normalize @ 500Hz
+    ref  = fft(ref, N);e
+    ref = ref./ref(f_500hz);    % normalize @ 500Hz
 
 %% Calculates the Spectral Distortion
     switch method

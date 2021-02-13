@@ -63,7 +63,7 @@ for subj = 1:size(pathtub_sim, 1)% Numero de indivíduos
     
     for l = 1:no_directions
         % Aplicando fase minima e de excesso
-        offset = 20.4; % valor arbitrario
+        offset = 20; % valor arbitrario
         [IR_minL, IR_minR] = phase_job(DTF_sim(:, l, 1), DTF_sim(:, l, 2), ...
                                                    itd(l), out_pos(l,:), offset); 
         hrir_final(l, 1, :) = IR_minL;

@@ -12,8 +12,8 @@
     </param.icons>
     <param.summary />
     <param.description>Generate individualized head related transfer functions based on anthropometric dimensions.</param.description>
-    <param.screenshot>C:\Users\rdavi\AppData\Local\Temp\tp5df8ab8e_978b_4456_9616_1c7ea2328d32.png</param.screenshot>
-    <param.version>1.02.06</param.version>
+    <param.screenshot>C:\Users\rdavi\AppData\Local\Temp\tp319b41e9_8669_4b7c_ba5d_cffff6da78f4.png</param.screenshot>
+    <param.version>1.0</param.version>
     <param.products.name>
       <item>MATLAB</item>
       <item>Deep Learning Toolbox</item>
@@ -34,6 +34,7 @@
       <param.email />
       <param.company />
       <param.summary />
+      <param.version />
       <param.platforms />
       <param.output />
     </unset>
@@ -54,14 +55,14 @@
       <file>${PROJECT_ROOT}\sofaALFE.m</file>
       <file>${PROJECT_ROOT}\SOFAgetConventions.m</file>
       <file>${PROJECT_ROOT}\target_pca_CIPIC_ARI_ITA_3D3A.mat</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\netcdf\NETCDFsave.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAarghelper.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAcheckFilename.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAdbPath.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAdefinitions.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAgetVersion.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAsave.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAupdateDimensions.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\netcdf\NETCDFsave.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAarghelper.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAcheckFilename.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAdbPath.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAdefinitions.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAgetVersion.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAsave.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAupdateDimensions.m</file>
     </fileset.depfun>
     <fileset.resources>
       <file>${PROJECT_ROOT}\SimpleFreeFieldHRIR-a.mat</file>

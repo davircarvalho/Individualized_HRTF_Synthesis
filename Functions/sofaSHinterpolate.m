@@ -119,7 +119,7 @@ switch p.Results.method
         Obj   = SOFAconvertConventions(TFint);
         
         
-     
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     case validMethods{2} % SUpDEq API
         sparseHRIRdataset_SOFA = IR;
         % sparseHRIRdataset_SOFA = SOFAload('sparseHRIRdataset_L38.sofa');
@@ -142,7 +142,8 @@ switch p.Results.method
         sparseSamplingGrid = sparseHRTFdataset.samplingGrid;
         Nsparse = sparseHRTFdataset.Nmax;
 
-        eqHRTFdataset = supdeq_eq(sparseHRTFdataset,eqDataset,Nsparse,sparseSamplingGrid);
+        eqHRTFdataset = supdeq_eq(sparseHRTFdataset,eqDataset,Nsparse,...
+                                  sparseSamplingGrid, 10-5);
 
         % (5) - Perform de-equalization 
         %Here, the sparse equalized HRTF dataset is de-equalized with the

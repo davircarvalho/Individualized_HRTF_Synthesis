@@ -19,7 +19,7 @@
 % SL = {'90°, 0°'};
 % RL = {'160°, -15°'};
 
-% DAVI ROCHA CARVALHO; ENG. ACUSTICA - UFSM; AGOSTO/2020
+% DAVI ROCHA CARVALHO; ENG. ACUSTICA - UFSM; FEVEREIRO/2021
 % Simulação de HRTF individualizada, a partir da RNA treinada e uso de dados
 % antropométricos
 function model_engine(x1, x3,... % anthro cabeca
@@ -32,7 +32,7 @@ function model_engine(x1, x3,... % anthro cabeca
 tic
 load('net_treinada_CIPIC_ARI_ITA_3D3A.mat');
 load('target_pca_CIPIC_ARI_ITA_3D3A.mat');
-Fs_sim = 44100; % sample rate das IR geradas na nn  
+Fs_sim = 44100; % sample rate das IR geradas na nn 
 
 %% Defnindo INPUT
 % separando os 8 parametros necessários para a ann
@@ -139,34 +139,33 @@ function HeSuViExport(Obj_in, FileName, Fs_out, angles)
     n = 0;
     for k = 1:length(azim)
         tsqr = sqrt((Obj_in.SourcePosition(:,1) - azim(k)).^2 + (Obj_in.SourcePosition(:,2) - elev(k)).^2);
-        [~,pos_idx] = min(tsqr); 
+        [~,pos_idx(k)] = min(tsqr); 
 %         pos_idx = find(Obj_in.SourcePosition(:,1)==azim(k) & Obj_in.SourcePosition(:,2)==elev(k)); %#ok<SAGROW>
+    end
+    
+    Obj_out = SOFAgetConventions('SimpleFreeFieldHRIR'); 
+    Obj_out.Data.SamplingRate = Obj_in.Data.SamplingRate;
+    Obj_out.Data.IR = Obj_in.Data.IR(pos_idx,:,:);
+    Obj_out.SourcePosition = Obj_in.SourcePosition(pos_idx,:);
+    Obj_out = SOFAupdateDimensions(Obj_out);
+    
+    
+    % processing IR 
+    Obj_out = sofaResample(Obj_out, Fs_out, 4096); %tamanho do vetor de saida pra permitir low freq
+    
         
-        clear Obj_out IR
-        Obj_out = SOFAgetConventions('SimpleFreeFieldHRIR'); 
-        Obj_out.Data.SamplingRate = Obj_in.Data.SamplingRate;
-        Obj_out.Data.IR = Obj_in.Data.IR(pos_idx,:,:);
-        Obj_out.SourcePosition = Obj_in.SourcePosition(pos_idx,:);
-        Obj_out = SOFAupdateDimensions(Obj_out);
-        
-        % processing IR 
-        if Fs_out ~= Obj_in.Data.SamplingRate
-            Obj_out = sofaResample(Obj_out, Fs_out, 4096); %tamanho do vetor de saida pra permitir low freq
-        end
-%         Obj_out = sofaALFE(Obj_out);
-
-        % prepare for hesuvi export
-        IR = squeeze(Obj_out.Data.IR).'; 
-        for g = 1:size(IR, 2) % L/R channels
+    for k = 1:length(pos_idx)
+        for g = 1:2 % L/R channels
             n = n+1;
-            y(:,n) = IR(:,g);
+            y(:,n) = squeeze(Obj_out.Data.IR(k,g,:)).'; 
         end
     end
 %%% Export to .wav %%%-----------------------------------------------------
-    y = y./max(abs(y(:)));
+    y = circshift(y, 100); % add more silence to the begining
+    y = y./max(abs(y(:))) *2^31-1;
     y = y(:, [1,2,3,4,5,6,7,10,9,12,11,14,13,8]);
     file_path = ([FileName, '_', num2str(Fs_out/1000), 'kHz.wav']);
-    audiowrite(file_path, y, Obj_out.Data.SamplingRate)
+    audiowrite(file_path, y, Obj_out.Data.SamplingRate, 'BitsPerSample', 32)
 end
 
 

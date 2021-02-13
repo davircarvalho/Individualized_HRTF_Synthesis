@@ -1,7 +1,7 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="395109920" file="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App\Auraliza.prj" location="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App" name="Auraliza" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="4073804353" file="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App\Auraliza.prj" location="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App" name="Auraliza" target="target.mlapps" target-name="Package App">
     <param.appname>Auraliza</param.appname>
-    <param.authnamewatermark />
+    <param.authnamewatermark>Davi R Carvalho</param.authnamewatermark>
     <param.email />
     <param.company />
     <param.icon>${PROJECT_ROOT}\Auraliza_resources\icon_24.png</param.icon>
@@ -12,8 +12,8 @@
     </param.icons>
     <param.summary />
     <param.description>Módulo de auralização SOFA multicanal</param.description>
-    <param.screenshot>C:\Users\rdavi\AppData\Local\Temp\tp6f0fcc0b_5cbe_4ac3_841d_a837695529ec.png</param.screenshot>
-    <param.version>1.02.02</param.version>
+    <param.screenshot>C:\Users\rdavi\AppData\Local\Temp\tp8abdf84f_435d_4f4b_a2e2_4ebacc35fee5.png</param.screenshot>
+    <param.version>1.02.13</param.version>
     <param.products.name />
     <param.products.id />
     <param.products.version />
@@ -21,7 +21,6 @@
     <param.output>${PROJECT_ROOT}</param.output>
     <param.guid>4afdff7e-02dc-41e3-bf52-c0e745327413</param.guid>
     <unset>
-      <param.authnamewatermark />
       <param.email />
       <param.company />
       <param.summary />
@@ -35,20 +34,22 @@
       <file>${PROJECT_ROOT}\Auraliza.mlapp</file>
     </fileset.main>
     <fileset.depfun>
+      <file>${PROJECT_ROOT}\nav2sph.m</file>
       <file>${PROJECT_ROOT}\playbuttom.png</file>
       <file>${PROJECT_ROOT}\sph2nav.m</file>
       <file>${PROJECT_ROOT}\stopbuttom.png</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\netcdf\NETCDFload.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAappendText.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAarghelper.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAcheckFilename.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAdbPath.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAdbURL.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAdefinitions.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAgetVersion.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAload.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAupdateDimensions.m</file>
-      <file>D:\Documentos\MATLAB\SOFA toolbox\API_MO\API_MO\SOFAupgradeConventions.m</file>
+      <file>${PROJECT_ROOT}\supdeq_parallax.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\netcdf\NETCDFload.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAappendText.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAarghelper.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAcheckFilename.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAdbPath.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAdbURL.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAdefinitions.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAgetVersion.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAload.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAupdateDimensions.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAupgradeConventions.m</file>
     </fileset.depfun>
     <fileset.resources>
       <file>${PROJECT_ROOT}\conventions</file>
