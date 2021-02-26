@@ -38,20 +38,21 @@ load(DTF_file)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Pre-processsamento
 no_samples = size(DTF, 1);
-DTF_ok = DTF((1:no_samples/2),:,:,:); % take 1/2 the magnitude spectra
+DTF_ok = DTF((1:no_samples/2),:,:,:); % take the single sided spectra
 [no_samples, no_subj, no_directions, no_channels] = size(DTF_ok);
 
 
 %% Principal Component Analysis (PCA)
-no_PC = 12; %número de principais componentes de interesse
+clear med_vec2 coeffs PCWs explain
+no_PC = 16; %número de principais componentes de interesse
 for m = 1:no_channels
     for n = 1:no_directions
         med_vec2(:,n,m) = mean(DTF_ok(:, :, n, m), 2);
         data_mtx = DTF_ok(:, :, n, m) - med_vec2(:,n,m);
          
         [coeff, score, ~,~,explained,mu] = pca(data_mtx,'NumComponents', no_PC, ...
-                                                        'Centered', true, ...
-                                                        'Algorith', 'svd');      
+                                                        'Centered', false, ...
+                                                        'Algorith', 'eig');      
         coeffs(:,:, n, m) = coeff;
         % Scores are the representations of X in the principal component space
         PCWs(:,:, n, m) = score;
@@ -64,7 +65,7 @@ disp('PCA calculada!')
 %% PLOT DO NUMERO DE PC NECESSÀRIOS 
 
 figure()
-y = cumsum(mean(explain(:,:,1),3));
+y = cumsum(mean(explain(:,:,:,1),3));
 h = plot(y, 'LineWidth', 2.0);
 axis tight
 ylabel('Recuperação de variância total [%]')
@@ -110,24 +111,24 @@ disp('Dados salvos!')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plot reconstruction
-% N = no_samples;  
-% freq = linspace(0, fs-fs/N, N);
-% subj = 2;
-% ch = 1;
-% dir = 270;
-% recon = PCWs(:,:,dir,ch)*coeffs(subj,:,dir,ch)'+ med_vec2(:,dir,ch);
-% 
-% close all 
-% figure()
-% plot(freq(1:N/2), DTF_ok(:,subj,dir,ch), 'linewidth', 2.5, 'color', [0 0 0]); hold on 
-% plot(freq(1, 1:N/2), recon(:,1), 'r','linewidth', 1.5); 
-% 
-% ylim([-30 5]); xlim([900 2e4])
-% axis tight
-% xlabel('Frequencia [Hz]'); ylabel('Amplitude [dB]')
-% legend('Original', [num2str(no_PC) ' CPs'], 'Location', 'best')
-% set(gca, 'FontSize', 13)
-% 
+N = 2*no_samples;  
+freq = linspace(0, fs-fs/N, N);
+subj = 2;
+ch = 2;
+dir = 150;
+recon = PCWs(:,:,dir,ch)*coeffs(subj,:,dir,ch)'+ med_vec2(:,dir,ch);
+
+close all 
+figure()
+plot(freq(1:N/2), DTF_ok(:,subj,dir,ch), 'linewidth', 2.5, 'color', [0 0 0]); hold on 
+plot(freq(1, 1:N/2), recon(:,1), 'r','linewidth', 1.5); 
+
+ylim([-30 5]); xlim([900 2e4])
+axis tight
+xlabel('Frequencia [Hz]'); ylabel('Amplitude [dB]')
+legend('Original', [num2str(no_PC) ' CPs'], 'Location', 'best')
+set(gca, 'FontSize', 13)
+
 
 
 %% Avaliação da reconstrução 
@@ -147,20 +148,15 @@ end
 
 
 %% Mapa projeção
-ch = 2;
+ch = 1;
 SD_recon_PCA = squeeze(mean(SD,2));
-color_range = [1, (max(SD_recon_PCA(:, ch))*0.99)];
+color_range = [1, (max(SD_recon_PCA(:, ch)))];
+% color_range = [1, 12];
 
 % Simulada 
 hFigure = figure('Renderer', 'painters', 'Position', [10 10 600 460]);
 scatter(out_pos(:,1), out_pos(:,2), 30, SD_recon_PCA(:,ch), 'filled', 'square')
-if ch == 1
-    title('Erro espectral da compressão ACP (esquerda)') 
-    filename = [pwd, '\Images\MAP_PCAerror_L.pdf'];
-else
-    title('Erro espectral da compressão ACP (direita)')
-    filename = [pwd, '\Images\MAP_PCAerror_R.pdf'];
-end
+
 xlabel('Azimute [°]')
 ylabel('Elevação [°]')
 axis tight
@@ -169,8 +165,8 @@ c.Label.String = 'Distorção Espectral [dB]';
 set(gca,'FontSize',12)
 set(gca,'Color','k')
 
-filename = [pwd, '\Images\MAP_PCAerror_R.pdf'];
-% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+filename = [pwd, '\Images\MAP_PCAerror.pdf'];
+exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
 
 
 %% Probabilidade 
@@ -181,16 +177,11 @@ set(gca, 'YTick',ytix, 'YTickLabel',ytix*100);
 
 xlabel('Distorção espectral [dB]')
 ylabel('Probabilidade [%]')
-if ch == 1
-    title('Distribuição da distorção espectral (esquerda)')
-    filename = [pwd, '\Images\Prob_PCAerror_L.pdf'];
-else
-    title('Distribuição da distorção espectral (direita)')
-    filename = [pwd, '\Images\Prob_PCAerror_R.pdf'];
-end
+xticks([0:0.5:5.5])
+xlim([0, 5.5])
 set(gca,'FontSize',12)
-filename = [pwd, '\Images\Prob_PCAerror_L.pdf'];
-% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+filename = [pwd, '\Images\Prob_PCAerror.pdf'];
+exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
 
 
 %% INTERNAL FUNCTIONS %----------------------------------------------------

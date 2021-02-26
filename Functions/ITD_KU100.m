@@ -6,12 +6,13 @@ Obj = SOFAload('ClubFritz5.sofa'); %medição do ITA
 
 %% Desired ITD positions
 addpath(genpath([pwd, '\..\DADOS_TREINAMENTO'])); 
+addpath(genpath([pwd, '\..\Functions'])); 
 load('DADOS_TREINAMENTO\target_pca_CIPIC_ARI_ITA_3D3A.mat');
-Obj = sofaFit2Grid(Obj, out_pos, 'spherical_harmonics');
+Obj = sofaFit2Grid(Obj, out_pos, 'adapt');
 
 
 %% ITD estimate
-ref_itd = sofaGetITD(Obj, 'time'); % use: ('correlation', true)
+ref_itd = sofaGetITD(Obj, 'time', 'thr', 20); 
 figure()
 plot(ref_itd)
 
@@ -24,6 +25,6 @@ ref_depth  = 20;   %[cm]
 ref_height = 25;   %[cm]
 
 %% Save
-save('Functions\KU100_itd.mat', 'ref_itd', 'ref_pos', 'ref_width', ...
+save('..\Functions\KU100_itd.mat', 'ref_itd', 'ref_pos', 'ref_width', ...
                        'ref_depth', 'ref_height')
 disp('Dados Salvos!')

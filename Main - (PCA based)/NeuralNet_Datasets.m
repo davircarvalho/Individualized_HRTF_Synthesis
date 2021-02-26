@@ -55,7 +55,7 @@ target = coeffs;
 % [xinpt, sig1, mu1] = nn_preprocess(anthro);
 
 %% Setting up Feed Forward Neural Network with BP
-net = fitnet(14, 'trainbr'); 
+net = fitnet(20, 'trainbr'); 
 % função de treinamento
 % max iterações 
 net.trainParam.epochs = 400; 
@@ -64,8 +64,8 @@ net.trainParam.max_fail = 4; % avoid overfitting by early stopping
 
 % dividir minibatchs
 net.divideFcn= 'divideint'; 
-net.divideParam.trainRatio = .8; 
-net.divideParam.valRatio   = .15; 
+net.divideParam.trainRatio = .85; 
+net.divideParam.valRatio   = .10; 
 net.divideParam.testRatio  = .05; 
 
 net.layers{1}.transferFcn  = 'tansig';
@@ -100,17 +100,17 @@ for channel = 1:no_channels % cada orelha
   
         
 %%%%%%% Repete o treinamento para mesma direção em caso de perf muito ruim
-        cont1 = 0;
-        tol_max = 0.01;
-         while tr_pca{i, channel}.best_tperf > tol_max
-            net = init(net);           
-            [net_pca{i, channel}, tr_pca{i, channel}] = train(net, x, t);
-            cont1 = cont1 + 1;
-            if cont1 > 10 % caso não consiga atingir a meta em 5 tentativas, utilizará o ultimo treinamento realizado 
-                tr_pca{i, channel}.best_tperf
-                break
-            end                   
-         end  
+%         cont1 = 0;
+%         tol_max = 0.008;
+%          while tr_pca{i, channel}.best_tperf > tol_max
+%             net = init(net);           
+%             [net_pca{i, channel}, tr_pca{i, channel}] = train(net, x, t);
+%             cont1 = cont1 + 1;
+%             if cont1 > 10 % caso não consiga atingir a meta em 5 tentativas, utilizará o ultimo treinamento realizado 
+%                 tr_pca{i, channel}.best_tperf
+%                 break
+%             end                   
+%          end  
     end
 end
 disp('Treinamento completo.')

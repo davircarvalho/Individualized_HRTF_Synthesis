@@ -14,7 +14,7 @@ Datasets = {'cipic', 'ari', 'ita', '3d3a'};
 fmin = 250; fmax = 18000;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load Simulated and Measured SOFAs
-file = 'DADOS_TREINAMENTO\rebuilt_data';
+file = '\..\DADOS_TREINAMENTO\rebuilt_data';
 if any(strcmp('cipic', Datasets)) 
     file = append(file, '_CIPIC');
 end
@@ -36,7 +36,7 @@ end
 if any(strcmp({'tub_meas'}, Datasets)) 
     file = append(file, '_TUBMEAS');
 end
-load(file)
+load([pwd file])
 disp('Dados carregados!')
 
 %% 
@@ -44,7 +44,7 @@ fs = Obj_med.Data.SamplingRate;
 out_pos = Obj_med(1).SourcePosition;
 
 %% LOAD Generic HRTFs]
-addpath('B:\Documentos\#3 - TCC\EAC-TCC-Davi\HRTF-datasets\Cabecas\');
+addpath([pwd, '\..\Datasets\Generic HRTFs\']);
 %Fabian
 generic_head(1).SF = SOFAload('FABIAN_HRIR_measured_HATO_0.sofa');
 

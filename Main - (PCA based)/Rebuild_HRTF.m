@@ -52,8 +52,6 @@ disp('Network carregada!')
 %% Definir INPUTs PRO TESTE
 % indivíduos para VALIDAÇÃO: 1('003') .
 subj = 42;
-% nome do individuo dentro do banco de dados
-subject = '001';
 
 % Tenha certeza de que a rede foi treinada com a mesma antropometria
 anthro = load('anthro_TUB.mat');
@@ -120,17 +118,18 @@ Obj_sim.SourcePosition = out_pos;
 Obj_sim = SOFAupdateDimensions(Obj_sim);
 
 
-plot(new_itd); hold on; plot(sofaGetITD(Obj_sim));
+plot(new_itd); hold on; plot(sofaGetITD(Obj_sim, 'samples'));
 %% Preprocessamento do database para comparação
 path_hutubs = dir([pwd '\..\Datasets\HUTUBS\*.sofa']);
 Obj_med = SOFAload([path_hutubs(subj).folder '\' path_hutubs(subj).name], 'nochecks');
 % HRTF -> DTF
 clc
-Obj_med = sofaFit2Grid(Obj_med, out_pos, 'spherical_harmonics', 'Fs', fs);   
+Obj_med = sofaFit2Grid(Obj_med, out_pos, 'spherical_harmonics', 'Fs', fs);
+Obj_med = SOFAhrtf2dtf(Obj_med); 
 fmin = 250; fmax = 18000;
 Obj_med = sofaIRfilter(Obj_med, fmin, fmax);
 Obj = sofaNormalize(Obj_med);
-Obj_med = SOFAhrtf2dtf(Obj_med); 
+
 
 
 itdori = sofaGetITD(Obj_med);
@@ -263,7 +262,7 @@ ylabel('Amplitude [dB]');
 azim = num2str(out_pos(pos,1));
 elee = num2str(out_pos(pos,2));
 % title(['DTF Individuo ', subject,', azimute ' azim 'º, elevação ' elee 'º.' ]);
-title(['DTF Subject ', subject,', azimuth ' azim 'º, elevation ' elee 'º.' ]);
+title(['DTF azimuth ' azim 'º, elevation ' elee 'º.' ]);
 
 
 grid on 
@@ -298,7 +297,7 @@ xlabel('Amostras')
 ylabel('Esquerda')
 azim = num2str(out_pos(pos,1));
 elee = num2str(out_pos(pos,2));
-title(['HRIR Invididuo ', num2str(subject), ', azimute ', azim, ...
+title(['HRIR Invididuo ', num2str(subj), ', azimute ', azim, ...
                                    '°, elevação ', elee, '°']);
 legend('Original', 'Simulada')
 set(gca,'FontSize',12)

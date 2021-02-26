@@ -86,7 +86,7 @@ function sd = spec_dist(msrd,ref,fs,fmin,fmax, method)
 %% Normalizes vectors in frequency domain
     msrd = fft(msrd, N);
     msrd = msrd./msrd(f_500hz); % normalize @ 500Hz
-    ref  = fft(ref, N);e
+    ref  = fft(ref, N);
     ref = ref./ref(f_500hz);    % normalize @ 500Hz
 
 %% Calculates the Spectral Distortion

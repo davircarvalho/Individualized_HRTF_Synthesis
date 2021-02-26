@@ -1,4 +1,4 @@
-clear all; clc; tic
+clear all; clc; 
 % DAVI ROCHA CARVALHO; ENG. ACUSTICA - UFSM; Fevereiro/2020
 %% General INFO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ~INPUT SOFA FILE FROM THE CIPIC ARI AND ITA DATASETS,
@@ -49,7 +49,7 @@ pathtub_sim = pathtub_sim(idx_tubsim, :);
 
 %% Options
 % Defina quais datasets usar: {'cipic', 'ari', 'ita', '3d3a', 'riec', 'tub_meas', 'tub_sim'}, o
-Datasets = {'ari','3d3a', 'ita', 'tub_sim'};
+Datasets = {'cipic', 'ari', 'ita', '3d3a'};
 no_samples = 200; % Tamanho do vetor na saída (pós fft)
 fs   = 44100;     % Taxa de amostragem 
 fmin = 250;       % Frequencia min de corte para RI 
@@ -58,20 +58,20 @@ fmax = 18000;     % Frequencia max de corte para IR
 out_pos = select_best_grid(Datasets);
 freq = linspace(0, fs-fs/no_samples, no_samples);
 
-Datasets = {'ari', 'ita', 'tub_sim'};
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CIPIC %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if any(strcmp('cipic', Datasets))  
     disp('Processando CIPIC Dataset ...'); tic
-    DTF_CIPIC = zeros( size(out_pos,1), 2, no_samples, length(pathcipic));
+    DTF_CIPIC = zeros( no_samples, size(out_pos,1),2, length(pathcipic));
     for k = 1:length(pathcipic)
         CIPIC = SOFAload([pathcipic(k).folder '\' pathcipic(k).name]);
         % Process
-        CIPIC_ok = process2unite(CIPIC, out_pos, fs, fmin, fmax);        
-        DTF_CIPIC(:,:,:,k) = (abs(fft(CIPIC_ok.Data.IR, no_samples, 3)));
+        CIPIC_ok = process2unite(CIPIC, out_pos, fs, fmin, fmax);   
+        IR = shiftdim(CIPIC_ok.Data.IR, 2);
+        DTF_CIPIC(:,:,:,k) = abs(fft(IR, no_samples));
     end  
-    DTF_CIPIC = permute(DTF_CIPIC, [3,4,1,2]);
+    DTF_CIPIC = permute(DTF_CIPIC, [1,4,2,3]);
     % remover dados sem antropometria e teste
     load('remove_CIPIC.mat');
     DTF_CIPIC(:,remove_CIPIC,:,:) = [];
@@ -90,18 +90,19 @@ if any(strcmp('ari', Datasets))  %(hrtf b_nh*.sofa)
     end
     
     no_subj_ari = length(anthro_ari.id);
-    DTF_ARI = zeros( size(out_pos,1), 2, no_samples, no_subj_ari);
+    DTF_ARI = zeros( no_samples, size(out_pos,1), 2, no_subj_ari);
     for k = 1:no_subj_ari
     % Encontrar indivíduos com antropometria
         idx = find((anthro_ari.id(k) - 3000) == id_hrtf_ari);
     % Carregar SOFA files
-        ARI = SOFAload([pathari(idx).folder, '\',pathari(idx).name], 'nochecks');
+        ARI = SOFAload([pathari(idx).folder, '\',pathari(idx).name]);
     % Process
         ARI_ok = process2unite(ARI, out_pos, fs, fmin, fmax);
-        DTF_ARI(:,:,:,k) = (abs(fft(ARI_ok.Data.IR, no_samples, 3)));
+        IR = shiftdim(ARI_ok.Data.IR, 2);
+        DTF_ARI(:,:,:,k) = (abs(fft(IR, no_samples)));
     end
     
-    DTF_ARI = permute(DTF_ARI, [3,4,1,2]);
+    DTF_ARI = permute(DTF_ARI, [1,4,2,3]);
     % Remover HRTFs com antropometria INCOMPLETA
     load('remove_ARI.mat');
     DTF_ARI(:,remove_ARI,:,:) = [];
@@ -112,9 +113,9 @@ end
 %% ITA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if any(strcmp('ita', Datasets))
     disp('Processando ITA Dataset ...'); tic
-    DTF_ITA = zeros( size(out_pos,1), 2, no_samples, length(pathita));
+    DTF_ITA = zeros(no_samples, size(out_pos,1), 2, length(pathita));
     for k = 1:length(pathita) 
-        ITA = SOFAload([pathita(k).folder, '\',pathita(k).name], 'nochecks');
+        ITA = SOFAload([pathita(k).folder, '\',pathita(k).name]);
     
         %%% Transição de coordenadas cartesianas para esfericas
         for l = 1:length(ITA.SourcePosition)
@@ -136,10 +137,11 @@ if any(strcmp('ita', Datasets))
                 
         % Process
         ITA_ok = process2unite(ITA, out_pos, fs, fmin, fmax);
-        DTF_ITA(:,:,:,k) = (abs(fft(ITA_ok.Data.IR, no_samples, 3)));        
+        IR = shiftdim(ITA_ok.Data.IR, 2);
+        DTF_ITA(:,:,:,k) = (abs(fft(IR, no_samples)));        
     end
     % Remover indivíduos com dados inconsistentes
-    DTF_ITA = permute(DTF_ITA, [3,4,1,2]);
+    DTF_ITA = permute(DTF_ITA, [1,4,2,3]);
     DTF_ITA(:,(14:15),:,:) = [];
     toc
 end
@@ -156,16 +158,17 @@ if any(strcmp('3d3a', Datasets))
     end
     
     % Carregar HRIRs
-    DTF_D3A = zeros( size(out_pos,1), 2, no_samples, length(anthro_D3A.id));
+    DTF_D3A = zeros(no_samples, size(out_pos,1), 2, length(anthro_D3A.id));
     for k = 1:length(anthro_D3A.id)
         idx = find(num == anthro_D3A.id(k)); 
-        D3A = SOFAload([path3d3a(idx).folder '\' path3d3a(idx).name], 'nochecks');       
+        D3A = SOFAload([path3d3a(idx).folder '\' path3d3a(idx).name]);       
         
         % Process
         D3A_ok = process2unite(D3A, out_pos, fs, fmin, fmax);
-        DTF_D3A(:,:,:,k) = (abs(fft(D3A_ok.Data.IR, no_samples, 3)));       
+        IR = shiftdim(D3A_ok.Data.IR, 2);
+        DTF_D3A(:,:,:,k) = (abs(fft(IR, no_samples)));       
     end  
-    DTF_D3A = permute(DTF_D3A, [3,4,1,2]);  
+    DTF_D3A = permute(DTF_D3A, [1,4,2,3]);  
     load('remove_D3A.mat');
     DTF_D3A(:,remove_D3A,:,:) = []; % remover por inconsistencias
     toc
@@ -177,7 +180,7 @@ if any(strcmp('riec', Datasets))
     disp('Processando RIEC Dataset ...'); tic 
     DTF_RIEC = zeros( size(out_pos,1), 2, no_samples, length(pathriec));
     for k = 1: length(pathriec)
-        RIEC = SOFAload([pathriec(k).folder '\' pathriec(k).name], 'nochecks');
+        RIEC = SOFAload([pathriec(k).folder '\' pathriec(k).name]);
         
         % Process
         RIEC_ok = process2unite(RIEC, out_pos, fs, fmin, fmax);
@@ -193,7 +196,7 @@ if any(strcmp('tub_meas', Datasets))
     disp('Processando TU Berlim (medido) Dataset ...'); tic
     DTF_TUBmeas = zeros( size(out_pos,1), 2, no_samples, length(pathtub_meas));
     for k = 1 : length(pathtub_meas)
-        TUBmeas = SOFAload([pathtub_meas(k).folder '\' pathtub_meas(k).name], 'nochecks');                
+        TUBmeas = SOFAload([pathtub_meas(k).folder '\' pathtub_meas(k).name]);                
         
         % Process
         TUBmeas_ok = process2unite(TUBmeas, out_pos, fs, fmin, fmax);
@@ -211,7 +214,7 @@ if any(strcmp('tub_sim', Datasets))
     disp('Processando TU Berlim (simulado) Dataset ...'); tic
     DTF_TUBsim = zeros( size(out_pos,1), 2, no_samples, length(pathtub_sim));
     for k = 1 : length(pathtub_sim)
-        TUBsim = SOFAload([pathtub_sim(k).folder '\' pathtub_sim(k).name], 'nochecks');
+        TUBsim = SOFAload([pathtub_sim(k).folder '\' pathtub_sim(k).name]);
 
         % Process
         TUBsim_ok = process2unite(TUBsim, out_pos, fs, fmin, fmax);
@@ -248,8 +251,8 @@ if any(strcmp('riec', Datasets))
     path_save = append(path_save, '_RIEC');
 end
 if any(strcmp('tub_meas', Datasets))
-%     DTF = cat(2, [DTF, DTF_TUBmeas]);
-%     path_save = append(path_save, '_TUBMEAS');
+    DTF = cat(2, [DTF, DTF_TUBmeas]);
+    path_save = append(path_save, '_TUBMEAS');
 end
 if any(strcmp('tub_sim', Datasets))
     DTF = cat(2, [DTF, DTF_TUBsim]);
@@ -263,19 +266,19 @@ disp('Dados Salvos!')
 
 %% plot
 figure()
-surf(DTF(:,:,500,2),'linestyle', 'none')
+surf(DTF(:,:,400,1),'linestyle', 'none')
 
 
 %% LOCAL FUCTIONS 
 function Obj = process2unite(Obj, out_pos, fs, fmin, fmax)
     % Make same grid
-    Obj = sofaFit2Grid(Obj, out_pos, 'adapt', 'Fs', fs);     
+    Obj = sofaFit2Grid(Obj, out_pos, 'adapt', 'Fs', fs);
     % Normalize L/R balance and IR levels
     Obj = sofaNormalize(Obj);
     % filter
-    Obj = sofaIRfilter(Obj, fmin, fmax);
+    Obj = sofaIRfilter(Obj, fmin, fmax);    
     % HRTF -> DTF
-    [Obj, ~] = SOFAhrtf2dtf(Obj);    
+    [Obj, ~] = SOFAhrtf2dtf(Obj);
 end
 
 

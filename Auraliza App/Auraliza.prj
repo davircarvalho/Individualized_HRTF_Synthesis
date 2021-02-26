@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="4073804353" file="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App\Auraliza.prj" location="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App" name="Auraliza" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="1240079928" file="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App\Auraliza.prj" location="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App" name="Auraliza" target="target.mlapps" target-name="Package App">
     <param.appname>Auraliza</param.appname>
     <param.authnamewatermark>Davi R Carvalho</param.authnamewatermark>
     <param.email />
@@ -12,8 +12,8 @@
     </param.icons>
     <param.summary />
     <param.description>Módulo de auralização SOFA multicanal</param.description>
-    <param.screenshot>C:\Users\rdavi\AppData\Local\Temp\tp8abdf84f_435d_4f4b_a2e2_4ebacc35fee5.png</param.screenshot>
-    <param.version>1.02.13</param.version>
+    <param.screenshot>C:\Users\rdavi\AppData\Local\Temp\tpf989b287_9d8a_4076_afc1_e509b2dad1f6.png</param.screenshot>
+    <param.version>1.02.26</param.version>
     <param.products.name />
     <param.products.id />
     <param.products.version />
@@ -34,12 +34,16 @@
       <file>${PROJECT_ROOT}\Auraliza.mlapp</file>
     </fileset.main>
     <fileset.depfun>
+      <file>${PROJECT_ROOT}\air_absorption.m</file>
+      <file>${PROJECT_ROOT}\get_min_phase.m</file>
       <file>${PROJECT_ROOT}\nav2sph.m</file>
       <file>${PROJECT_ROOT}\playbuttom.png</file>
+      <file>${PROJECT_ROOT}\SOFAgetITD.m</file>
       <file>${PROJECT_ROOT}\sph2nav.m</file>
       <file>${PROJECT_ROOT}\stopbuttom.png</file>
       <file>${PROJECT_ROOT}\supdeq_parallax.m</file>
       <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\netcdf\NETCDFload.m</file>
+      <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAaddVariable.m</file>
       <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAappendText.m</file>
       <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAarghelper.m</file>
       <file>D:\Documentos\MATLAB\SUpDEq\thirdParty\AKtools\2_Tools\ThirdParty\SOFA_API_MO\SOFAcheckFilename.m</file>

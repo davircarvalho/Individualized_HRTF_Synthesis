@@ -7,11 +7,12 @@ Fabian = SOFAload([path 'FABIAN_HRIR_measured_HATO_0.sofa']);
 
 %% Select desired positions
 addpath(genpath([pwd, '\..\DADOS_TREINAMENTO'])); 
+addpath(genpath([pwd, '\..\Functions'])); 
 load('DADOS_TREINAMENTO\target_pca_CIPIC_ARI_ITA_3D3A.mat');
 Fabian = sofaFit2Grid(Fabian, out_pos, 'spherical_harmonics');
 
 %% ITD estimate
-ref_itd = sofaGetITD(Fabian, 'time');
+ref_itd = sofaGetITD(Fabian, 'time', 'thr', 20);
 
 figure()
 plot(ref_itd)
@@ -29,6 +30,6 @@ ref_height = 24;     %[cm]
 
 
 %% Save
-save('Functions\fabian_itd.mat', 'ref_itd', 'ref_pos', 'ref_width', ...
+save('..\Functions\fabian_itd.mat', 'ref_itd', 'ref_pos', 'ref_width', ...
                        'ref_depth', 'ref_height')
 disp('Dados Salvos!')

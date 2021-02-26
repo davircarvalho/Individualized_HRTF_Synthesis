@@ -143,7 +143,7 @@ switch p.Results.method
         Nsparse = sparseHRTFdataset.Nmax;
 
         eqHRTFdataset = supdeq_eq(sparseHRTFdataset,eqDataset,Nsparse,...
-                                  sparseSamplingGrid, 10-5);
+                                  sparseSamplingGrid);
 
         % (5) - Perform de-equalization 
         %Here, the sparse equalized HRTF dataset is de-equalized with the

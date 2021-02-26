@@ -1,16 +1,22 @@
 clear all; clc
+% DAVI R CARVALHO @ UFSM - FEVEREIRO/2021
+% Simulation error for the training with ARI, ITA and HUTUBS_measured datasets
+% where the comparisson is with the cipic dataset, the positions are
+% unified via sphericaal harmonics implemented with the SUpDEq toolbox
+
 % Avaliação de performance do modelo a partir de HRTFs do HUTUBS database
 addpath(genpath([pwd, '\..\Functions']));
 addpath(genpath([pwd, '\..\DADOS_TREINAMENTO']));
 
 %% LOAD FILES 
 % Network
-load('DADOS_TREINAMENTO\net_treinada_CIPIC_ARI_ITA_3D3A');
-load('DADOS_TREINAMENTO\target_pca_CIPIC_ARI_ITA_3D3A');
+load('DADOS_TREINAMENTO\net_treinada_ARI_ITA_TUBMEAS');
+load('DADOS_TREINAMENTO\target_pca_ARI_ITA_TUBMEAS');
+sim_pos = out_pos;
 
 %% Load Antropometria 
-load('DADOS_TREINAMENTO\input_TUBSIM.mat');
-load('DADOS_TREINAMENTO\remove_TUB.mat');
+load('DADOS_TREINAMENTO\input_CIPIC.mat');
+load('DADOS_TREINAMENTO\remove_CIPIC.mat');
 
 %% Useful  parameters
 fs = 44100;
@@ -21,32 +27,34 @@ fmin = 250; fmax = 18000;
 %% LOAD TEST DATA 
 %%% HRIRs ORIGINAIS
 local = [pwd, '\..\Datasets\'];
-pathtub_sim = dir([local 'HUTUBS\pp*_HRIRs_measured.sofa']);
-[~,idx_tubsim] = natsortfiles({pathtub_sim.name});
-pathtub_sim = pathtub_sim(idx_tubsim, :);
-pathtub_sim(remove_TUB) = []; %remover individuos sem antropometria
+pathcipic = dir([local 'CIPIC\*.sofa']);
+[~,idx_cipic] = natsortfiles({pathcipic.name});
+pathcipic = pathcipic(idx_cipic, :);
+pathcipic(remove_CIPIC) = []; %remover individuos sem antropometria
+obj = SOFAload([pathcipic(1).folder '\' pathcipic(1).name], 'nochecks');
+out_pos = obj.SourcePosition;
 
-%%% HRIRs GENERICAS
+%% HRIRs GENERICAS
 addpath([pwd '\..\Datasets\Generic HRTFs']);
 %Fabian
 Obj_gen(1).SF = SOFAload('FABIAN_HRIR_measured_HATO_0.sofa');
 
-% MIT large pinna
-Obj_gen(2).SF = SOFAload('mit_kemar_large_pinna.sofa');
-
-% MIT normal pinna
-Obj_gen(3).SF = SOFAload('mit_kemar_normal_pinna.sofa');
+% % MIT large pinna
+% Obj_gen(2).SF = SOFAload('mit_kemar_large_pinna.sofa');
+% 
+% % MIT normal pinna
+% Obj_gen(3).SF = SOFAload('mit_kemar_normal_pinna.sofa');
 
 % Procesamento
 for k = 1:length(Obj_gen)
     % Make same grid
-    Obj_gen(k).SF = sofaFit2Grid(Obj_gen(k).SF, out_pos, 'adapt', 'Fs', fs);     
+    Obj_gen(k).SF = sofaFit2Grid(Obj_gen(k).SF, out_pos, 'spherical_harmonics', 'Fs', fs);     
     Obj_gen(k).SF = process2unite(Obj_gen(k).SF, out_pos, fs, fmin, fmax);
 end
 
 
 %% Simulação 
-for subj = 1:size(pathtub_sim, 1)% Numero de indivíduos
+for subj = 1:size(pathcipic, 1)% Numero de indivíduos
     clc; disp(['Individuo: ' num2str(subj)])    
     % Simulação de redes 
     for n = 1:no_channels
@@ -59,13 +67,13 @@ for subj = 1:size(pathtub_sim, 1)% Numero de indivíduos
     %% RECONSTRUÇÃO DE FASE: (fase mínima + ITD)    
     % calcular ITD
     itd_synth_method = 'adapt';
-    itd = itd_synthesis(anthro(1,subj,1), anthro(2,subj,1), out_pos, fs, itd_synth_method);
+    itd = itd_synthesis(anthro(1,subj,1), anthro(2,subj,1), sim_pos, fs, itd_synth_method);
     
     for l = 1:no_directions
         % Aplicando fase minima e de excesso
         offset = 20; % valor arbitrario
         [IR_minL, IR_minR] = phase_job(DTF_sim(:, l, 1), DTF_sim(:, l, 2), ...
-                                                   itd(l), out_pos(l,:), offset); 
+                                                   itd(l), sim_pos(l,:), offset); 
         hrir_final(l, 1, :) = IR_minL;
         hrir_final(l, 2, :) = IR_minR;
     end    
@@ -75,13 +83,12 @@ for subj = 1:size(pathtub_sim, 1)% Numero de indivíduos
     Obj_sim = SOFAgetConventions('SimpleFreeFieldHRIR');
     Obj_sim.Data.IR = hrir_final;
     Obj_sim.Data.SamplingRate = fs;
-    Obj_sim.SourcePosition = out_pos;
+    Obj_sim.SourcePosition = sim_pos;
     Obj_sim = SOFAupdateDimensions(Obj_sim);
+    Obj_sim = sofaFit2Grid(Obj_sim, out_pos, 'spherical_harmonics', 'Fs', fs); % Make same grid
     
     % Medido Processamento %%% 
-    Obj_med = SOFAload([pathtub_sim(subj).folder '\' pathtub_sim(subj).name], 'nochecks');
-   % Make same grid
-    Obj_med = sofaFit2Grid(Obj_med, out_pos, 'spherical_harmonics', 'Fs', fs);
+    Obj_med = SOFAload([pathcipic(subj).folder '\' pathcipic(subj).name], 'nochecks');
     Obj_med = process2unite(Obj_med, out_pos, fs, fmin, fmax);
     
     %% Erro espectral 
@@ -123,7 +130,7 @@ end
 %%
 save([pwd '\..\DADOS_TREINAMENTO\workspace_Simulation_Erro.mat'])
 % clear all
-% load('DADOS_TREINAMENTO\workspace_Simulation_Erro_ITDadapt.mat')
+% load([pwd '\..\DADOS_TREINAMENTO\workspace_Simulation_Erro.mat'])
 
 %% Plot erro ESPECTRAL (Todas as posições)
 % hFigure = figure('Renderer', 'painters', 'Position', [10 10 2000 450]);
@@ -183,8 +190,6 @@ idx_pos = find(out_pos(:,2)==elev);
 
 % plotar em ordem 
 yitd = cat(1, mean(sd_gen(1).gen(idx_pos, :)),...
-              mean(sd_gen(2).gen(idx_pos, :)),...
-              mean(sd_gen(3).gen(idx_pos, :)),...
               mean(sd_sim(idx_pos, :)));
 [ysort, idx_sort] = sort(yitd, 1, 'descend');
 
@@ -209,19 +214,15 @@ end
 
 % plotar medias 
 yline(mean(mean(sd_gen(1).gen(idx_pos, :))), '--', 'Média', 'color', 'c', 'linewidth', 1.5);
-yline(mean(mean(sd_gen(2).gen(idx_pos, :))), '--', 'Média', 'color', C(6,:),'linewidth', 1.5);
-yline(mean(mean(sd_gen(3).gen(idx_pos, :))), '--', 'color', 'y','linewidth', 1.5);
 yline(mean(mean(sd_sim(idx_pos, :))),'--', 'Média', 'color', [0.4940 0.1840 0.5560],'linewidth', 1.5); 
 hold off
 
 % general 
-yticks([3, mean(mean(sd_sim(idx_pos, :))), mean(mean(sd_gen(1).gen(idx_pos, :))),...
-        mean(mean(sd_gen(2).gen(idx_pos, :))), 7.5]);
 arruma_fig('% 4.0f','% 2.2f','virgula');
-axis([0 97, 2, 7.9]);
+% axis([0 97, 2, 7.9]);
 xlabel('Indivíduo');
 ylabel('Erro Espectral [dB]');
-legend(h, 'Fabian','Kemar Small','Kemar Large','Simulada','location','southeast');
+legend(h, 'Fabian','Simulada','location','southeast');
 title('Distorção espectral no plano horizontal')
 set(gca,'fontsize', 12);
 

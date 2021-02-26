@@ -119,6 +119,7 @@ Obj_out = SOFAupgradeConventions(Obj_out);
 % Obj_out = SOFAupdateDimensions(Obj_out);
 
 
+
 %% Plots
 % ri = Obj_in.SourcePosition(1,3);
 % %%% plot input %%%

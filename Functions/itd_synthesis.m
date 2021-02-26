@@ -81,10 +81,10 @@ switch p.Results.method
 %% Adapt
     case 'adapt' 
         % selecionar posições correspondentes a out_pos 
-        load('KU100_itd.mat')
+        load('fabian_itd.mat')
         for k = 1:length(positions)  
             [~,idx_pos(k)] = min(sqrt((ref_pos(:,1)-positions(k,1)).^2 +...
-                                  (ref_pos(:,2)-positions(k,2)).^2)); 
+                                      (ref_pos(:,2)-positions(k,2)).^2)); 
         end
                         
         % Reference Head
@@ -110,9 +110,7 @@ switch p.Results.method
             tsqr_head(k) = (data(k).x(1)/data(k).x(2) - wid/dep);
         end
         [~,idx_head] = min(tsqr_head); 
-
         itd = (data(idx_head).itd(idx_pos))./44100;
-
 end
 
 

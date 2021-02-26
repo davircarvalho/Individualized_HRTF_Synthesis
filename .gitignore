@@ -2,19 +2,16 @@ DADOS_TREINAMENTO
 Datasets
 Referencias
 HRTF_interpolation_in_3D
+Python
+Ambisonics 
 
 *.sofa
 *.asv
 *.wav
+*.py
+*.pdf
+*.rar 
 
-sofaSHinterpolate.m
 PCA_experimental.m
 NeuralNet_experimental.m
 DEEPnet_experimental.m
-ALFE.m
-test_interpolation.m
-test_ITA_SH_interp.m
-test_SH_datasets.m
-test_resample.m
-test_SUpDEq_interp.m
-Mouse_Clicker.m
