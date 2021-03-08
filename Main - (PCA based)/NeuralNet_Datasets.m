@@ -49,18 +49,13 @@ load(input_file)
 target = coeffs;
 [no_PC, no_subjects, no_directions, no_channels] = size(target);
 
-%% Pré-processamento INPUT (normalize)
-% A arquitetura definida na célula abaixo automaticamente aplica mapminmax
-% o que torna a normalização prévia redundante
-% [xinpt, sig1, mu1] = nn_preprocess(anthro);
-
 %% Setting up Feed Forward Neural Network with BP
 net = fitnet(20, 'trainbr'); 
 % função de treinamento
 % max iterações 
 net.trainParam.epochs = 400; 
-% max validation non improvement
-net.trainParam.max_fail = 4; % avoid overfitting by early stopping
+% early stopping (validation patience)
+net.trainParam.max_fail = 4; 
 
 % dividir minibatchs
 net.divideFcn= 'divideint'; 
@@ -84,19 +79,7 @@ for channel = 1:no_channels % cada orelha
         waitbar(cont/(no_directions*no_channels), wait);        
         t = target(:, :, i, channel)';% output target varia com a direção 
         net = configure(net, x, t); %define input e output da rede
-               %% VIEW net export
-%                 jframe = view(net);
-%                 %# create it in a MATLAB figure
-%                 hFig = figure('Menubar','none', 'Position',[100 100 565 166]);
-%                 jpanel = get(jframe,'ContentPane');
-%                 [~,h] = javacomponent(jpanel);
-%                 set(h, 'units','normalized', 'position',[0 0 1 1])
-%                 %# close java window
-%                 jframe.setVisible(false);
-%                 jframe.dispose();           
-%                 export_fig([pwd, '\Images\view_net' ], '-pdf', '-transparent');
-        %% 
-            [net_pca{i, channel}, tr_pca{i, channel}] = train(net, x, t);
+        [net_pca{i, channel}, tr_pca{i, channel}] = train(net, x, t);
   
         
 %%%%%%% Repete o treinamento para mesma direção em caso de perf muito ruim
@@ -213,3 +196,16 @@ set(gca, 'FontSize', 16)
 %     tperf = tperf +ttemp;
 % end
 % 
+
+
+ %% VIEW net export
+%                 jframe = view(net);
+%                 %# create it in a MATLAB figure
+%                 hFig = figure('Menubar','none', 'Position',[100 100 565 166]);
+%                 jpanel = get(jframe,'ContentPane');
+%                 [~,h] = javacomponent(jpanel);
+%                 set(h, 'units','normalized', 'position',[0 0 1 1])
+%                 %# close java window
+%                 jframe.setVisible(false);
+%                 jframe.dispose();           
+%                 export_fig([pwd, '\Images\view_net' ], '-pdf', '-transparent');

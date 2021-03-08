@@ -118,7 +118,6 @@ ch = 2;
 dir = 150;
 recon = PCWs(:,:,dir,ch)*coeffs(subj,:,dir,ch)'+ med_vec2(:,dir,ch);
 
-close all 
 figure()
 plot(freq(1:N/2), DTF_ok(:,subj,dir,ch), 'linewidth', 2.5, 'color', [0 0 0]); hold on 
 plot(freq(1, 1:N/2), recon(:,1), 'r','linewidth', 1.5); 

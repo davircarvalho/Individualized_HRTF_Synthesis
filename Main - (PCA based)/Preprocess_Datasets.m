@@ -274,7 +274,7 @@ function Obj = process2unite(Obj, out_pos, fs, fmin, fmax)
     % Make same grid
     Obj = sofaFit2Grid(Obj, out_pos, 'adapt', 'Fs', fs);
     % Normalize L/R balance and IR levels
-    Obj = sofaNormalize(Obj);
+%     Obj = sofaNormalize(Obj);
     % filter
     Obj = sofaIRfilter(Obj, fmin, fmax);    
     % HRTF -> DTF

@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="1240079928" file="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App\Auraliza.prj" location="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App" name="Auraliza" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="3859866109" file="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App\Auraliza.prj" location="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Auraliza App" name="Auraliza" target="target.mlapps" target-name="Package App">
     <param.appname>Auraliza</param.appname>
     <param.authnamewatermark>Davi R Carvalho</param.authnamewatermark>
     <param.email />
@@ -12,8 +12,8 @@
     </param.icons>
     <param.summary />
     <param.description>Módulo de auralização SOFA multicanal</param.description>
-    <param.screenshot>C:\Users\rdavi\AppData\Local\Temp\tpf989b287_9d8a_4076_afc1_e509b2dad1f6.png</param.screenshot>
-    <param.version>1.02.26</param.version>
+    <param.screenshot>C:\Users\rdavi\AppData\Local\Temp\tp1a558b6b_5c3b_40eb_93b4_bd4fc05a319e.png</param.screenshot>
+    <param.version>1.02.27</param.version>
     <param.products.name />
     <param.products.id />
     <param.products.version />
@@ -57,8 +57,10 @@
     </fileset.depfun>
     <fileset.resources>
       <file>${PROJECT_ROOT}\conventions</file>
+      <file>${PROJECT_ROOT}\individuo_141.sofa</file>
       <file>${PROJECT_ROOT}\miinterpolateHRTF.m</file>
       <file>${PROJECT_ROOT}\SOFAgetConventions.m</file>
+      <file>${PROJECT_ROOT}\Voice Sabine Short_edited.wav</file>
     </fileset.resources>
     <fileset.package />
     <build-deliverables>
