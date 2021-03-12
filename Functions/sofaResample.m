@@ -14,15 +14,17 @@ function Obj = sofaResample(Obj, Fs, Nintp)
 %
 % Matlab 2020a
 %% Resample
-N = ceil((Fs/Obj.Data.SamplingRate) * Obj.API.N); % length after resample
+Fs_sofa = Obj.Data.SamplingRate;
+N = ceil((Fs/Fs_sofa) * Obj.API.N); % length after resample
 if nargin<3 || Nintp<N
     Nintp = N; 
 end
 zpad = zeros((Nintp - N), 1);
 
+
 %% options
-tx = (0:Obj.API.N-1)/Obj.Data.SamplingRate;
-[p,q] = rat(Fs / Obj.Data.SamplingRate);
+tx = (0:Obj.API.N-1)/Fs_sofa;
+[p,q] = rat(Fs / Fs_sofa);
 % normFc = .98 / max(p,q);
 % order = 256 * max(p,q);
 % beta = 12;
