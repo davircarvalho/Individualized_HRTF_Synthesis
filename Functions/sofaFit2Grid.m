@@ -1,4 +1,4 @@
-function Obj_out = sofaFit2Grid(Obj_in, out_pos, varargin)
+function [Obj_out, error] = sofaFit2Grid(Obj_in, out_pos, varargin)
 % Converte posições de HRIRs SOFA às posições especificadas em 'out_pos'
 % Davi R. Carvalho @UFSM - Engenharia Acustica - julho/2020
 
@@ -14,6 +14,7 @@ function Obj_out = sofaFit2Grid(Obj_in, out_pos, varargin)
 %  ~Output Parameters:
 %     Obj_out:   Objeto de HRTFs SOFA com as característica 
 %                de medição do dataset CIPIC.
+%     error:     Erro rms (°) para cara posicao (valido apenas em 'adapt') 
 
 %  ~Optional Parameters:     
 %    'adapt':    Seleciona as posicoes mais proximas do grid objetivo e
@@ -53,6 +54,8 @@ if Obj_in.Data.SamplingRate ~= p.Results.Fs
     Obj_in = sofaResample(Obj_in, p.Results.Fs);
 end
 
+%% Initialize error
+error = zeros(length(out_pos),1);
 
 %% "Interpolation" by nearest position ('ADAPT')
 switch p.Results.method
@@ -63,7 +66,7 @@ switch p.Results.method
         for zz = 1:length(out_pos) 
             % Calculo do erro entre posição objetivo e posições disponiveis
             tsqr = sqrt((meta.pos(:,1)-out_pos(zz,1)).^2 + (meta.pos(:,2)-out_pos(zz,2)).^2);
-            [~, idx_adapt(zz,1)] = min(tsqr); 
+            [error(zz), idx_adapt(zz,1)] = min(tsqr); 
             idx_adapt(zz,2) = zz; %salvar indice da posição objetivo
             
             % Posicoes selecionadas no grid original (util para visualização)
