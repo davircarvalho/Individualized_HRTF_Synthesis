@@ -32,8 +32,8 @@ parse(p, Obj_med, Obj_ref, varargin{:})
     ILD_error = mean(abs(ILD_ref - ILD_msrd));
     
 %% ITD --------------------------------------------------------------------
-    ITD_ref = sofaGetITD(Obj_ref, p.Results.outputMode);
-    ITD_med = sofaGetITD(Obj_med, p.Results.outputMode);    
+    ITD_ref = SOFAgetITD(Obj_ref, p.Results.outputMode);
+    ITD_med = SOFAgetITD(Obj_med, p.Results.outputMode);    
     % error
     ITD_error = abs(ITD_ref - ITD_med);
 
