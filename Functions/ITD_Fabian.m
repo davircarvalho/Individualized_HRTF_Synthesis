@@ -12,7 +12,7 @@ load('DADOS_TREINAMENTO\target_pca_CIPIC_ARI_ITA_3D3A.mat');
 Fabian = sofaFit2Grid(Fabian, out_pos, 'spherical_harmonics');
 
 %% ITD estimate
-ref_itd = sofaGetITD(Fabian, 'time', 'thr', 20);
+ref_itd = sofaGetITD(Fabian, 'time', 'thr', 30);
 
 figure()
 plot(ref_itd)

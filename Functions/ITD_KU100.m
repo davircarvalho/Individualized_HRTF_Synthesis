@@ -7,12 +7,12 @@ Obj = SOFAload('ClubFritz5.sofa'); %medição do ITA
 %% Desired ITD positions
 addpath(genpath([pwd, '\..\DADOS_TREINAMENTO'])); 
 addpath(genpath([pwd, '\..\Functions'])); 
-load('DADOS_TREINAMENTO\target_pca_CIPIC_ARI_ITA_3D3A.mat');
-Obj = sofaFit2Grid(Obj, out_pos, 'adapt');
+% load('DADOS_TREINAMENTO\target_pca_CIPIC_ARI_ITA_3D3A.mat');
+% Obj = sofaFit2Grid(Obj, out_pos, 'adapt');
 
 
 %% ITD estimate
-ref_itd = sofaGetITD(Obj, 'time', 'thr', 20); 
+ref_itd = SOFAgetITD(Obj, 'time', 'thr', 30); 
 figure()
 plot(ref_itd)
 
