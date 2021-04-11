@@ -126,6 +126,7 @@ if any(strcmp('ita', Datasets))
             [az,elev,r] = cart2sph(x,y,z);
             azi=rad2deg(az); elev=rad2deg(elev);
             [azi,ele]   = nav2sph(azi,elev);
+            azi(azi == 360) = 0;
             % update coordinates
             ITA.SourcePosition(l, 1) = azi;
             ITA.SourcePosition(l, 2) = ele; 
@@ -174,21 +175,6 @@ if any(strcmp('3d3a', Datasets))
     toc
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% RIEC %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if any(strcmp('riec', Datasets))  
-    disp('Processando RIEC Dataset ...'); tic 
-    DTF_RIEC = zeros( size(out_pos,1), 2, no_samples, length(pathriec));
-    for k = 1: length(pathriec)
-        RIEC = SOFAload([pathriec(k).folder '\' pathriec(k).name]);
-        
-        % Process
-        RIEC_ok = process2unite(RIEC, out_pos, fs, fmin, fmax);
-        DTF_RIEC(:,:,:,k) = (abs(fft(RIEC_ok.Data.IR, no_samples, 3)));             
-    end  
-    DTF_RIEC = permute(DTF_RIEC, [3,4,1,2]);    
-    toc
-end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% TU Berlim MEDIDO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
