@@ -25,7 +25,7 @@ function [itd, Obj] = SOFAgetITD(Obj, varargin)
 % Author: Davi R. Carvalho, 2021/02/07
 
 %% Parameters
-definput.keyvals.thr = 30;  % dB
+definput.keyvals.thr = 10;  % dB
 definput.flags.units = {'time', 'samples'};
 [flags,kv]=SOFAarghelper({'thr'},definput,varargin);
 

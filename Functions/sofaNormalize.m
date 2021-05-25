@@ -1,7 +1,6 @@
 function Obj = sofaNormalize(Obj)
 % Normalizes channel balance acording to mismatch between level for the 
-% source right in front of the subject and checks if the left channel is 1 
-% and right channel is 2, if misplaced it'll be corrected
+% source right in front of the subject 
 elev = 0; azim = 0;
 posi = round(Obj.SourcePosition);
 idx_pos = dsearchn(posi(:,[1,2]),  [azim, elev]);
@@ -14,7 +13,9 @@ IR(:,2,:) = Obj.Data.IR(:,2,:)./norm(2);
 % normalize peaks
 IR = IR./max(abs(IR(:)));
 
-%% Check IR channels
+
+%% Check IR channels (deprecated)
+% This was build before the correction in the CIPIC to SOFA fix
 azim = 90;
 idx_pos = dsearchn(posi(:,[1,2]),  [azim, elev]);
 chkIR =  max(abs(Obj.Data.IR(idx_pos, :,:)),[],3);

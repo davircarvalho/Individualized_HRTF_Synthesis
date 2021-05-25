@@ -51,7 +51,7 @@ disp('Network carregada!')
 
 %% Definir INPUTs PRO TESTE
 % indivíduos para VALIDAÇÃO: 1('003') .
-subj = 42;
+subj = 43;
 
 % Tenha certeza de que a rede foi treinada com a mesma antropometria
 anthro = load('anthro_TUB.mat');
@@ -118,13 +118,13 @@ Obj_sim.SourcePosition = out_pos;
 Obj_sim = SOFAupdateDimensions(Obj_sim);
 
 
-plot(new_itd); hold on; plot(sofaGetITD(Obj_sim, 'samples'));
+plot(new_itd); hold on; plot(SOFAgetITD(Obj_sim, 'samples'));
 %% Preprocessamento do database para comparação
-path_hutubs = dir([pwd '\..\Datasets\HUTUBS\*.sofa']);
+path_hutubs = dir([pwd '\..\Datasets\HUTUBS\pp*_HRIRs_measured.sofa']);
 Obj_med = SOFAload([path_hutubs(subj).folder '\' path_hutubs(subj).name], 'nochecks');
 % HRTF -> DTF
 clc
-Obj_med = sofaFit2Grid(Obj_med, out_pos, 'spherical_harmonics', 'Fs', fs);
+Obj_med = sofaFit2Grid(Obj_med, out_pos, 'adapt', 'Fs', fs);
 Obj_med = SOFAhrtf2dtf(Obj_med); 
 fmin = 250; fmax = 18000;
 Obj_med = sofaIRfilter(Obj_med, fmin, fmax);
@@ -132,8 +132,8 @@ Obj = sofaNormalize(Obj_med);
 
 
 
-itdori = sofaGetITD(Obj_med);
-res = mean(abs(itdori - sofaGetITD(Obj_sim)))
+itdori = SOFAgetITD(Obj_med);
+res = mean(abs(itdori - SOFAgetITD(Obj_sim)))
 
 
 %% % SAVE %%%
@@ -198,6 +198,8 @@ freq = linspace(0, fs-fs/N, N);
 f_1000hz = dsearchn(freq', 500); %posicao da sample em 1000Hz
 Obj_med.SourcePosition = round(Obj_med.SourcePosition);
 
+hFigure = figure('Renderer', 'painters', 'Position', [10 10 1500 400]);
+
 azimute = [0, 30, 90, 120, 220, 240, 270, 330];
 for i = 1:length(azimute) % plot loop
 %%%% DEFINA A DIREÇÃO DA HRTF %%%
@@ -235,13 +237,13 @@ h_simR = h_simR./h_simR(f_1000hz); %normalizar em 1000Hz
 h_simR = 20*log10(abs(h_simR));
 
 %%%% PLOT %%%%
-figure()
-semilogx(freq(1:N/2), g_L(1:N/2), 'lineWidth', 1.5,  'Color', 'blue'); hold on
-semilogx(freq(1:N/2), g_R(1:N/2), 'lineWidth', 1.5, 'Color', 'red'); 
+subplot(str2double(['24' num2str(i)]))
+semilogx(freq(1:N/2), g_L(1:N/2), 'lineWidth', 1.3,  'Color', 'blue'); hold on
+semilogx(freq(1:N/2), g_R(1:N/2), 'lineWidth', 1.3, 'Color', 'red'); 
 
 
-semilogx(freq(1:N/2), h_simL(1:N/2), '-.r', 'lineWidth', 1.5, 'Color', 'blue'); 
-semilogx(freq(1:N/2), h_simR(1:N/2), '-.r', 'lineWidth', 1.5, 'Color', 'red'); hold off
+semilogx(freq(1:N/2), h_simL(1:N/2), '-.r', 'lineWidth', 1.3, 'Color', 'blue'); 
+semilogx(freq(1:N/2), h_simR(1:N/2), '-.r', 'lineWidth', 1.3, 'Color', 'red'); hold off
 
 % PT_BR
 % legend('Original Esquerda', 'Original Direita', ... 
@@ -251,27 +253,31 @@ semilogx(freq(1:N/2), h_simR(1:N/2), '-.r', 'lineWidth', 1.5, 'Color', 'red'); h
 % xlabel('Frequência [Hz]');
 % ylabel('Amplitude [dB]');
 % EN_US
-legend('Original left', 'Original right', ... 
-       'Predicted left', 'Predicted right', ...
-               'Location', 'best', 'lineWidth', 1.5)
+% legend('Original left', 'Original right', ... 
+%        'Predicted left', 'Predicted right', ...
+%                'Location', 'best', 'lineWidth', 1.5)
     
-xlabel('Frequency [Hz]');
-ylabel('Amplitude [dB]');
+xlabel('Frequency (Hz)');
+ylabel('Amplitude (dB)');
 
 
 azim = num2str(out_pos(pos,1));
 elee = num2str(out_pos(pos,2));
 % title(['DTF Individuo ', subject,', azimute ' azim 'º, elevação ' elee 'º.' ]);
-title(['DTF azimuth ' azim 'º, elevation ' elee 'º.' ]);
+title(['(azim:' azim '°, elev:' elee '°)' ]);
 
 
 grid on 
 xlim([250 17000])
 set(gca, 'YLimSpec', 'Tight');
 % axis tight
-set(gca,'FontSize',13)
-% export_fig([pwd, '\Images\English\hrtf' num2str(azimute(i))], '-pdf', '-transparent');
+set(gca,'FontSize',10)
 end
+
+filename = [pwd, '\Images\example_HRTF.pdf' ];
+exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+
+
 
 
 

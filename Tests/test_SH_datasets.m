@@ -40,19 +40,13 @@ pathtub_sim = dir([local 'HUTUBS\pp*_HRIRs_simulated.sofa']);
 [~,idx_tubsim] = natsortfiles({pathtub_sim.name});
 pathtub_sim = pathtub_sim(idx_tubsim, :);
 
-
-%% Options
-% Defina quais datasets usar: {'cipic', 'ari', 'ita', '3d3a', 'riec', 'tub_meas', 'tub_sim'}, o
-Datasets = {'cipic', 'ari', 'ita', '3d3a', 'tub_meas', 'tub_sim'};
-no_samples = 200; % Tamanho do vetor na saída (pós fft)
-fs   = 44100;     % Taxa de amostragem 
-fmin = 250;       % Frequencia min de corte para RI 
-fmax = 18000;     % Frequencia max de corte para IR  
-% Grid objetivo selecionado a partir do grid com menor número de posições
-% out_pos = select_best_grid(Datasets);
-freq = linspace(0, fs-fs/no_samples, no_samples);
+% VIKING
+pathvik = dir([local 'VIKING\*.sofa']);
+[~,idx_vik] = natsortfiles({pathvik.name}); % garantir que estão em ordem
+pathvik = pathvik(idx_vik, :);
 
 
+%% Output positions
 res = .1;
 ele=[-90:res:90 89:-res:-90 zeros(1,length(1:res:360-res))]';
 azi=[zeros(length(-90:res:90),1); 180*ones(length(89:-res:-90),1); (1:res:360-res)'];
@@ -61,13 +55,14 @@ out_pos = [azi, ele, ones(length(azi), 2)];
 
 
 %%
-k = 10;
+k = 5;
 % CIPIC = SOFAload([pathcipic(k).folder '\' pathcipic(k).name]);
 % ARI = SOFAload([pathari(k).folder, '\',pathari(k).name], 'nochecks');
 % ITA = SOFAload([pathita(k).folder, '\',pathita(10).name], 'nochecks');
 % D3A = SOFAload([path3d3a(k).folder '\' path3d3a(k).name], 'nochecks');       
-TUBmeas = SOFAload([pathtub_meas(k).folder '\' pathtub_meas(k).name], 'nochecks');                
-TUBsim = SOFAload([pathtub_sim(k).folder '\' pathtub_sim(k).name], 'nochecks');
+% TUBmeas = SOFAload([pathtub_meas(k).folder '\' pathtub_meas(k).name], 'nochecks');                
+% TUBsim = SOFAload([pathtub_sim(k).folder '\' pathtub_sim(k).name], 'nochecks');
+VIK = SOFAload([pathvik(k).folder '\' pathvik(k).name], 'nochecks');
 
 %%
 % [ITA] Transição de coordenadas cartesianas para esfericas
@@ -95,8 +90,9 @@ close all
 % ARI_interp = process2unite(ARI, out_pos, fs, 'ari');
 % ITA_interp = process2unite(ITA, out_pos, fs, 'ita');
 % D3A_interp = process2unite(D3A, out_pos, fs, 'd3a');
-TUBmeas_interp = process2unite(TUBmeas, out_pos, fs, 'tubmeas');
+% TUBmeas_interp = process2unite(TUBmeas, out_pos, fs, 'tubmeas');
 % TUBsim_interp = process2unite(TUBsim, out_pos, fs, 'tubsim');
+VIK_interp = process2unite(VIK, out_pos, 'VIKING');
 
 
 
@@ -107,18 +103,11 @@ TUBmeas_interp = process2unite(TUBmeas, out_pos, fs, 'tubmeas');
 
 
 
-function Obj_out = process2unite(Obj, out_pos, fs, name)
+function Obj_out = process2unite(Obj, out_pos, name)
     % Make same grid
-    Obj_out = sofaFit2Grid(Obj, out_pos, 'spherical_harmonics', 'Fs', fs);     
-    % Normalize L/R balance and IR levels
-%     Obj = sofaNormalize(Obj);
-%     % filter
-%     Obj = sofaIRfilter(Obj, fmin, fmax);
-%     % HRTF -> DTF
-%     [Obj, ~] = SOFAhrtf2dtf(Obj);    
+    Obj_out = sofaFit2Grid(Obj, out_pos, 'spherical_harmonics');     
 
-
-
+    
     %% PLOTA
     plane1 = 'MagHorizontal';
     plane2 = 'MagSagittal';

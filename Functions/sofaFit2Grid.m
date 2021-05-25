@@ -67,6 +67,7 @@ switch p.Results.method
             % Calculo do erro entre posição objetivo e posições disponiveis
             tsqr = sqrt((meta.pos(:,1)-out_pos(zz,1)).^2 + (meta.pos(:,2)-out_pos(zz,2)).^2);
             [error(zz), idx_adapt(zz,1)] = min(tsqr); 
+%             idx_adapt(zz,1) = dsearchn(meta.pos(:,[1,2]), out_pos(zz,[1,2]));
             idx_adapt(zz,2) = zz; %salvar indice da posição objetivo
             
             % Posicoes selecionadas no grid original (util para visualização)

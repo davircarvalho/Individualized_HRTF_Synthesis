@@ -15,9 +15,9 @@ function Obj = sofaResample(Obj, Fs, Nintp)
 % Matlab 2020a
 %% Resample
 Fs_sofa = Obj.Data.SamplingRate;
-N = ceil((Fs/Fs_sofa) * Obj.API.N); % length after resample
+N = ceil((Fs/Fs_sofa) * size(Obj.Data.IR, 3)); % length after resample
 if nargin<3 || Nintp<N
-    Nintp = N; 
+    Nintp = N;
 end
 zpad = zeros((Nintp - N), 1);
 
@@ -38,7 +38,8 @@ tx = (0:Obj.API.N-1)/Fs_sofa;
 for k = 1:size(Obj.Data.IR, 1)
     for l = 1:size(Obj.Data.IR, 2)
 %         IRpre(k, l, :) = resample(Obj.Data.IR(k, l, :),p,q,lpFilt);
-        IRpre(k, l, :) = resample(Obj.Data.IR(k, l, :),tx, Fs, p,q, 'spline');
+        IRpre(k, l, :) = resample(squeeze(Obj.Data.IR(k, l, :)), ...
+                                          tx, Fs, p,q, 'spline');
         IR(k, l, :) = [squeeze(IRpre(k, l, :)); zpad];
     end 
 end

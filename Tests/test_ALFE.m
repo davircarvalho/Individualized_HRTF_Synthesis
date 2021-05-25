@@ -77,8 +77,8 @@ ylabel('Amplitude')
 figure
 ch = 1;
 k = 100;
-lfe = db(abs(fft(squeeze(ir_interp(k,ch,:)))));
 ori = db(abs(fft(squeeze(Obj.Data.IR(k,ch,:)), N_ext)));
+lfe = db(abs(fft(squeeze(ir_interp(k,ch,:)))));
 semilogx(freq_vec_ext, ori(1:N_ext/2)); hold on
 semilogx(freq_vec_ext, lfe(1:N_ext/2));
 legend('original', 'ALFE', 'location', 'best')

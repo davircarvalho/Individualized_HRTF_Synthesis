@@ -14,26 +14,21 @@ addRequired(p,'Obj_med',@isstruct);
 addRequired(p,'Obj_ref',@isstruct);
 addOptional(p,'outputMode', defaultMode,checkOutMode)
 parse(p, Obj_med, Obj_ref, varargin{:})
-
-
-%%
-    IR_ref = shiftdim(Obj_ref.Data.IR, 2);
-    IR_med = shiftdim(Obj_med.Data.IR, 2);
-    N = size(IR_ref, 1);
     
 %% ILD --------------------------------------------------------------------
-    % diferenca de fase interaural
-    ITF_ref  = fft(IR_ref(:,:,1), N)./fft(IR_ref(:,:,2), N);
-    ITF_msrd = fft(IR_med(:,:,1), N)./fft(IR_med(:,:,2), N);
-    % ild
-    ILD_ref  = 20*log10(abs(ITF_ref(2:N/2,:)));
-    ILD_msrd = 20*log10(abs(ITF_msrd(2:N/2,:)));
+    IR_ref = shiftdim(Obj_ref.Data.IR, 2);
+    IR_med = shiftdim(Obj_med.Data.IR, 2);
+    
+    ILD_ref = getILD(IR_ref(:,:,1), IR_ref(:,:,2));
+    ILD_med = getILD(IR_med(:,:,1), IR_med(:,:,2));
+
     % error
-    ILD_error = mean(abs(ILD_ref - ILD_msrd));
+    ILD_error = abs(ILD_ref - ILD_med);
     
 %% ITD --------------------------------------------------------------------
     ITD_ref = SOFAgetITD(Obj_ref, p.Results.outputMode);
-    ITD_med = SOFAgetITD(Obj_med, p.Results.outputMode);    
+    ITD_med = SOFAgetITD(Obj_med, p.Results.outputMode); 
+    
     % error
     ITD_error = abs(ITD_ref - ITD_med);
 
@@ -43,3 +38,22 @@ parse(p, Obj_med, Obj_ref, varargin{:})
 %     hold off
 %     legend('ref', 'sim')
 end 
+
+
+function ILD = getILD(L, R)
+pLeft  = fft(L);
+pRight = fft(R);
+
+pLeft(1,:) = [];
+pRight(1,:) =[];
+
+pLeftIntegral  = sum(abs(pLeft).^2, 1 );
+pRightIntegral = sum(abs(pRight).^2, 1 );
+
+ILD = 10*log10( pLeftIntegral ./ pRightIntegral );
+end
+
+
+
+
+

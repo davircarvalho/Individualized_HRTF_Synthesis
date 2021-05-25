@@ -8,7 +8,7 @@ IR = shiftdim(Obj.Data.IR,2);
 % % IR_filtered = filter(Hd, IR, 1);  %% Sinal filtrado
 
 hpFilt  = fdesign.highpass('N,F3dB',4, fmin, fs);
-lpFilt  = fdesign.lowpass	('N,F3dB',6, fmax, fs);
+lpFilt  = fdesign.lowpass('N,F3dB',6, fmax, fs);
 Hdhigh  = design(hpFilt, 'butter');   %%% Especifica filtro
 Hdlow   = design(lpFilt, 'butter');   %%% Especifica filtro
 
