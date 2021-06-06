@@ -82,6 +82,7 @@ switch p.Results.method
     case 'adapt' 
         % selecionar posições correspondentes a out_pos 
         load('KU100_itd.mat')
+%         load('fabian_itd.mat')
         for k = 1:length(positions)  
             [~,idx_pos(k)] = min(sqrt((ref_pos(:,1)-positions(k,1)).^2 +...
                                       (ref_pos(:,2)-positions(k,2)).^2)); 
