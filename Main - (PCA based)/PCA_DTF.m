@@ -48,16 +48,17 @@ clear med_vec2 coeffs PCWs explain
 no_PC = 12; %número de principais componentes de interesse
 for m = 1:no_channels
     for n = 1:no_directions
-        med_vec2(:,n,m) = mean(DTF_ok(:, :, n, m), 2);
-        data_mtx = DTF_ok(:, :, n, m) - med_vec2(:,n,m);
+%         med_vec2(:,n,m) = mean(DTF_ok(:, :, n, m), 2);
+        data_mtx = DTF_ok(:, :, n, m);% - med_vec2(:,n,m);
          
-        [coeff, score, ~,~,explained,mu] = pca(data_mtx,'NumComponents', no_PC, ...
-                                                        'Centered', false, ...
+        [coeff, score, ~,~,explained,mu] = pca(data_mtx.','NumComponents', no_PC, ...
+                                                        'Centered', true, ...
                                                         'Algorith', 'svd');      
         coeffs(:,:, n, m) = coeff;
         % Scores are the representations of X in the principal component space
         PCWs(:,:, n, m) = score;
         explain(:,:,n,m) = explained;
+        med_vec2(:,n,m) = mu;
     end
 end
 disp('PCA calculada!')
@@ -141,7 +142,7 @@ recon = zeros(size(DTF_ok));
 for m = 1:no_channels
     for l = 1:no_directions
         for k = 1:no_subj
-            recon(:,k,l,m) = PCWs(:,:,l,m)*coeffs(k,:,l,m)'+ med_vec2(:,l,m);            
+            recon(:,k,l,m) = coeffs(:,:,l,m)*PCWs(k,:,l,m)'+ med_vec2(:,l,m);            
             SD(:,k,l,m) = spectral_dist(recon(:,k,l,m),DTF_ok(:,k,l,m),fs,fmin,fmax);
         end
     end
