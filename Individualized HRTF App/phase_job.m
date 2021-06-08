@@ -9,7 +9,6 @@ if nargin < 5
     offset = 0;
 end
 offset = offset+itd;
-
 %% Log 2 Linear
 hL = 10.^(hL./20);
 hR = 10.^(hR./20);

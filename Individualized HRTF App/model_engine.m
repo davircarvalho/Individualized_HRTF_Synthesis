@@ -52,8 +52,9 @@ wait = waitbar(0,'Neural net inference ..');
 cont = 0;
 for n = 1:no_channels
     for i = 1:no_directions
-        result = net_pca{i, n}(InptMtx(:,:, n));
-        DTF_sim(:, i, n) = (PCWs(:, :, i, n) * result) + med_vec2(:, i, n); 
+        X = net_pca{i, n}(InptMtx(:,:, n));
+        result = mapminmax('reverse',X,PS{i,n});        
+        DTF_sim(:, i, n) = (coeffs(:, :, i, n) * result) + med_vec2(:, i, n); 
         
         cont = cont+1;
         waitbar((cont)/(no_directions*no_channels), wait);        
@@ -67,13 +68,15 @@ waitbar(0.3, wait, 'Processing results ...');
 new_itd = itd_synthesis(x(1), x(2), out_pos, Fs_sim, 'adapt');
 for k = 1:no_directions
     itd = new_itd(k);
-    offset = 20.4;
+    offset = 10;
     [IR_minL, IR_minR] = phase_job(DTF_sim(:, k, 1), DTF_sim(:, k, 2), ...
                                    itd, out_pos(k,:), offset); 
     %save no formato CIPIC
     hrir_final(:, k, 1) = IR_minL;
     hrir_final(:, k, 2) = IR_minR;
 end
+hrir_final = hrir_final./max(abs(hrir_final(:)));
+
 
 %% EXPORTS
 Obj = SOFAgetConventions('SimpleFreeFieldHRIR');
@@ -81,7 +84,20 @@ Obj.Data.IR = shiftdim(hrir_final, 1);
 Obj.Data.SamplingRate = Fs_sim; % valor atual 
 Obj.SourcePosition = out_pos;
 Obj = SOFAupdateDimensions(Obj);
-Obj = sofaALFE(Obj, 15, 500);
+Obj = SOFAlfe(Obj, 15, 600);
+if Fs_out ~= Fs_sim 
+   Obj = sofaResample(Obj, Fs_out);
+end
+
+%%% save SOFA file %%%%
+if sofa_flag 
+    waitbar(0.6,wait,'Assembling SOFA output ....');
+    file_path = ([FileName, '_', num2str(Fs_out/1000), 'kHz.sofa']);
+    
+    compression = 0;
+    SOFAsave(file_path, Obj, compression);
+end
+
 
 %%% save HeSuVi %%%%%%%
 if hesuvi_flag 
@@ -90,17 +106,6 @@ if hesuvi_flag
     HeSuViExport(Obj, FileName, Fs_out, hesuvi_angles)
 end
 
-%%% save SOFA file %%%%
-if sofa_flag 
-    waitbar(0.6,wait,'Assembling SOFA output ....');
-    if Fs_out ~= Fs_sim 
-        Obj = sofaResample(Obj, Fs_out);
-    end
-    file_path = ([FileName, '_', num2str(Fs_out/1000), 'kHz.sofa']);
-    
-    compression = 0;
-    SOFAsave(file_path, Obj, compression);
-end
 
 
 waitbar(1, wait, ['All Done!          Time: ' num2str(toc) 's']);
@@ -149,11 +154,7 @@ function HeSuViExport(Obj_in, FileName, Fs_out, angles)
     Obj_out.SourcePosition = Obj_in.SourcePosition(pos_idx,:);
     Obj_out = SOFAupdateDimensions(Obj_out);
     
-    
-    % processing IR 
-    Obj_out = sofaResample(Obj_out, Fs_out, 4096); %tamanho do vetor de saida pra permitir low freq
-    
-        
+
     for k = 1:length(pos_idx)
         for g = 1:2 % L/R channels
             n = n+1;
@@ -161,11 +162,11 @@ function HeSuViExport(Obj_in, FileName, Fs_out, angles)
         end
     end
 %%% Export to .wav %%%-----------------------------------------------------
-    y = circshift(y, 100); % add more silence to the begining
-    y = y./max(abs(y(:))) *2^31-1;
+%     y = circshift(y, 100); % add more silence to the begining
+    y = y./max(abs(y(:))) *0.975;
     y = y(:, [1,2,3,4,5,6,7,10,9,12,11,14,13,8]);
     file_path = ([FileName, '_', num2str(Fs_out/1000), 'kHz.wav']);
-    audiowrite(file_path, y, Obj_out.Data.SamplingRate, 'BitsPerSample', 32)
+    audiowrite(file_path, y, Obj_out.Data.SamplingRate)
 end
 
 
