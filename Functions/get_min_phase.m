@@ -15,7 +15,7 @@ function Hmin = get_min_phase(H, varargin)
 % Saída:    Hmin:            espectro complexo de fase mínima, calculado a partir da
 %                            Transformada de Hilbert.
 %       
-% Uso:                       Hmin = minimum_phase(H, 'linear', 'simetrica')
+% Uso:                       Hmin = minimum_phase(H, 'linear', 'symmetric')
 
 %% Parse arguments
 defautScale = 'linear';
