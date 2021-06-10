@@ -67,7 +67,7 @@ x = anthro.X(subj, [1,3]);
 % unir as duas matrizes
 InptMtx(:,:,1) = [x, d1]';  % L 
 InptMtx(:,:,2) = [x, d2]';  % R
-
+size(InptMtx)
 [no_samples, no_PC, no_directions, no_channels] = size(PCWs);
 
 
@@ -80,9 +80,11 @@ wait = waitbar(0,'Processando Novas Componentes Principais');
 cont = 0;
 for n = 1:no_channels
     for i = 1:no_directions
-        result = net_pca{i, n}(InptMtx(:,:, n));
-        DTF_sim(:, i, n) = (PCWs(:, :, i, n) * result) + med_vec2(:, i, n); 
+        X = net_pca{i, n}(InptMtx(:,:, n));
+        result = mapminmax('reverse',X,PS{i,n});
         
+        DTF_sim(:, i, n) = (coeffs(:, :, i, n) * result) + med_vec2(:, i, n); 
+         
         cont = cont+1;
         waitbar((cont)/(no_directions*no_channels), wait);        
     end
