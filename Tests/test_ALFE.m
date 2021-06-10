@@ -8,7 +8,7 @@ fs = Obj.Data.SamplingRate;
 IR = shiftdim(Obj.Data.IR, 2);
 N = size(IR, 1);
 freq_vec = (0:N/2-1)*fs/N;
-
+fmax=500;
 % check fmax
 if length(find(fmax > freq_vec)) == 1
     fmax = freq_vec(2);
@@ -25,26 +25,27 @@ else
     freq_vec_ext = (0:N_ext/2-1)*fs/N_ext;
 end
 
-idx_max = dsearchn(freq_vec_ext.', 500); % idx at 500Hz
+f500Hz = dsearchn(freq_vec_ext.', 600); % idx at 500Hz
 
 
 %% interp 
 ir_interp = zeros(size(IR, 2), size(IR, 3), N_ext);
 for k = 1:size(IR, 2)
     for l = 1:size(IR, 3)
-        mag = fft(IR(:,k,l), N_ext);
+        time = [IR(:,k,l); zeros(ceil(N_ext - N), 1)];
+        mag = fft(time);
         mag_interp = mag;
-
-        % interp baixas freqs
-        x = [freq_vec_ext(2),    freq_vec_ext(idx_max:idx_max+1)];
-        xq = freq_vec_ext(2:idx_max);
-
-        y_mag = [mag(idx_max); mag(idx_max:idx_max+1)];
         
-        mag_interp(2:idx_max) = interp1(x, y_mag, xq, 'linear');
+        % interp 
+        x = [freq_vec_ext(2),    freq_vec_ext(f500Hz:f500Hz+1)];
+        xq = freq_vec_ext(2:f500Hz);
+        y_mag = [mag(f500Hz); mag(f500Hz:f500Hz+1)];
+        mag_interp(2:f500Hz) = interp1(x, y_mag, xq, 'makima');
 
         % back to time domain
-        ir_interp(k,l,:) = real(ifft(mag_interp, N_ext, 'symmetric'));
+%         ir_interp(k,l,:) = real(ifft(mag_interp, N_ext, 'symmetric'));
+        ir_interp(k,l,:) = (real(ifft(  get_min_phase(abs(mag_interp)))));
+        
         
     end
 end
@@ -73,10 +74,10 @@ xlabel('Time (ms)')
 ylabel('Amplitude')
             
 
-%%% Plot freq
+%% Plot freq
 figure
 ch = 1;
-k = 100;
+k = 50;
 ori = db(abs(fft(squeeze(Obj.Data.IR(k,ch,:)), N_ext)));
 lfe = db(abs(fft(squeeze(ir_interp(k,ch,:)))));
 semilogx(freq_vec_ext, ori(1:N_ext/2)); hold on
@@ -86,7 +87,7 @@ xlabel('Frequency (Hz)')
 ylabel('Amplitude')
 
 
-%%% Plot ITD
+%% Plot ITD
 itd = SOFAgetITD(Obj);
 itd2= SOFAgetITD(Obj_out);
 figure()
@@ -100,13 +101,13 @@ title('ITD')
  
  
 %% 
-t = 0:1/1e3:10;
-fo = 0;
-f1 = 500;
-y = chirp(t,fo,t(end),f1,'linear',0,'complex');
-figure
-semilogx(angle(fft(y)))
-title('phase')
+% t = 0:1/1e3:10;
+% fo = 0;
+% f1 = 500;
+% y = chirp(t,fo,t(end),f1,'linear',0,'complex');
+% figure
+% semilogx(angle(fft(y)))
+% title('phase')
 
 
 
