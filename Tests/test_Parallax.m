@@ -3,9 +3,24 @@
 clear all; clc
 addpath(genpath(pwd))
 %% Carregar HRTF SOFA
-Obj = SOFAload('individuo_140.sofa');
+Obj = SOFAload('individuo_141.sofa');
 HRIRs = shiftdim(Obj.Data.IR, 2); % separar HRIRs 
 positions = Obj.SourcePosition; % separar posições de fonte
+
+azim = 40; % anti-horario
+sourceDistance = 0.2;
+elev = 0;
+
+
+% Fazer parallax
+samplingGrid = positions;
+samplingGrid(:,2) = 90-samplingGrid(:,2);% Mod apenas para calculo
+% sourceDistance = 0.3;
+radius = 0.1; % raio da cabeça
+[samplingGridParL, samplingGridParR] = supdeq_parallax(samplingGrid, sourceDistance, radius);
+
+
+
 
 
 %% Carregar audio
