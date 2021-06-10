@@ -1,13 +1,13 @@
 clear all; clc
 % DAVI ROCHA CARVALHO; ENG. ACUSTICA - UFSM; Fevereiro/2020
-addpath(genpath([pwd, '\..\EAC-Toolbox']));
+addpath(genpath([pwd, '\..\Functions']));
+addpath([pwd, '\..\DADOS_TREINAMENTO']);
 
 %% GENERAL INFO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ~ ASSEMBLE ANTHROPOMETRY FROM CIPC, ARI AND ITS DATABASES
-addpath([pwd, '\..\DADOS_TREINAMENTO']);
+% ~ ASSEMBLE ANTHROPOMETRY FROM MULTIPLE DATABASES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Options 
-% Defina quais datasets usar: {'cipic', 'ari', '3d3a', 'ita', 'riec', 'tub_sim'}
+% Defina quais datasets usar: {'cipic', 'ari', 'ita', '3d3a', 'riec', 'tub_sim', 'viking'}
 Datasets = {'cipic', 'ari', 'ita', '3d3a'};
 % Defina quais parametros de saida (Tabela CIPIC e valida para todos*)
 head_torso = [1,3]; % aplicado a cipic e ari
@@ -64,7 +64,7 @@ if any(strcmp('ari', Datasets))
 
     %%% Remorção de indivíduos sem dados anthropométricos %%%   
     remove_ARI = any(any(isnan(data_ARI),1),3); % identifica quais colunas não possuem pelo menos uma das medidas necessárias        
-    remove_ARI([41,43,45]) = true; % remover outliers
+    remove_ARI([41,43,45]) = true; % remover outliers  
     data_ARI(:,remove_ARI,:) = [];
     
     anthro = cat(2, [anthro, data_ARI]);
@@ -80,7 +80,7 @@ if any(strcmp('ita', Datasets))
     ITA_anthro = [x_I; d_I];
     ITA_anthro(:,:,2) = ITA_anthro;
     % caso queira adcionar algum parametro, go to: Anthropometry_ITA.m
-    
+    % subjects 14 and 15 were removed 
     anthro = cat(2, [anthro, ITA_anthro]);
 end
 
@@ -89,7 +89,7 @@ end
 %% 3D3A %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if any(strcmp('3d3a', Datasets))
     anthro_D3A = load('anthro_3D3A.mat');
-    d_3 = anthro_D3A.D(left_ear,:); %ITA apresenta medições apenas para orelha esquerda
+    d_3 = anthro_D3A.D(left_ear,:); %apresenta medições apenas para orelha esquerda
     x_3 = anthro_D3A.X(1:2, :); % x1, x3, x12: head width, head depth, torso width
     D3A_anthro = [x_3; d_3];
     D3A_anthro(:,:,2) = D3A_anthro;
@@ -100,18 +100,6 @@ if any(strcmp('3d3a', Datasets))
     anthro = cat(2, [anthro, D3A_anthro]);
 end
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% RIEC %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if any(strcmp('riec', Datasets))
-    anthro_RIEC = load('anthro_RIEC.mat');
-    d_3 = anthro_RIEC.D(left_ear,:); %ITA apresenta medições apenas para orelha esquerda
-    x_3 = anthro_RIEC.X(1:2, :); % x1, x3, x12: head width, head depth, torso width
-    RIEC_anthro = [x_3; d_3];
-    RIEC_anthro(:,:,2) = RIEC_anthro;
-    
-    anthro = cat(2, [anthro, RIEC_anthro]);   
-end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -137,6 +125,25 @@ if any(strcmp('tub_meas', Datasets)) || any(strcmp('tub_sim', Datasets))
     
     % assembly
     anthro = cat(2, [anthro, data_TUB]);
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% VIKING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if any(strcmp('viking', Datasets))   
+    anthro_VIKING = load('anthro_VIKING.mat');
+    % Orelhas
+    d1_V = anthro_VIKING.D(:, left_ear);
+    d2_V = anthro_VIKING.D(:, right_ear);
+
+    % Cabeca e torso
+    x_V = anthro_VIKING.X; % x1, x3
+
+    % Concatena
+    data_VIKING(:,:,1) = [x_V, d1_V].'; 
+    data_VIKING(:,:,2) = [x_V, d2_V].'; 
+    
+    anthro = cat(2, [anthro, data_VIKING]);
 end
 
 
@@ -169,47 +176,14 @@ if any(strcmp('tub_sim', Datasets))
     path_save = append(path_save, '_TUBSIM');
     save([pwd '\..\DADOS_TREINAMENTO\remove_TUB.mat'], 'remove_TUB')
 end
+if any(strcmp('viking', Datasets))
+    path_save = append(path_save, '_VIKING');
+end
+
+
 save(path_save, 'anthro')
 disp('Dados Salvos!')
 
 
-
-
-%% Feature selection
-
-% for k =1:1
-%     cor = corr(anthro(3:end,:,k)', anthro(3:end,:,k)');
-% end
-%     
-% clc
-% figure()
-% heat = heatmap(cor(:,:,1), 'Colormap', parula(5));
-% % figure()
-% % heatmap(cor(:,:,2), 'Colormap', jet);
-% 
-% % labels = {'x1', 'x3', 'x12'};
-% labels  = {'d1', 'd2', 'd3','d4', 'd5', 'd6', 'd7', 'd8'};
-% % labels  = {'d1','d2', 'd3', 'd5', 'd7', 'd8'};
-% 
-% % heatmap(heat,'ver','metric', 'ColorVariable','val','CellLabelFormat', '%,g')
-% ax = gca;
-% ax.XData = labels;
-% ax.YData = labels;
-% set(gca, 'fontsize', 13)
-% title('Correlação antropométrica (CIPIC, ARI, ITA, 3D3A)')
-% caxis([0 0.8]); 
-% colorbar off
-% export_fig([pwd, '\Images\feature_selection2'], '-pdf', '-transparent');
-% %
-% %%
-% % figure()
-% % plot(anthro(:,:,1)')
-% % legend('x1', 'x3', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8')
-% %% desvio padrão interno de parametros
-% % std_dev = std(anthro(3:end,:,1)')
-% % 
-% % bar(std_dev)
-% % title('desvio padrão interno para cada parametro')
-% % 
-% % xticklabels({'d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8'})
-% 
+%%
+plot(anthro(:,:,2))
