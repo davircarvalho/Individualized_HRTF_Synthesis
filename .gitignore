@@ -15,3 +15,10 @@ Python
 PCA_experimental.m
 NeuralNet_experimental.m
 DEEPnet_experimental.m
+
+data_aumentation.m
+HyperparameterTunning.m
+Simulation_Erro_VIK.m
+desvios_padrao.m
+desvios_padrao.xltx
+test_Data_augmentation.m
