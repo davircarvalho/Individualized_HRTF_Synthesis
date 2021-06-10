@@ -84,7 +84,11 @@ Obj.Data.IR = shiftdim(hrir_final, 1);
 Obj.Data.SamplingRate = Fs_sim; % valor atual 
 Obj.SourcePosition = out_pos;
 Obj = SOFAupdateDimensions(Obj);
-Obj = SOFAlfe(Obj, 15, 600);
+Obj = SOFAlfe(Obj, 15, 600); % ALFE
+% Add head width to SOFA 
+Obj.ReceiverPosition(3) =  x(1)/2*1e-2;
+Obj.ReceiverPosition(4) = -x(1)/2*1e-2;
+% Resample if necessary
 if Fs_out ~= Fs_sim 
    Obj = sofaResample(Obj, Fs_out);
 end
