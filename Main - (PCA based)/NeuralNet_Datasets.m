@@ -1,9 +1,9 @@
 clear all; close all; clc;
 % DAVI ROCHA CARVALHO; ENG. ACUSTICA - UFSM; FEVEREIRO/2020 
-addpath(genpath([pwd, '\..\EAC-Toolbox']));
+addpath(genpath([pwd, '\..\Functions']));
 
 %% Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Defina quais datasets usar: {'cipic', 'ari', 'ita', '3d3a', 'riec', 'tub'}
+% Defina quais datasets usar: {'cipic', 'ari', 'ita', '3d3a', 'riec', 'tub_sim'}
 
 Datasets = {'cipic', 'ari', 'ita', '3d3a'};
 
@@ -46,8 +46,9 @@ load(input_file)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 
-target = coeffs;
-[no_PC, no_subjects, no_directions, no_channels] = size(target);
+% [anthro, coeffs] = data_aumentation(Datasets);
+target = PCWs;
+[no_subjects, no_PC, no_directions, no_channels] = size(target);
 
 %% Setting up Feed Forward Neural Network with BP
 net = fitnet(20, 'trainbr'); 
@@ -55,29 +56,34 @@ net = fitnet(20, 'trainbr');
 % max iterações 
 net.trainParam.epochs = 400; 
 % early stopping (validation patience)
-net.trainParam.max_fail = 4; 
+net.trainParam.max_fail = 6; 
 
+net.inputs{1}.processFcns{2} = 'mapstd';
+% net.outputs{2}.processFcns{2} = 'mapminmax';
 % dividir minibatchs
 net.divideFcn= 'divideint'; 
-net.divideParam.trainRatio = .85; 
-net.divideParam.valRatio   = .10; 
-net.divideParam.testRatio  = .05; 
+net.divideParam.trainRatio = .80; 
+net.divideParam.valRatio   = .20; 
+net.divideParam.testRatio  = .0; 
 
-net.layers{1}.transferFcn  = 'tansig';
-net.layers{2}.transferFcn  = 'purelin';
+% net.layers{1}.transferFcn  = 'tansig';
+% net.layers{2}.transferFcn  = 'purelin';
 
-net.trainParam.showWindow  = 0; %show training window
+net.trainParam.showWindow  = 1; %show training window
 %% Treinamento 
 disp('Iniciado o treinamento da rede neural')
 tic
 wait = waitbar(0,'Progresso de treinamento');
 cont = 0;
-for channel = 1:no_channels % cada orelha
+YMIN = 0;
+YMAX = 1;
+for channel = 1:no_channels % cada orelhano_PC
     x = ((anthro(:, :, channel)));  
     for i = 1:no_directions
         cont = cont+1;
         waitbar(cont/(no_directions*no_channels), wait);        
         t = target(:, :, i, channel)';% output target varia com a direção 
+        [t,PS{i, channel}] = mapminmax(t,YMIN,YMAX);
         net = configure(net, x, t); %define input e output da rede
         [net_pca{i, channel}, tr_pca{i, channel}] = train(net, x, t);
   
@@ -85,12 +91,12 @@ for channel = 1:no_channels % cada orelha
 %%%%%%% Repete o treinamento para mesma direção em caso de perf muito ruim
 %         cont1 = 0;
 %         tol_max = 0.008;
-%          while tr_pca{i, channel}.best_tperf > tol_max
+%          while tr_pca{i, channel}.best_vperf > tol_max
 %             net = init(net);           
 %             [net_pca{i, channel}, tr_pca{i, channel}] = train(net, x, t);
 %             cont1 = cont1 + 1;
 %             if cont1 > 10 % caso não consiga atingir a meta em 5 tentativas, utilizará o ultimo treinamento realizado 
-%                 tr_pca{i, channel}.best_tperf
+%                 tr_pca{i, channel}.best_vperf
 %                 break
 %             end                   
 %          end  
@@ -122,7 +128,7 @@ end
 if any(strcmp('tub_meas', Datasets))
     path_save = append(path_save, '_TUBMEAS');
 end
-save(path_save, 'net_pca', 'tr_pca');
+save(path_save, 'net_pca', 'tr_pca', 'PS');
 
 disp('Dados salvos!')
 
@@ -146,8 +152,8 @@ end
    
 plot(pv(:,1)); hold on
 plot(pv(:,2)); hold off
-xlim([0 no_directions])
-ylim([4e-3 10e-3])
+% xlim([0 no_directions])
+% ylim([4e-3 10e-3])
 
 % legend('Esquerda', 'Direita');
 % xlabel('Índice da posição')
@@ -173,8 +179,8 @@ end
    
 plot(pt(:,1)); hold on
 plot(pt(:,2)); hold off
-xlim([0 no_directions])
-ylim([4e-3 10e-3])
+% xlim([0 no_directions])
+% ylim([4e-3 10e-3])
 % legend('Esquerda', 'Direita');
 % xlabel('Índice da posição')
 legend('Left', 'Right');
@@ -184,18 +190,28 @@ title('Performance on training dataset')
 set(gca, 'FontSize', 16)
 % export_fig([pwd, '\Images\English\neuralnet_tRMSE' ], '-pdf', '-transparent');
 
+
 %% 
-% tperf=[];
-% for l = 1:size(tr_pca, 1)
-%     ttemp = tr_pca{l, 1}.tperf;
-%     if length(ttemp) > length(tperf)
-%         tperf = [tperf zeros(1,abs(length(tperf) - length(ttemp)))];
-%     else %tperf >ttemp
-%         ttemp = [ttemp zeros(1,abs(length(tperf) - length(ttemp)))];
-%     end
-%     tperf = tperf +ttemp;
-% end
-% 
+tperf=[];
+vperf=[];
+for l = 1:size(tr_pca, 1)
+    ttemp = tr_pca{l, 1}.perf;
+    vtemp = tr_pca{l, 1}.vperf;
+    if length(ttemp) > length(tperf)
+        padding = zeros(size(tperf,1), abs(size(tperf,2) - size(ttemp,2)));
+        tperf = [tperf, padding];
+        vperf = [vperf, padding];
+    else %tperf >ttemp
+        padding = zeros(1,abs(size(tperf,2) - size(ttemp,2)));
+        ttemp = [ttemp, padding];
+        vtemp = [vtemp, padding];
+    end  
+    tperf = cat(1, tperf, ttemp);
+    vperf = cat(1, vperf, vtemp);
+end
+
+vperf_mean = mean(vperf);
+vperf_std = std(vperf);
 
 
  %% VIEW net export
