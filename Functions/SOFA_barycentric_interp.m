@@ -82,7 +82,6 @@ else
     N = dtNeighbours(T);
 end
 
-
 for k_pos = 1:size(out_pos,1)
     posi = out_pos(k_pos,:);
     if USE_OCTREE
@@ -114,7 +113,6 @@ for k_pos = 1:size(out_pos,1)
     for t = 1:size(T,1)
         % count iterations
         Niter = Niter+1;
-
         % vertices of tetrahedron
         HM = X(T(ti,:),:);
         v4 = HM(4,:);
@@ -134,8 +132,13 @@ for k_pos = 1:size(out_pos,1)
 
         if USE_ADJACENCY_WALK
             % move to adjacent tetrahedron
-            [tmp, bi] = min(bary_gains);
-            ti = N(ti,bi);
+            [~, bi] = min(bary_gains);           
+            
+            if isnan(N(ti,bi))
+                ti = ti+1;
+            else
+                ti = N(ti,bi);
+            end
         else
             % BRUTE-FORCE: move to next tetrahedron in list
             ti = ti+1;
@@ -154,14 +157,15 @@ for k_pos = 1:size(out_pos,1)
     hrir = shiftdim(hrir,2);
     HRTF = fft(hrir);
     NFFT = size(HRTF,1);
-    for k =1:size(hrir,3)
-        Hint(k_pos,:,k) = bary_gains*abs(HRTF(1:NFFT/2,:,k)');
+    for k = 1:size(hrir,3)
+        Hint(:,k_pos,k) = bary_gains*abs(HRTF(:,:,k)');
     end
 end
 disp('Barycentric interpolation complete!');
 
 %% Output SOFA Obj
-Obj.Data.IR = shiftdim(Hint,1);
+HRIR = real(ifft(Hint, NFFT));
+Obj.Data.IR = shiftdim(HRIR,1);
 Obj.SourcePosition = out_pos;
 Obj = SOFAupgradeConventions(Obj);
 % Obj = SOFAupdateDimensions(Obj);
@@ -317,7 +321,7 @@ for bi = 1:NBins
             binb = OT.BinBoundaries(bi,:);
             binc = (binb(1:3)+binb(4:6))./2;
             binn = sqrt(sum( (OT.Points-repmat(binc, NPoints,1)).^2,2 ));
-            [tmp, pt] = min(binn);
+            [~, pt] = min(binn);
         end
         
         % find a tetrahedron containing pt
