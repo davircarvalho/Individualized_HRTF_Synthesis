@@ -6,10 +6,10 @@ For using the app you only need **eac_individualized_hrtf.mlappinstall**.
 
 - Please make sure you have the following toolboxes installed:
 ```
-image_toolbox
-matlab
-neural_network_toolbox
-signal_toolbox
+Image Processing Toolbox  
+MATLAB
+Deep Learning Toolbox 
+Signal Processing Toolbox
 ```
 
 # Source Code
