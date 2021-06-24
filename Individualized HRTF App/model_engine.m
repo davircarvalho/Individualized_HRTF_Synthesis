@@ -170,38 +170,11 @@ function HeSuViExport(Obj_in, FileName, Fs_out, angles)
     y = y./max(abs(y(:))) *0.975;
     y = y(:, [1,2,3,4,5,6,7,10,9,12,11,14,13,8]);
     file_path = ([FileName, '_', num2str(Fs_out/1000), 'kHz.wav']);
-    audiowrite(file_path, y, Obj_out.Data.SamplingRate)
+    audiowrite(file_path, y, Obj_out.Data.SamplingRate,'BitsPerSample',32)
 end
 
 
-%% INTERNAL FUNCTIONS
-function Obj = sofaResample(Obj, Fs, Nintp)
-    N = ceil( (Fs/Obj.Data.SamplingRate) * size(Obj.Data.IR, 3) ); % length after resample
-    if nargin < 3  ||  Nintp < N
-        Nintp = 2^nextpow2(N); % output length
-    end
-    zpad = zeros((Nintp - N), 1);
-    % options
-    [p,q] = rat(Fs / Obj.Data.SamplingRate);
-    normFc = .98 / max(p,q);
-    order = 256 * max(p,q);
-    beta = 12;
-    %%% Cria um filtro via Least-square linear-phase FIR filter design
-    lpFilt = firls(order, [0 normFc normFc 1],[1 1 0 0]);
-    lpFilt = lpFilt .* kaiser(order+1,beta)';
-    lpFilt = lpFilt / sum(lpFilt);
-    % multiply by p
-    lpFilt = p * lpFilt;
-    % Actual Resample
-    for k = 1:size(Obj.Data.IR, 1)
-        for l = 1:size(Obj.Data.IR, 2)
-            IRpre(k, l, :) = resample(Obj.Data.IR(k, l, :),p,q,lpFilt);
-            IR(k, l, :) = [squeeze(IRpre(k, l, :)); zpad];
-        end 
-    end
-    Obj.Data.IR = IR;
-    Obj.Data.SamplingRate = Fs;
-end
+
 %%
 
 
