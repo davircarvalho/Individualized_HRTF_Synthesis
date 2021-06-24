@@ -93,7 +93,7 @@ function sd = spec_dist(msrd,ref,fs,fmin,fmax, method)
     switch method
         case 'posi'
             % por posição
-            sd = sqrt((1/(fmax-fmin+1))*sum((20*log10(abs(msrd(fmin:fmax)./ref(fmin:fmax)))).^2));
+            sd = sqrt((1/(fmax-fmin+1))*sum((20*log10(abs(msrd(fmin:fmax))./abs(ref(fmin:fmax)))).^2));
         case 'freq'
             % por frequência
             sd = 20*log10(abs(msrd(fmin:fmax)./ref(fmin:fmax)));
