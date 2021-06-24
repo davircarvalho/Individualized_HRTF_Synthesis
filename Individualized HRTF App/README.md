@@ -4,6 +4,13 @@ For using the app you only need **eac_individualized_hrtf.mlappinstall**.
 
 >>* On MATLAB under APPS tab, click on *Install App* and choose the desired app. 
 
+- Please make sure you have the following toolboxes installed:
+```
+Image Processing Toolbox  
+MATLAB
+Deep Learning Toolbox 
+Signal Processing Toolbox
+```
 
 # Source Code
 
