@@ -48,12 +48,9 @@ clear med_vec2 coeffs PCWs explain
 no_PC = 12; %número de principais componentes de interesse
 for m = 1:no_channels
     for n = 1:no_directions
-%         med_vec2(:,n,m) = mean(DTF_ok(:, :, n, m), 2);
-        data_mtx = DTF_ok(:, :, n, m);% - med_vec2(:,n,m);
-         
-        [coeff, score, ~,~,explained,mu] = pca(data_mtx.','NumComponents', no_PC, ...
-                                                        'Centered', true, ...
-                                                        'Algorith', 'svd');      
+        data_mtx = DTF_ok(:, :, n, m);       
+        [coeff, score, ~,~,explained,mu] = pca(data_mtx.',...
+                                               'NumComponents', no_PC);      
         coeffs(:,:, n, m) = coeff;
         % Scores are the representations of X in the principal component space
         PCWs(:,:, n, m) = score;
@@ -78,7 +75,7 @@ datatip(h, idx_tip, y(idx_tip));
 set(gca, 'FontSize', 12)
 
 filename = [pwd, '\Images\no_PC.pdf'];
-exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
 
 
 %% SAVE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -114,22 +111,22 @@ disp('Dados salvos!')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plot reconstruction
-% N = 2*no_samples;  
-% freq = linspace(0, fs-fs/N, N);
-% subj = 2;
-% ch = 2;
-% dir = 150;
-% recon = PCWs(:,:,dir,ch)*coeffs(subj,:,dir,ch)'+ med_vec2(:,dir,ch);
-% 
-% figure()
-% plot(freq(1:N/2), DTF_ok(:,subj,dir,ch), 'linewidth', 2.5, 'color', [0 0 0]); hold on 
-% plot(freq(1, 1:N/2), recon(:,1), 'r','linewidth', 1.5); 
-% 
-% ylim([-30 5]); xlim([900 2e4])
-% axis tight
-% xlabel('Frequencia [Hz]'); ylabel('Amplitude [dB]')
-% legend('Original', [num2str(no_PC) ' CPs'], 'Location', 'best')
-% set(gca, 'FontSize', 13)
+N = 2*no_samples;  
+freq = linspace(0, fs-fs/N, N);
+subj = 2;
+ch = 2;
+dir = 150;
+recon = coeffs(:,:,dir,ch)*PCWs(subj,:,dir,ch)'+ med_vec2(:,dir,ch);
+
+figure()
+plot(freq(1:N/2), DTF_ok(:,subj,dir,ch), 'linewidth', 2.5, 'color', [0 0 0]); hold on 
+plot(freq(1, 1:N/2), recon(:,1), 'r','linewidth', 1.5); 
+
+ylim([-30 5]); xlim([900 2e4])
+axis tight
+xlabel('Frequencia [Hz]'); ylabel('Amplitude [dB]')
+legend('Original', [num2str(no_PC) ' CPs'], 'Location', 'best')
+set(gca, 'FontSize', 13)
 
 
 
@@ -153,7 +150,7 @@ end
 ch = 1;
 SD_recon_PCA = squeeze(mean(SD,2));
 % color_range = [0, 2];
-color_range = [0 0.5];
+color_range = [0 .6];
 
 % Simulada 
 hFigure = figure('Renderer', 'painters', 'Position', [10 10 600 460]);
