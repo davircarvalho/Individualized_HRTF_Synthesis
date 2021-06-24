@@ -8,7 +8,7 @@ function [IR_L, IR_R] = phase_job(hL, hR, itd, pos, offset)
 if nargin < 5
     offset = 0;
 end
-offset = offset+itd;
+
 %% Log 2 Linear
 hL = 10.^(hL./20);
 hR = 10.^(hR./20);
