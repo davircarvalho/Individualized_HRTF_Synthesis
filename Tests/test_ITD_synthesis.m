@@ -3,12 +3,12 @@ clear all;
 
 %% LOAD TEST DATA 
 % Load Antropometria 
-load('DADOS_TREINAMENTO\input_CIPIC.mat');
+load('..\DADOS_TREINAMENTO\input_CIPIC.mat');
 
 %%% HRIRs ORIGINAIS
-local = [pwd, '\..\Datasets\'];
+local = [fileparts(which('test_ITD_synthesis')), '\..\Datasets\'];
 pathcipic = dir([local 'CIPIC\subject_*.sofa']);
-subj = 12;
+subj = 10;
 Obj = SOFAload([pathcipic(subj).folder '\' pathcipic(subj).name], 'nochecks');
 
 
