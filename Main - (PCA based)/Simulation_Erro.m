@@ -5,7 +5,7 @@ addpath(genpath([pwd, '\..\DADOS_TREINAMENTO']));
 
 %% LOAD FILES 
 % Network
-load('DADOS_TREINAMENTO\net_augmented_CIPIC_ARI_ITA_3D3A');
+load('DADOS_TREINAMENTO\net_treinada_CIPIC_ARI_ITA_3D3A');
 load('DADOS_TREINAMENTO\target_pca_CIPIC_ARI_ITA_3D3A');
 
 %% Load Antropometria 
@@ -29,19 +29,18 @@ pathtub_sim(remove_TUB) = []; %remover individuos sem antropometria
 %%% HRIRs GENERICAS
 addpath([pwd '\..\Datasets\Generic HRTFs']);
 %Fabian
-Obj_gen(1).SF = SOFAload('FABIAN_HRIR_measured_HATO_0.sofa');
+Obj_gen(1).SF = SOFAload('FABIAN_HRIR_measured_HATO_0.sofa', 'nochecks');
 
-% MIT large pinna
+% % MIT large pinna
 % Obj_gen(2).SF = SOFAload('mit_kemar_large_pinna.sofa');
-% 
-% % MIT normal pinna
+% % 
+% % % MIT normal pinna
 % Obj_gen(3).SF = SOFAload('mit_kemar_normal_pinna.sofa');
 
 % Procesamento
 for k = 1:length(Obj_gen)
     % Make same grid
-    Obj_gen(k).SF = sofaFit2Grid(Obj_gen(k).SF, out_pos, 'adapt', 'Fs', fs);     
-    Obj_gen(k).SF = process2unite(Obj_gen(k).SF, out_pos, fs, fmin, fmax);
+    Obj_gen(k).SF = process2unite(Obj_gen(k).S0F, out_pos, fs, fmin, fmax);
 end
 
 
@@ -82,7 +81,6 @@ for subj = 1:size(pathtub_sim, 1)% Numero de indivíduos
     % Medido Processamento %%% 
     Obj_med = SOFAload([pathtub_sim(subj).folder '\' pathtub_sim(subj).name], 'nochecks');
    % Make same grid
-    Obj_med = sofaFit2Grid(Obj_med, out_pos, 'adapt', 'Fs', fs);
     Obj_med = process2unite(Obj_med, out_pos, fs, fmin, fmax);
     
     %% Erro espectral 
@@ -122,9 +120,9 @@ end
 
 
 %%
-% save([pwd '\..\DADOS_TREINAMENTO\workspace_Simulation_Erro_augmented.mat'])
-clear all; clc
-load([pwd '\..\DADOS_TREINAMENTO\workspace_Simulation_Erro.mat'])
+save([pwd '\..\DADOS_TREINAMENTO\workspace_Simulation_Erro.mat'])
+% clear all; clc
+% load([pwd '\..\DADOS_TREINAMENTO\workspace_Simulation_Erro.mat'])
 
 %% Plot erro ESPECTRAL (Todas as posições)
 hFigure = figure('Renderer', 'painters', 'Position', [10 10 2000 450]);
@@ -188,39 +186,39 @@ elev = 0; % Plano horizontal
 idx_pos = find(out_pos(:,2)==elev);
 
 % plotar em ordem 
-% yitd = cat(1, mean(sd_gen(1).gen(idx_pos, :)),...
-%               mean(sd_gen(2).gen(idx_pos, :)),...
-%               mean(sd_gen(3).gen(idx_pos, :)),...
-%               mean(sd_sim(idx_pos, :)));
 yitd = cat(1, mean(sd_gen(1).gen(idx_pos, :)),...
+              mean(sd_gen(2).gen(idx_pos, :)),...
+              mean(sd_gen(3).gen(idx_pos, :)),...
               mean(sd_sim(idx_pos, :)));
+% yitd = cat(1, mean(sd_gen(1).gen(idx_pos, :)),...
+%               mean(sd_sim(idx_pos, :)));
 [ysort, idx_sort] = sort(yitd, 1, 'descend');
 
 % Cores
 N=9;
 C = linspecer(N);
 
-% hold on 
-% for k = 1:size(ysort, 2)
-%     for l = 1:size(ysort, 1)
-%         if idx_sort(l,k) == 1
-%             h(1) = bar(k, ysort(l,k), 'BarWidth', 1, 'FaceAlpha',1, 'FaceColor', 'c');
-% %         elseif idx_sort(l,k) == 2
-% %             h(2) = bar(k, ysort(l,k), 'BarWidth', 1, 'FaceAlpha',1, 'FaceColor', C(6,:));
-% %         elseif idx_sort(l,k) == 3
-% %             h(3) = bar(k, ysort(l,k), 'BarWidth', 1, 'FaceAlpha',1, 'FaceColor', 'y');
-%         elseif idx_sort(l,k) == 4
-%             h(2) = bar(k, ysort(l,k), 'BarWidth', 0.5, 'FaceAlpha',1, 'FaceColor', [0.4940 0.1840 0.5560]);
-%         end
-%     end
-% end
+hold on 
+for k = 1:size(ysort, 2)
+    for l = 1:size(ysort, 1)
+        if idx_sort(l,k) == 1
+            h(1) = bar(k, ysort(l,k), 'BarWidth', 1, 'FaceAlpha',1, 'FaceColor', 'c');
+%         elseif idx_sort(l,k) == 2
+%             h(2) = bar(k, ysort(l,k), 'BarWidth', 1, 'FaceAlpha',1, 'FaceColor', C(6,:));
+%         elseif idx_sort(l,k) == 3
+%             h(3) = bar(k, ysort(l,k), 'BarWidth', 1, 'FaceAlpha',1, 'FaceColor', 'y');
+        elseif idx_sort(l,k) == 4
+            h(2) = bar(k, ysort(l,k), 'BarWidth', 0.5, 'FaceAlpha',1, 'FaceColor', [0.4940 0.1840 0.5560]);
+        end
+    end
+end
 
 bar(ysort.',  'BarWidth',2 )
 
 % plotar medias 
 yline(mean(mean(sd_gen(1).gen(idx_pos, :))), '--', 'Mean', 'linewidth', 1);
-% yline(mean(mean(sd_gen(2).gen(idx_pos, :))), '--', 'Média', 'color', C(6,:),'linewidth', 1.5);
-% yline(mean(mean(sd_gen(3).gen(idx_pos, :))), '--', 'color', 'y','linewidth', 1.5);
+yline(mean(mean(sd_gen(2).gen(idx_pos, :))), '--', 'Média', 'color', C(6,:),'linewidth', 1.5);
+yline(mean(mean(sd_gen(3).gen(idx_pos, :))), '--', 'color', 'y','linewidth', 1.5);
 yline(mean(mean(sd_sim(idx_pos, :))),'--', 'Mean','linewidth', 1); 
 
 hold off
@@ -238,7 +236,7 @@ title('Spectral distortion - horizontal plane')
 set(gca,'fontsize', 12);
 
 filename = [pwd, '\Images\article_SD_horizontal.pdf' ];
-exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
 
 
 
@@ -393,42 +391,42 @@ end
 % 
 
 %% Plot polar ITD
-% % Selecionar posições
-% elev = 0;
-% idx_pos = find(out_pos(:,2)==elev);
-% 
-% figure('Renderer', 'painters', 'Position', [10 10 700 450])
-% 
-% %Cores
-% N=5;
-% C = linspecer(N);
-% 
-% angles = deg2rad(out_pos(idx_pos, 1));
-% ax = polaraxes;
-% % polarplot(angles, smoothdata(mean(ITDE(2).gen(idx_pos,:),2)*10^6), ...
-% %                   '.-', 'color', 'k', 'linewidth', 1.2); hold on
-% % polarplot(angles, smoothdata(mean(ITDE(3).gen(idx_pos,:),2)*10^6), ...
-% %                   '.-',  'color', C(3,:) , 'linewidth', 1.2);
-% polarplot(angles, smoothdata(mean(ITDE(1).gen(idx_pos,:),2)*10^6),...
-%                   '.-','color', C(1,:), 'linewidth', 1.2); hold on
-% polarplot(angles, smoothdata(mean(ITDE_sim(idx_pos,:),2)*10^6), ...
-%                   '.-','color', C(2,:), 'linewidth', 1.2); hold off 
-% ax.ThetaDir = 'counterclockwise';
-% ax.ThetaZeroLocation = 'top';
-% % title('Erro médio do ITD')
-% legend('Kemar Large','Kemar Small', 'Fabian', 'Simulado: Esférico')
+% Selecionar posições
+elev = 0;
+idx_pos = find(round(out_pos(:,2))==elev);
+
+figure('Renderer', 'painters', 'Position', [10 10 700 450])
+
+%Cores
+N=5;
+C = linspecer(N);
+
+angles = deg2rad(out_pos(idx_pos, 1));
+ax = polaraxes;
+polarplot(angles, smoothdata(mean(ITDE(2).gen(idx_pos,:),2)*10^6), ...
+                  '.-', 'color', 'k', 'linewidth', 1.2); hold on
+polarplot(angles, smoothdata(mean(ITDE(3).gen(idx_pos,:),2)*10^6), ...
+                  '.-',  'color', C(3,:) , 'linewidth', 1.2);
+polarplot(angles, smoothdata(mean(ITDE(1).gen(idx_pos,:),2)*10^6),...
+                  '.-','color', C(1,:), 'linewidth', 1.2); hold on
+polarplot(angles, smoothdata(mean(ITDE_sim(idx_pos,:),2)*10^6), ...
+                  '.-','color', C(2,:), 'linewidth', 1.2); hold off 
+ax.ThetaDir = 'counterclockwise';
+ax.ThetaZeroLocation = 'top';
+% title('Erro médio do ITD')
+legend('Kemar Large','Kemar Small', 'Fabian', 'Simulado: Esférico')
 % legend('Fabian', 'Neural network')
-% 
-% thetaticks(0:30:330)
-% thetaticklabels({'0°', '30°', '60°', '90°', '120°', '150°', '180°', '210°', '240°',...
-%                  '270°', '300°', '330°'})
-% rticks([50 100 150])
-% rticklabels({'50 \mus','100 \mus','150 \mus'})
-% 
-% axis tight
-% grid on
-% ax.GridAlpha = 0.3; 
-% set(gca,'fontsize', 12)
+
+thetaticks(0:30:330)
+thetaticklabels({'0°', '30°', '60°', '90°', '120°', '150°', '180°', '210°', '240°',...
+                 '270°', '300°', '330°'})
+rticks([50 100 150])
+rticklabels({'50 \mus','100 \mus','150 \mus'})
+
+axis tight
+grid on
+ax.GridAlpha = 0.3; 
+set(gca,'fontsize', 12)
 % % export_fig([pwd, '\Images\Erro_ITD_horizontal_SPHERIC' ], '-pdf', '-transparent');
 
 %% Plot erro ITD 
@@ -472,9 +470,7 @@ end
 %% LOCAL FUCTIONS 
 function Obj = process2unite(Obj, out_pos, fs, fmin, fmax)
 %     % Make same grid
-%     Obj = sofaFit2Grid(Obj, out_pos, 'Fs', fs);     
-    % Normalize L/R balance and IR levels
-%     Obj = sofaNormalize(Obj);
+    Obj = sofaFit2Grid(Obj, out_pos, 'Fs', fs);     
     % filter
     Obj = sofaIRfilter(Obj, fmin, fmax);
     % HRTF -> DTF

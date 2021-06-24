@@ -127,9 +127,9 @@ Obj_med = SOFAload([path_hutubs(subj).folder '\' path_hutubs(subj).name], 'noche
 % HRTF -> DTF
 clc
 Obj_med = sofaFit2Grid(Obj_med, out_pos, 'adapt', 'Fs', fs);
-Obj_med = SOFAhrtf2dtf(Obj_med); 
 fmin = 250; fmax = 18000;
 Obj_med = sofaIRfilter(Obj_med, fmin, fmax);
+Obj_med = SOFAhrtf2dtf(Obj_med); 
 Obj = sofaNormalize(Obj_med);
 
 
@@ -289,7 +289,8 @@ figure()
 % DEFINA A DIREÇÃO DA RI
 azim = 90; 
 elev = 0;
-
+Obj_med.Data.IR = Obj_med.Data.IR./max(abs(Obj_med.Data.IR(:)));
+Obj_sim.Data.IR = Obj_sim.Data.IR./max(abs(Obj_sim.Data.IR(:)));
 
 % Get index of measurements with the same directions
 pos=find(round(Obj_med.SourcePosition(:,1))==azim & round(Obj_med.SourcePosition(:,2))==elev);
