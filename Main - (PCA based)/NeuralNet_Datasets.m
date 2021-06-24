@@ -69,7 +69,7 @@ net.divideParam.testRatio  = .0;
 % net.layers{1}.transferFcn  = 'tansig';
 % net.layers{2}.transferFcn  = 'purelin';
 
-net.trainParam.showWindow  = 1; %show training window
+net.trainParam.showWindow  = 0; %show training window
 %% Treinamento 
 disp('Iniciado o treinamento da rede neural')
 tic
