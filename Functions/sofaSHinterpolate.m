@@ -7,8 +7,8 @@ function  Obj = sofaSHinterpolate(IR, pos, varargin)
 % https://github.com/AudioGroupCologne/SUpDEq
 % https://github.com/sofacoustics/API_MO
 
-defaultMethod = 'SUPDEQ_api';
-validMethods = {'SOFA_api', 'SUPDEQ_api'};
+defaultMethod = 'ITA_api';
+validMethods = {'SOFA_api', 'SUPDEQ_api', 'ITA_api'};
 checkMethod = @(x) any(validatestring(x,validMethods));
 
 %Verificar entradas
@@ -81,7 +81,8 @@ switch p.Results.method
         SH=TFE;
         SH.GLOBAL_SOFAConventions = 'FreeFieldHRTF';
 
-        Lmax=floor(sqrt(size(SH.EmitterPosition,1)/4)-1); % Max SH order
+        Lmax=floor(sqrt(size(SH.EmitterPosition,1))-1); % Max SH order
+%         Lmax=floor(sqrt(size(SH.EmitterPosition,1)/4)-1); % Max SH order
         L=Lmax; % actual SH order
         [S, SH.API.E]=sph2SH(SH.EmitterPosition(:,1:2), L);
 
@@ -125,14 +126,16 @@ switch p.Results.method
         % sparseHRIRdataset_SOFA = SOFAload('sparseHRIRdataset_L38.sofa');
         %Transform to sparseHRTFdataset struct with pre-defined samplingGrid 
         %(Lebedev grid with 38 nodes here), Nmax = 4, and FFToversize = 4.
-        Nmax = floor(sqrt(IR.API.M/4));
+%         Nmax = floor(sqrt(size(IR.Data.IR,1))-1);
+        Nmax = floor(sqrt(size(IR.Data.IR,1)/4)); % Max SH order
         FFToversize = 4;
         sparseHRTFdataset = supdeq_sofa2hrtf(sparseHRIRdataset_SOFA,Nmax,[],FFToversize);
 
         %% (3) - Get equalization dataset (SH-coefficients)
         %The eqDataset describes the sound pressure distribution on a sphere 
         NFFT=(length(sparseHRTFdataset.HRTF_L(1,:))-1)*2;
-        eqDataset = supdeq_getEqDataset(35, [], NFFT, IR.Data.SamplingRate);
+        eqDataset = supdeq_getEqDataset(35, [], NFFT, IR.Data.SamplingRate,...
+                                        [],[],[],[],[],3);
 
         %% (4) - Perform equalization
         %Here, the sparse HRTF dataset is equalized with the eqDataset. The
@@ -143,7 +146,7 @@ switch p.Results.method
         Nsparse = sparseHRTFdataset.Nmax;
 
         eqHRTFdataset = supdeq_eq(sparseHRTFdataset,eqDataset,Nsparse,...
-                                  sparseSamplingGrid);
+                                  sparseSamplingGrid, 1e-8, 1);
 
         % (5) - Perform de-equalization 
         %Here, the sparse equalized HRTF dataset is de-equalized with the
@@ -169,7 +172,24 @@ switch p.Results.method
                                   denseHRIRdataset.HRIR_R,...
                                   denseSamplingGrid);
 
+                              
+                              
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                             
+    case validMethods{3} % ITA API       
+        this = SOFA2itaHRTF(IR); % convert SOFA to itaHRTF
+        r=ones(size(ele));
+        
+        % Define objective positions
+        coords = itaCoordinates(size(pos,1));
+        coords.phi_deg = azi;
+        coords.theta_deg = ele+90;
+        coords.r = r;
+        
+        % interpolate 
+        epsilon = 1e-6; % regularization Tikoff
+        cThis = this.interp(coords, 'epsilon', epsilon, 'shiftToEar', true);
 
+        Obj = itaHRTF2SOFA(cThis); % convert itaHRTF to SOFA       
 end
 %% compare
 % figure;
