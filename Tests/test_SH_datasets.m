@@ -47,52 +47,33 @@ pathvik = pathvik(idx_vik, :);
 
 
 %% Output positions
-res = .1;
+res = 1;
 ele=[-90:res:90 89:-res:-90 zeros(1,length(1:res:360-res))]';
 azi=[zeros(length(-90:res:90),1); 180*ones(length(89:-res:-90),1); (1:res:360-res)'];
+r = ones(length(azi),1);
 
-out_pos = [azi, ele, ones(length(azi), 2)];
+out_pos = unique([azi, ele, r], 'rows');
 
 
 %%
-k = 5;
-% CIPIC = SOFAload([pathcipic(k).folder '\' pathcipic(k).name]);
-% ARI = SOFAload([pathari(k).folder, '\',pathari(k).name], 'nochecks');
-% ITA = SOFAload([pathita(k).folder, '\',pathita(10).name], 'nochecks');
-% D3A = SOFAload([path3d3a(k).folder '\' path3d3a(k).name], 'nochecks');       
-% TUBmeas = SOFAload([pathtub_meas(k).folder '\' pathtub_meas(k).name], 'nochecks');                
-% TUBsim = SOFAload([pathtub_sim(k).folder '\' pathtub_sim(k).name], 'nochecks');
+k = 1;
+CIPIC = SOFAload([pathcipic(k).folder '\' pathcipic(k).name]);
+ARI = SOFAload([pathari(k).folder, '\',pathari(k).name], 'nochecks');
+ITA = ITA2spheric(SOFAload([pathita(k).folder, '\',pathita(k).name], 'nochecks'));
+D3A = SOFAload([path3d3a(k).folder '\' path3d3a(k).name], 'nochecks');       
+TUBmeas = SOFAload([pathtub_meas(k).folder '\' pathtub_meas(k).name], 'nochecks');                
+TUBsim = SOFAload([pathtub_sim(k).folder '\' pathtub_sim(k).name], 'nochecks');
 VIK = SOFAload([pathvik(k).folder '\' pathvik(k).name], 'nochecks');
 
 %%
-% [ITA] Transição de coordenadas cartesianas para esfericas
-% for l = 1:length(ITA.SourcePosition)
-%     x = ITA.SourcePosition(l, 1);  
-%     y = ITA.SourcePosition(l, 2); 
-%     z = ITA.SourcePosition(l, 3);
-%     % new coordinates
-%     [az,elev,r] = cart2sph(x,y,z);
-%     azi=rad2deg(az); elev=rad2deg(elev);
-%     [azi,ele]   = nav2sph(azi,elev);
-%     % update coordinates
-%     ITA.SourcePosition(l, 1) = azi;
-%     ITA.SourcePosition(l, 2) = ele; 
-%     ITA.SourcePosition(l, 3) = round(r);
-%     % more metadata
-%     ITA.SourcePosition_Type = 'spherical';
-%     ITA.SourcePosition_Units = 'degree, degree, meter';              
-% end       
-
-
-%%
 close all
-% CIPIC_interp = process2unite(CIPIC, out_pos, fs, 'cipic');
-% ARI_interp = process2unite(ARI, out_pos, fs, 'ari');
-% ITA_interp = process2unite(ITA, out_pos, fs, 'ita');
-% D3A_interp = process2unite(D3A, out_pos, fs, 'd3a');
-% TUBmeas_interp = process2unite(TUBmeas, out_pos, fs, 'tubmeas');
-% TUBsim_interp = process2unite(TUBsim, out_pos, fs, 'tubsim');
-VIK_interp = process2unite(VIK, out_pos, 'VIKING');
+% CIPIC_interp = process2unite(CIPIC, out_pos,  'cipic');
+% ARI_interp = process2unite(ARI, out_pos,  'ari');
+% ITA_interp = process2unite(ITA, out_pos, 'ita');
+% D3A_interp = process2unite(D3A, out_pos, 'd3a');
+TUBmeas_interp = process2unite(TUBmeas, out_pos, 'tubmeas');
+% TUBsim_interp = process2unite(TUBsim, out_pos, 'tubsim');
+% VIK_interp = process2unite(VIK, out_pos, 'VIKING');
 
 
 
@@ -105,8 +86,12 @@ VIK_interp = process2unite(VIK, out_pos, 'VIKING');
 
 function Obj_out = process2unite(Obj, out_pos, name)
     % Make same grid
+%     Obj_out = sofaSHinterpolate(Obj, out_pos, 'ITA_api');
     Obj_out = sofaFit2Grid(Obj, out_pos, 'spherical_harmonics');     
-
+    
+    % Check sd 
+    fmin = 100; fmax = 19000;
+    SD = mean(sofaSpecDist(Obj_out, Obj, fmin,fmax), 'all')
     
     %% PLOTA
     plane1 = 'MagHorizontal';

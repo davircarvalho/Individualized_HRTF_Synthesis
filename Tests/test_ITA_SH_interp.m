@@ -6,45 +6,26 @@ Obj = SOFAload([path(1).folder, '\',path(1).name], 'nochecks');
 
 
 %% ITA TOOLBOX
-SOFAsave('temp.sofa', Obj);
-Obj_ita = itaHRTF('sofa', 'temp.sofa');
-
+Obj_ita = SOFA2itaHRTF(Obj);
 res = 1;
-theta=[-90:res:90 89:-res:-90 zeros(1,length(1:res:355))]';
-phi=[zeros(length(-90:res:90),1); 180*ones(length(89:-res:-90),1); (1:res:355)'];
-r=ones(size(theta));
+theta_ele=[-90:res:90 89:-res:-90 zeros(1,length(1:res:355))]';
+phi_azi=[zeros(length(-90:res:90),1); 180*ones(length(89:-res:-90),1); (1:res:355)'];
+r=ones(size(theta_ele));
 
+
+pos = [theta_ele phi_azi, r];
 % define interpolated positions
-coords = itaCoordinates([r, r, r], 'cart');
-coords.phi_deg = phi;
-coords.theta_deg = theta;
+coords = itaCoordinates(size(pos,1));
+coords.phi_deg = phi_azi;
+coords.theta_deg = theta_ele+90;
 coords.r = r;
 
 
 %% SH INTER/EXTRAP
-Obj_ita_extrp = Obj_ita.interp(coords);
+Obj_ita_extrp = Obj_ita.interp(coords, 'epsilon', 1e-8);
+Obj_sofa_extrp = itaHRTF2SOFA(Obj_ita_extrp);
 
 
-
-%% save SOFA 
-Obj_sofa_extrp = SOFAgetConventions('SimpleFreeFieldHRIR');
-
-% IR
-Obj_sofa_extrp.Data.SamplingRate = Obj_ita_extrp.samplingRate;
-irL = Obj_ita_extrp.getEar('L');
-irR = Obj_ita_extrp.getEar('R');
-Obj_sofa_extrp.Data.IR = zeros(size(irL.time, 2), 2, size(irL.time, 1));
-Obj_sofa_extrp.Data.IR(:,1,:) = (irL.time).';
-Obj_sofa_extrp.Data.IR(:,2,:) = (irR.time).';
-
-% Coordinates
-Obj_sofa_extrp = ita_itaHRTFCoordinates2SOFACoordinates(Obj_ita_extrp, Obj_sofa_extrp);
-
-% Meta
-filename = (['ita.sofa']);
-Obj_sofa_extrp = SOFAupdateDimensions(Obj_sofa_extrp);
-SOFAsave(filename, Obj_sofa_extrp);
-disp('Done!')
 
 %%
 plane = 'MagSagittal';
