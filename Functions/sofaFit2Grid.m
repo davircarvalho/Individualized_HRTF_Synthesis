@@ -73,8 +73,6 @@ switch p.Results.method
             % Posicoes selecionadas no grid original (util para visualização)
 %             meta.fittedPOS(zz,:) = Obj_in.SourcePosition(idx_adapt(zz, 1),:);            
         end
-        % (caso for visualizar as posições selecionadas, comentar a linha abaixo)
-        meta.fittedPOS = out_pos; % <-------
         meta.fittedIR  = Obj_in.Data.IR(idx_adapt(:,1), :, :);
         
         %% Modelo Hibrido ('HYBRID') 
@@ -99,28 +97,25 @@ switch p.Results.method
     case {validMethods{3}, validMethods{4}}
         meta.fittedIR = zeros(length(out_pos), 2, size(Obj_in.Data,3));
         meta.pos = Obj_in.SourcePosition;
-        meta.fittedIR = miinterpolateHRTF(Obj_in.Data.IR, meta.pos(:,[1,2]), out_pos(:,[1,2]),...
+        meta.fittedIR = interpolateHRTF(Obj_in.Data.IR, meta.pos(:,[1,2]), out_pos(:,[1,2]),...
                                           'Algorithm', p.Results.method);   
-        meta.fittedPOS = out_pos;
 
 %% Interpolar por harmonicos esféricos 'spherical_harmonics'
     case {validMethods{5}}
         IR_interp = sofaSHinterpolate(Obj_in, out_pos(:, [1,2]));
         meta.fittedIR = IR_interp.Data.IR;
-        meta.fittedPOS = out_pos;
 end 
-
 
 
 %% OUTPUT data (assembly and metadata) 
 Obj_out = SOFAgetConventions('SimpleFreeFieldHRIR');
 Obj_out.Data.IR = meta.fittedIR;
-Obj_out.SourcePosition = meta.fittedPOS;
+Obj_out.SourcePosition = out_pos;
 Obj_out.Data.SamplingRate = p.Results.Fs;
 
 % warning('off','SOFA:upgrade');
-Obj_out = SOFAupgradeConventions(Obj_out);
-% Obj_out = SOFAupdateDimensions(Obj_out);
+% Obj_out = SOFAupgradeConventions(Obj_out);
+Obj_out = SOFAupdateDimensions(Obj_out);
 
 
 
