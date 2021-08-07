@@ -35,7 +35,9 @@ MATLAB app that can be used to generate individualized HRTFs with SOFA or HeSuVi
 
 ## Auraliza app
 
-MATLAB app that can create real-time virtual auditory scenes using SOFA HRTFs and n-channel audio input.
+MATLAB app to create real-time virtual auditory scenes using SOFA SimpleFreeField HRTFs and n-channel audio inputs.
+
+Latest updates for this app can be found [here](https://github.com/davircarvalho/Auralization_Engine)
 
 
 ## Main - (PCA based)
