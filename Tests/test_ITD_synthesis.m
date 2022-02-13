@@ -7,11 +7,11 @@ load('..\DADOS_TREINAMENTO\input_CIPIC.mat');
 
 %%% HRIRs ORIGINAIS
 local = [fileparts(which('test_ITD_synthesis')), '\..\Datasets\'];
-pathcipic = dir([local 'CIPIC\subject_*.sofa']);
-subj = 10;
+pathcipic = dir([local 'HUTUBS\pp*_HRIRs_simulated.sofa']);
+subj = 3;
 Obj = SOFAload([pathcipic(subj).folder '\' pathcipic(subj).name], 'nochecks');
 
-
+Obj.Data.IR = Obj.Data.IR./max(abs(Obj.Data.IR(:)));
 %% Properties
 pos = Obj.SourcePosition;
 fs = Obj.Data.SamplingRate;
@@ -26,8 +26,7 @@ itd_sphe = itd_synthesis(width, depth, pos, fs, method, 'time');
 method = 'adapt';
 itd_adpt = itd_synthesis(width, depth, pos, fs, method, 'time');
 
-itd_real = SOFAgetITD(Obj, 'time', 'thr', 20);
-
+itd_real = SOFAgetITD(Obj, 'time', 'thr', 20, 'upsample', 32);
 
 sum(abs(itd_real - itd_sphe))
 sum(abs(itd_real - itd_adpt))

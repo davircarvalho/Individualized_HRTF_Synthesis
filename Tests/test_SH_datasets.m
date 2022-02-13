@@ -1,7 +1,7 @@
-% clear all; clc; tic
+clear all; clc; tic
 % DAVI ROCHA CARVALHO; ENG. ACUSTICA - UFSM; DEZEMBRO/2020
 %% PATHs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-addpath([pwd, '\..\Functions']);
+% addpath([pwd, '\..\Functions']);
 addpath([pwd, '\..\DADOS_TREINAMENTO']);
 local = [pwd, '\..\Datasets\'];
 
@@ -47,12 +47,13 @@ pathvik = pathvik(idx_vik, :);
 
 
 %% Output positions
-res = 1;
-ele=[-90:res:90 89:-res:-90 zeros(1,length(1:res:360-res))]';
-azi=[zeros(length(-90:res:90),1); 180*ones(length(89:-res:-90),1); (1:res:360-res)'];
-r = ones(length(azi),1);
-
-out_pos = unique([azi, ele, r], 'rows');
+% res = 1;
+% ele=[-90:res:90 89:-res:-90 zeros(1,length(1:res:360-res))]';
+% azi=[zeros(length(-90:res:90),1); 180*ones(length(89:-res:-90),1); (1:res:360-res)'];
+% r = ones(length(azi),1);
+% 
+% out_pos = unique([azi, ele, r], 'rows');
+out_pos = equiangular_coordinates(4);
 
 
 %%
@@ -65,56 +66,51 @@ TUBmeas = SOFAload([pathtub_meas(k).folder '\' pathtub_meas(k).name], 'nochecks'
 TUBsim = SOFAload([pathtub_sim(k).folder '\' pathtub_sim(k).name], 'nochecks');
 VIK = SOFAload([pathvik(k).folder '\' pathvik(k).name], 'nochecks');
 
+% TUBsim.SourcePosition = inpt_pos;
+% TUBsim.Data.IR = inpt_IR;
 %%
 close all
-% CIPIC_interp = process2unite(CIPIC, out_pos,  'cipic');
+CIPIC_interp = process2unite(CIPIC, out_pos,  'cipic');
 % ARI_interp = process2unite(ARI, out_pos,  'ari');
-% ITA_interp = process2unite(ITA, out_pos, 'ita');
+% ITA_interp = process2unite(ITA, out_pos, 'ita'); 
 % D3A_interp = process2unite(D3A, out_pos, 'd3a');
-TUBmeas_interp = process2unite(TUBmeas, out_pos, 'tubmeas');
+% TUBmeas_interp = process2unite(TUBmeas, out_pos, 'tubmeas');
 % TUBsim_interp = process2unite(TUBsim, out_pos, 'tubsim');
 % VIK_interp = process2unite(VIK, out_pos, 'VIKING');
 
 
-
-
-
-
-
-
+% SOFAplotGeometry(ITA_interp)
 
 
 function Obj_out = process2unite(Obj, out_pos, name)
     % Make same grid
-%     Obj_out = sofaSHinterpolate(Obj, out_pos, 'ITA_api');
-    Obj_out = sofaFit2Grid(Obj, out_pos, 'spherical_harmonics');     
-    
-    % Check sd 
-    fmin = 100; fmax = 19000;
+    Obj_out = sofaSHinterpolate(Obj, out_pos, 'ITA_api');
+%     Obj_out = sofaFit2Grid(Obj, out_pos, 'spherical_harmonics');     
+
+% Check sd 
+    fmin = 500; fmax = 18000;
     SD = mean(sofaSpecDist(Obj_out, Obj, fmin,fmax), 'all')
-    
     %% PLOTA
     plane1 = 'MagHorizontal';
     plane2 = 'MagSagittal';
     
-    figure()
-    SOFAplotHRTF(Obj,plane1); title(['Reference - ' plane1, ' ' name]);
-    axis tight
-    xlim([0 2e4])
-    
-    figure()
-    SOFAplotHRTF(Obj,plane2); title(['Reference - ' plane2, ' ' name]);
-    axis tight
-    xlim([0 2e4])
-     
+%     figure()
+%     SOFAplotHRTF(Obj,plane1); title(['Reference - ' plane1, ' ' name]);
+%     xlim([0 2e4])
+%     ylim([-180, 180])
+%     
+%     figure()
+%     SOFAplotHRTF(Obj,plane2); title(['Reference - ' plane2, ' ' name]);
+%     xlim([0 2e4])
+%     ylim([-80, 250])
+%      
     figure()
     SOFAplotHRTF(Obj_out,plane1); title(['Interpolated - ' plane1, ' ' name]);
-    axis tight
     xlim([0 2e4])
+    ylim([-180, 180])
     
     figure()
     SOFAplotHRTF(Obj_out,plane2); title(['Interpolated - ' plane2, ' ' name]);
-    axis tight
     xlim([0 2e4])
-    pause(0)
+    ylim([-80, 250])
 end
