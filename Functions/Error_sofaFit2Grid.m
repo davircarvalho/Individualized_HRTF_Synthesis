@@ -5,8 +5,12 @@ clear all; clc
 %% LOAD 
 local = [pwd '\..\Datasets\'];    
 dataset_name = 'HUTUBS';
-% path = dir([local dataset_name '\pp*_HRIRs_simulated.sofa']);
-path = dir([local dataset_name '\*simulated.sofa']);
+path = dir([local dataset_name '\pp*_HRIRs_simulated.sofa']);
+% % path = dir([local dataset_name '\*simulated.sofa']);
+% path = dir([local dataset_name '\*.sofa']);
+
+
+%% Config
 n_subjects = length(path);
 dataset = cell(1,n_subjects);
 for k = 1:n_subjects
@@ -19,17 +23,17 @@ if strcmp(dataset_name, 'AACHEN')
     dataset(14) = [];
 end
 n_subjects = length(dataset);
-fs = dataset{1}.Data.SamplingRate; % sampling rate
+% n_subjects = 3;
 % no_posi = size(dataset{1}.SourcePosition,1); % numero total de posições
 idx_pos = find(dataset{1}.SourcePosition(:,2)> -60 & ...
-               dataset{1}.SourcePosition(:,2)< 60); % limit elevation range
+               dataset{1}.SourcePosition(:,2)<  60); % limit elevation range
 posi = dataset{1}.SourcePosition(idx_pos, :);
 no_posi = length(posi);
 
 
 %% Main loop
 cont=1;
-n_desired_pos = [350]; % número de posições "objetivo" (removidas pro teste)
+n_desired_pos = [100]; % número de posições "objetivo" (removidas pro teste)
 for n = 1:length(n_desired_pos) 
     rng(0) % reset random generator
     idx_temp = randperm(no_posi, n_desired_pos(n)); % Index de posições a serem removidas
@@ -47,10 +51,10 @@ for n = 1:length(n_desired_pos)
         inpt_pos(idx,:)  = [];      % Posicoes de entrada    
 
         % SOFA sem posições objetivo (ENTRADA)
-        Obj_inpt = generate_sofa(inpt_pos, inpt_IR, fs);
+        Obj_inpt = generate_sofa(inpt_pos, inpt_IR, dataset{ii}.Data.SamplingRate);
 
         % SOFA apenas com posições objetivo (OBJETIVO)
-        REAL{n} = generate_sofa(des_pos, des_IR, fs);
+        REAL{n} = generate_sofa(des_pos, des_IR, dataset{ii}.Data.SamplingRate);
 
         % error
         [ADPT{n}, sd(n).adpt(:,ii), ITD_error(n).adpt(:,ii), ILD_error(n).adpt(:,ii)] = ...
@@ -65,9 +69,12 @@ for n = 1:length(n_desired_pos)
         clc; disp(['Iteração: ' num2str(n) ' de ' num2str(length(n_desired_pos)), ....
                    '    Subject: ' num2str(ii), ' de ' num2str(n_subjects)]); 
  
-        ETA = toc*(length(n_desired_pos)*length(dataset)-cont)/60;
-        disp(['ETA: ' num2str(ETA),'min' ]) 
+        ETA = toc*(length(n_desired_pos)*n_subjects-cont)/60;
+        disp(['ETA: ' num2str(ETA), ' min' ]) 
         cont = cont+1;
+        
+        
+%         plot_mag_map(REAL{n}, HSPH{n})
     end
     %save para plot
     plt(n).des  = des_pos;
@@ -129,18 +136,18 @@ for k = 1:n
     std_ild(k).hsph = std(mean([ILD_error(k).hsph], 2));
 end
 
-figure()
-plot(1:n, [media_itd.adpt]*1e6, 'linewidth', 1.7);hold on
-plot(1:n, [media_itd.vbap]*1e6, 'linewidth', 1.7);
-plot(1:n, [media_itd.blin]*1e6, 'linewidth', 1.7);
-plot(1:n, [media_itd.hsph]*1e6, 'linewidth', 1.7);
-xticks(1:n);
-title('ITD error')
-xticklabels(n_desired_pos)
-xlabel('Estimated positions')
-ylabel('Erro medio (\mus)')
-legend('Nearest', 'VBAP', 'Bilinear',  'Spherical harmonics','location', 'best')
-
+% figure()
+% plot(1:n, [media_itd.adpt]*1e6, 'linewidth', 1.7);hold on
+% plot(1:n, [media_itd.vbap]*1e6, 'linewidth', 1.7);
+% plot(1:n, [media_itd.blin]*1e6, 'linewidth', 1.7);
+% plot(1:n, [media_itd.hsph]*1e6, 'linewidth', 1.7);
+% xticks(1:n);
+% title('ITD error')
+% xticklabels(n_desired_pos)
+% xlabel('Estimated positions')
+% ylabel('Erro medio (\mus)')
+% legend('Nearest', 'VBAP', 'Bilinear',  'Spherical harmonics','location', 'best')
+% 
 
 % figure()
 % plot([media_ild.adpt], 'linewidth', 1.7);hold on
@@ -154,56 +161,56 @@ legend('Nearest', 'VBAP', 'Bilinear',  'Spherical harmonics','location', 'best')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Simplicação do erro para comparação (LSD)
-for l = 1:n
+for ks = 1:n
     % média do erro de todas as posições para cada individuo
-    pos_sd(l).adpt = nanmean(sd(l).adpt);
-    pos_sd(l).vbap = nanmean(sd(l).vbap);
-    pos_sd(l).blin = nanmean(sd(l).blin);
-    pos_sd(l).hsph = nanmean(sd(l).hsph);
+    pos_sd(ks).adpt = nanmean(sd(ks).adpt);
+    pos_sd(ks).vbap = nanmean(sd(ks).vbap);
+    pos_sd(ks).blin = nanmean(sd(ks).blin);
+    pos_sd(ks).hsph = nanmean(sd(ks).hsph);
 
     % média de todas as posições e todos os individuos
-    media_sd(l).adpt = mean(pos_sd(l).adpt);
-    stdev(l).adpt    = std(pos_sd(l).adpt); %std entre media de cada indivíduo
+    media_sd(ks).adpt = mean(pos_sd(ks).adpt);
+    stdev(ks).adpt    = std(pos_sd(ks).adpt); %std entre media de cada indivíduo
 
-    media_sd(l).vbap = mean(pos_sd(l).vbap);
-    stdev(l).vbap    = std(pos_sd(l).vbap);
+    media_sd(ks).vbap = mean(pos_sd(ks).vbap);
+    stdev(ks).vbap    = std(pos_sd(ks).vbap);
 
-    media_sd(l).blin = mean(pos_sd(l).blin);
-    stdev(l).blin    = std(pos_sd(l).blin);
+    media_sd(ks).blin = mean(pos_sd(ks).blin);
+    stdev(ks).blin    = std(pos_sd(ks).blin);
     
-    media_sd(l).hsph = mean(pos_sd(l).hsph);
-    stdev(l).hsph    = std(pos_sd(l).hsph);
+    media_sd(ks).hsph = mean(pos_sd(ks).hsph);
+    stdev(ks).hsph    = std(pos_sd(ks).hsph);
 end
 
 
 %% Media e desvio da SD para todas as posições e todos os individuos 
 % padrao entre individuos 
-hFigure = figure();
-set(0,'DefaultLineLineWidth',1.5)
-
-fig1 = shadedErrorBar(1:n, [media_sd.adpt], [stdev.adpt],{'Color',colors(0),'LineWidth', 1.7},1,0.2,'lin', 0);hold on
-fig2 = shadedErrorBar(1:n, [media_sd.vbap], [stdev.vbap],{'Color',colors(1),'LineWidth', 1.7},1,0.2,'lin', 0);
-fig3 = shadedErrorBar(1:n, [media_sd.blin], [stdev.blin],{'Color',colors(2),'LineWidth', 1.7},1,0.2,'lin', 0);
-fig5 = shadedErrorBar(1:n, [media_sd.hsph], [stdev.hsph],{'Color',colors(6),'LineWidth', 1.7},1,0.2,'lin', 0);hold off
-
-%metadata
-h = get(gca,'Children');
-legendstr = {'', 'Nearest', '', 'VBAP', '', 'Bilinear', '', 'Spherical harmonics'};
-legend(h([1 3 5 7 ]), legendstr{[ 8 6 4 2]}, 'Location', 'Best')
-xticks(1:n)
-xticklabels(n_desired_pos)
-title('')
-xlabel('Estimated positions')
-ylabel('Spectral distortion (dB)')
-set(gca,'FontSize',12)
-ylim([-1 10])
-filename = [pwd, '\Images\ShadedError_sofaFit2Grid.pdf'];
-% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+% hFigure = figure();
+% set(0,'DefaultLineLineWidth',1.5)
+% 
+% fig1 = shadedErrorBar(1:n, [media_sd.adpt], [stdev.adpt],{'Color',colors(0),'LineWidth', 1.7},1,0.2,'lin', 0);hold on
+% fig2 = shadedErrorBar(1:n, [media_sd.vbap], [stdev.vbap],{'Color',colors(1),'LineWidth', 1.7},1,0.2,'lin', 0);
+% fig3 = shadedErrorBar(1:n, [media_sd.blin], [stdev.blin],{'Color',colors(2),'LineWidth', 1.7},1,0.2,'lin', 0);
+% fig5 = shadedErrorBar(1:n, [media_sd.hsph], [stdev.hsph],{'Color',colors(6),'LineWidth', 1.7},1,0.2,'lin', 0);hold off
+% 
+% %metadata
+% h = get(gca,'Children');
+% legendstr = {'', 'Nearest', '', 'VBAP', '', 'Bilinear', '', 'Spherical harmonics'};
+% legend(h([1 3 5 7 ]), legendstr{[ 8 6 4 2]}, 'Location', 'Best')
+% xticks(1:n)
+% xticklabels(n_desired_pos)
+% title('')
+% xlabel('Estimated positions')
+% ylabel('Spectral distortion (dB)')
+% set(gca,'FontSize',12)
+% ylim([-1 10])
+% filename = [pwd, '\Images\ShadedError_sofaFit2Grid.pdf'];
+% % exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
 
 
 %% Mapa de ERRO por posição 
 lim_colorbar = [1 8.5];
-n_idx = 4; % 
+n_idx = 1; % 
 plt_pos = plt(n_idx).des;
 plt_inp = plt(n_idx).inpt;
 
@@ -219,7 +226,7 @@ c.Label.String = 'Spectral distortion (dB)';
 set(gca,'FontSize',12)
 % set(gca,'Color','k');
 filename = [pwd, '\Images\MAP_ADAPT_sofaFit2Grid.pdf'];
-exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
  
 %close  VBAP
 hFigure = figure();
@@ -233,7 +240,7 @@ c.Label.String = 'Spectral distortion (dB)';
 set(gca,'FontSize',12)
 % set(gca,'Color','k')
 filename = [pwd, '\Images\MAP_VBAP_sofaFit2Grid.pdf'];
-exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
  
 % BILINEAR
 hFigure = figure();
@@ -247,7 +254,7 @@ c.Label.String = 'Spectral distortion (dB)';
 set(gca,'FontSize',12)
 % set(gca,'Color','k')
 filename = [pwd, '\Images\MAP_BILIN_sofaFit2Grid.pdf'];
-exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
 
 
 
@@ -263,7 +270,7 @@ c.Label.String = 'Spectral distortion (dB)';
 set(gca,'FontSize',12)
 % set(gca,'Color','k')
 filename = [pwd, '\Images\MAP_HSPH_sofaFit2Grid.pdf'];
-exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
+% exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
 
 %% Visualiazação de posições input e target
 n_idx = 4; % 
@@ -357,8 +364,8 @@ exportgraphics(hFigure,filename,'BackgroundColor','none','ContentType','vector')
 
 
 %% PLOT PER POSITION
-n_idx =4; % index for n_desired_pos
-
+n_idx =1; % index for n_desired_pos
+fs = 44100;
 azi = 240; 
 elev = 0;
 idx_pos = dsearchn(plt(n_idx).des(:,[1, 2]), [azi, elev]);
@@ -416,7 +423,7 @@ function [Obj, SD, ITD_error, ILD_error]= EvaluateDistortions(Obj_stdy, Obj_real
     des_pos = Obj_real.SourcePosition;
     Obj     = sofaFit2Grid(Obj_stdy, des_pos, method); % interpolation
 %%% Spectral distortion
-    fmin = 100; fmax = 19000;
+    fmin = 500; fmax = 18000;
     SD = sofaSpecDist(Obj, Obj_real, fmin,fmax);
 %%% ERRO ITD e ILD 
     [ITD_error, ILD_error] = sofa_ITD_ILD_error(Obj, Obj_real, 'time');
@@ -432,3 +439,28 @@ function Obj = generate_sofa(positions, hrirs, fs)
     Obj.SourcePosition = positions;
     Obj = SOFAupdateDimensions(Obj);
 end
+
+
+
+function plot_mag_map(Obj, Obj_out)
+    
+    % Check sd 
+    fmin = 500; fmax = 18000;
+    SD = mean(sofaSpecDist(Obj_out, Obj, fmin,fmax), 'all')
+    
+    %% PLOTA
+    plane1 = 'MagHorizontal';
+    plane2 = 'EtcHorizontal';
+    
+    figure()
+    SOFAplotHRTF(Obj,plane1); title(['Reference - ' plane1]);
+    axis tight
+    xlim([0 2e4])
+     
+    figure()
+    SOFAplotHRTF(Obj_out,plane1); title(['Interpolated - ' plane1]);
+    axis tight
+    xlim([0 2e4])
+    
+end
+
