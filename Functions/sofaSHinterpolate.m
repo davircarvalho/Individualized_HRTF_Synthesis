@@ -1,9 +1,10 @@
 % SOFA HRTF INTERPOLATATION USING SPHERICAL HARMONICS
 function  Obj = sofaSHinterpolate(IR, pos, varargin)
 % INTERPOLATION BASED ON SPHERICAL HARMONICS 
-% MAKE SURE YOU HAVE INSTALLED THE SUpDEq API OR THE SOFA API
-
+% MAKE SURE YOU HAVE INSTALLED THE  ITA, SUpDEq, OR THE SOFA API
+% Davi Rocha Carvalho - AUG/2021
 % Refereces:
+% https://git.rwth-aachen.de/ita/toolbox
 % https://github.com/AudioGroupCologne/SUpDEq
 % https://github.com/sofacoustics/API_MO
 
@@ -23,6 +24,10 @@ ele = pos(:,2);
 fs=IR.Data.SamplingRate;
 IR.GLOBAL_APIVersion=SOFAgetVersion;
 
+
+if abs(IR.ReceiverPosition(3)) > 0.25 % HUTUBS measured data got this wrong
+   IR.ReceiverPosition = IR.ReceiverPosition/10;
+end
 
 %% Let's interpolate!
 switch p.Results.method
@@ -81,8 +86,8 @@ switch p.Results.method
         SH=TFE;
         SH.GLOBAL_SOFAConventions = 'FreeFieldHRTF';
 
-        Lmax=floor(sqrt(size(SH.EmitterPosition,1))-1); % Max SH order
-%         Lmax=floor(sqrt(size(SH.EmitterPosition,1)/4)-1); % Max SH order
+%         Lmax=floor(sqrt(size(SH.EmitterPosition,1))-1); % Max SH order
+        Lmax=floor(sqrt(size(SH.EmitterPosition,1)/2)-1); % Max SH order
         L=Lmax; % actual SH order
         [S, SH.API.E]=sph2SH(SH.EmitterPosition(:,1:2), L);
 
@@ -120,6 +125,7 @@ switch p.Results.method
         Obj   = SOFAconvertConventions(TFint);
         
         
+        
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     case validMethods{2} % SUpDEq API
         sparseHRIRdataset_SOFA = IR;
@@ -127,16 +133,15 @@ switch p.Results.method
         %Transform to sparseHRTFdataset struct with pre-defined samplingGrid 
         %(Lebedev grid with 38 nodes here), Nmax = 4, and FFToversize = 4.
 %         Nmax = floor(sqrt(size(IR.Data.IR,1))-1);
-        Nmax = floor(sqrt(size(IR.Data.IR,1)/4)); % Max SH order
+        Nmax = floor(sqrt(size(IR.Data.IR,1)/2)-1); % Max SH order
         FFToversize = 4;
         sparseHRTFdataset = supdeq_sofa2hrtf(sparseHRIRdataset_SOFA,Nmax,[],FFToversize);
-
         %% (3) - Get equalization dataset (SH-coefficients)
         %The eqDataset describes the sound pressure distribution on a sphere 
         NFFT=(length(sparseHRTFdataset.HRTF_L(1,:))-1)*2;
-        eqDataset = supdeq_getEqDataset(35, [], NFFT, IR.Data.SamplingRate,...
-                                        [],[],[],[],[],3);
-
+        ear_distance = IR.ReceiverPosition(3)*2;
+        
+        eqDataset = supdeq_getEqDataset(35, ear_distance, NFFT, fs);
         %% (4) - Perform equalization
         %Here, the sparse HRTF dataset is equalized with the eqDataset. The
         %equalized HRTF are transformed to the SH-domain again with the maximal 
@@ -146,7 +151,7 @@ switch p.Results.method
         Nsparse = sparseHRTFdataset.Nmax;
 
         eqHRTFdataset = supdeq_eq(sparseHRTFdataset,eqDataset,Nsparse,...
-                                  sparseSamplingGrid, 1e-8, 1);
+                                  sparseSamplingGrid, 1e-8);
 
         % (5) - Perform de-equalization 
         %Here, the sparse equalized HRTF dataset is de-equalized with the
@@ -159,44 +164,71 @@ switch p.Results.method
         des_pos(:,2) = 90-des_pos(:,2); % supdeq style
         denseSamplingGrid = des_pos;
         % denseSamplingGrid = supdeq_lebedev(2702);
-        Ndense = 35;
+        Ndense = Nmax;
 
         %Perform de-equalization. Apply head and tail window (8 and 32 samples
         %respectively) to de-equalized HRIRs/HRTFs.
         [~, denseHRIRdataset, ~] = ...
-            supdeq_deq(eqHRTFdataset, eqDataset, Ndense, denseSamplingGrid);
+            supdeq_deq(eqHRTFdataset, eqDataset, Ndense,...
+            denseSamplingGrid);
 
 
         % (6) - Optional: Save as SOFA object
         Obj = supdeq_writeSOFAobj(denseHRIRdataset.HRIR_L,...
                                   denseHRIRdataset.HRIR_R,...
-                                  denseSamplingGrid);
-
-                              
+                                  denseSamplingGrid,...
+                                  fs);
                               
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                             
     case validMethods{3} % ITA API       
-        this = SOFA2itaHRTF(IR); % convert SOFA to itaHRTF
-        r=ones(size(ele));
+        this = SOFA2itaHRTF(IR); % convert SOFA to itaHRTF 
         
-        % Define objective positions
+        % Generate high density objective grid 
+        radius = this.dirCoord.r(1);
+%         out_pos = equiangular_coordinates(1, radius);
+%         out_pos = unique([out_pos; IR.SourcePosition], 'rows');
+        
+        % Create ita coordinates object
         coords = itaCoordinates(size(pos,1));
-        coords.phi_deg = azi;
-        coords.theta_deg = ele+90;
-        coords.r = r;
+        coords.phi_deg = pos(:,1);
+        coords.theta_deg = pos(:,2)+90;
+        coords.r = ones(length(pos),1)*radius;
         
-        % interpolate 
-        epsilon = 1e-6; % regularization Tikoff
-        cThis = this.interp(coords, 'epsilon', epsilon, 'shiftToEar', true);
-
-        Obj = itaHRTF2SOFA(cThis); % convert itaHRTF to SOFA       
+        % Interpolate 
+        headr = abs(IR.ReceiverPosition(3));
+        
+        % Select SH order: for this to work you need to relax the order
+        % requirements at the function itaHRTF.interp       
+        if min(IR.SourcePosition(:,2)) < -70 
+            order = ceil(sqrt(this.nDirections/2)-1);
+            epsilon = 1e-8; % Tikhonov regularization coeff
+        else
+            order = floor(sqrt(this.nDirections/4)-1);           
+            epsilon = 1e-4; % Tikhonov regularization coeff
+        end
+        
+        cThis = ITAinterp(this, coords, 'epsilon', epsilon, 'order', order,...
+                            'shiftToEar', true,...
+                            'shiftOffset', [-headr, headr]);
+        
+        % Convert itaHRTF to SOFA    
+        Obj = itaHRTF2SOFA(cThis); 
+        idx_pos = dsearchn(Obj.SourcePosition(:,1:2), pos(:, 1:2));
+        Obj.SourcePosition = Obj.SourcePosition(idx_pos,:);
+        Obj.Data.IR = Obj.Data.IR(idx_pos,:,:);
+        Obj = SOFAupdateDimensions(Obj);        
 end
-%% compare
-% figure;
-% SOFAplotHRTF(Obj,'MagHorizontal'); title('Interpolated (SH)');
-% axis tight
-% figure;
-% SOFAplotHRTF(IR,'MagHorizontal'); title('Reference');
-% axis tight
 
-% SOFAplotHRTF(TFint,'etchorizontal'); title('SimpleFreeFieldHRTF (TF): Interpolated');
+Obj.Data.IR = Obj.Data.IR(:,:,1:size(IR.Data.IR,3));  
+end
+%% summary
+% SOFA_api               SUPDEQ_api                      ITA_api
+% TUBmeas (ruim)      CIPIC (mais ou menos)		    CIPIC (mais ou mens)
+%                                                   ARI (mais ou menos)
+%                     ARI (mais ou menos)           ITA (bom)
+%                     ITA (bom)                     3d3a (éeeh mais o menns)
+% TUBsim (muito bom)  3d3a (éeeh mais o menns)  	TUBmeas (boom)			
+%                     TUBmeas (bom)                 TUBsim(top)
+%                     TUBsim (bem bom)
+
+

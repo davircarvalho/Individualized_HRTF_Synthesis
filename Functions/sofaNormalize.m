@@ -18,7 +18,7 @@ IR = IR./max(abs(IR(:)));
 % This was build before the correction in the CIPIC to SOFA fix
 azim = 90;
 idx_pos = dsearchn(posi(:,[1,2]),  [azim, elev]);
-chkIR =  max(abs(Obj.Data.IR(idx_pos, :,:)),[],3);
+chkIR =  max(abs(Obj.Data.IR(idx_pos,:,:)),[],3);
 if chkIR(1)  > chkIR(2) % espera-se que ipsislateral sempre tenha maior amplitude
     Obj.Data.IR = IR;
 else % exchange posi
