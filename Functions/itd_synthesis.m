@@ -55,7 +55,7 @@ parse(p,width,depth,positions,fs, varargin{:})
 % HEAD DIMENSIONS 
 wid = p.Results.width;
 dep = p.Results.depth;
-obj_radius = 0.51*wid + 0.18*dep + 3.2; % algazi 
+obj_radius = 0.51*wid + 0.18*dep + 3.2; % (cm) algazi 
 
 no_directions = length(positions); 
 c0 = 343e2; %[cm/s] velocidade do som
@@ -71,23 +71,15 @@ ell = p.Results.positions(:, 2);
 %% Spheric
 switch p.Results.method
     case 'spheric'
-        itd = zeros(no_directions, 1);
-        for k = 1:no_directions
-            phi   = deg2rad(azz(k));
-            theta = deg2rad(ell(k));
-            itd(k, 1) = 3*obj_radius/(2*c0)*sin(phi)*cos(theta);              
-        end
+        itd(:, 1) = 3*obj_radius/(2*c0)*sind(azz).*cosd(ell);   
         
 %% Adapt
     case 'adapt' 
         % selecionar posições correspondentes a out_pos 
-        load('KU100_itd.mat')
-%         load('fabian_itd.mat')
-        for k = 1:length(positions)  
-            [~,idx_pos(k)] = min(sqrt((ref_pos(:,1)-positions(k,1)).^2 +...
-                                      (ref_pos(:,2)-positions(k,2)).^2)); 
-        end
-                        
+%         load('KU100_itd.mat')
+        load('fabian_itd.mat')
+        idx_pos = dsearchn(ref_pos(:,1:2), positions(:,1:2));      
+       
         % Reference Head
         itd_ref = ref_itd(idx_pos);
         ref_radius = 0.51*ref_width + 0.18*ref_depth + 3.2;
@@ -124,5 +116,9 @@ end
 
 itd = abs(itd);
 end
+
+
+
+
 
 
