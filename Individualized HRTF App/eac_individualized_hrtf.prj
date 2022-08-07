@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="1712703201" file="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Individualized HRTF App\eac_individualized_hrtf.prj" location="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Individualized HRTF App" name="eac_individualized_hrtf" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="1586421145" file="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Individualized HRTF App\eac_individualized_hrtf.prj" location="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Individualized HRTF App" name="eac_individualized_hrtf" target="target.mlapps" target-name="Package App">
     <param.appname>eac_individualized_hrtf</param.appname>
     <param.authnamewatermark />
     <param.email />
@@ -12,8 +12,8 @@
     </param.icons>
     <param.summary />
     <param.description>Generate individualized head related transfer functions based on anthropometric dimensions.</param.description>
-    <param.screenshot>C:\Users\rdavi\AppData\Local\Temp\tp2800303a_521c_47bb_95a7_2df85b2af058.png</param.screenshot>
-    <param.version>2.08.04</param.version>
+    <param.screenshot>C:\Users\rdavi\AppData\Local\Temp\tp225848d7_183d_4050_8eb8_f606e504c005.png</param.screenshot>
+    <param.version>2.08.07</param.version>
     <param.products.name>
       <item>MATLAB</item>
       <item>Deep Learning Toolbox</item>
@@ -41,17 +41,6 @@
       <file>${PROJECT_ROOT}\eac_individualized_hrtf.mlapp</file>
     </fileset.main>
     <fileset.depfun>
-      <file>D:\Documentos\1 - Work\Auralization_Engine\src\API_MO\helper\deg2rad.m</file>
-      <file>D:\Documentos\1 - Work\Auralization_Engine\src\API_MO\helper\isoctave.m</file>
-      <file>D:\Documentos\1 - Work\Auralization_Engine\src\API_MO\netcdf\NETCDFsave.m</file>
-      <file>D:\Documentos\1 - Work\Auralization_Engine\src\API_MO\SOFAaddVariable.m</file>
-      <file>D:\Documentos\1 - Work\Auralization_Engine\src\API_MO\SOFAarghelper.m</file>
-      <file>D:\Documentos\1 - Work\Auralization_Engine\src\API_MO\SOFAcheckFilename.m</file>
-      <file>D:\Documentos\1 - Work\Auralization_Engine\src\API_MO\SOFAdbPath.m</file>
-      <file>D:\Documentos\1 - Work\Auralization_Engine\src\API_MO\SOFAdefinitions.m</file>
-      <file>D:\Documentos\1 - Work\Auralization_Engine\src\API_MO\SOFAgetVersion.m</file>
-      <file>D:\Documentos\1 - Work\Auralization_Engine\src\API_MO\SOFAsave.m</file>
-      <file>D:\Documentos\1 - Work\Auralization_Engine\src\API_MO\SOFAupdateDimensions.m</file>
       <file>${PROJECT_ROOT}\anthro1.png</file>
       <file>${PROJECT_ROOT}\anthro2.png</file>
       <file>${PROJECT_ROOT}\anthro3.png</file>
@@ -66,7 +55,18 @@
       <file>${PROJECT_ROOT}\SOFAgetConventions.m</file>
       <file>${PROJECT_ROOT}\sofaResample.m</file>
       <file>${PROJECT_ROOT}\target_pca_CIPIC_ARI_ITA_3D3A.mat</file>
+      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\helper\deg2rad.m</file>
+      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\helper\isoctave.m</file>
+      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\netcdf\NETCDFsave.m</file>
+      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAaddVariable.m</file>
+      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAarghelper.m</file>
       <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAcalculateITD.m</file>
+      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAcheckFilename.m</file>
+      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAdbPath.m</file>
+      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAdefinitions.m</file>
+      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAgetVersion.m</file>
+      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAsave.m</file>
+      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAupdateDimensions.m</file>
     </fileset.depfun>
     <fileset.resources>
       <file>${PROJECT_ROOT}\SimpleFreeFieldHRIR-a.mat</file>
