@@ -75,7 +75,7 @@ for k = 1:size(IR, 2)
         
         % interp 
         x = [1,   f500Hz];
-        xq = freq_vec_ext(1:f500Hz);
+        xq = [1:f500Hz];
         y_mag = [mag(f500Hz); mag(f500Hz)];
         if exist('OCTAVE_VERSION','builtin')
           mag_interp(1:f500Hz) = interp1(x, y_mag, xq);
