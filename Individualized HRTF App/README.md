@@ -10,6 +10,7 @@ Image Processing Toolbox
 MATLAB
 Deep Learning Toolbox 
 Signal Processing Toolbox
+Symbolic Math Toolbox
 ```
 
 # Source Code
