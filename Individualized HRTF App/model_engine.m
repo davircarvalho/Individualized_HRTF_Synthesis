@@ -61,9 +61,9 @@ for n = 1:no_channels
     end
 end
 
-waitbar(0.3, wait, 'Processing results ...');
 
 %% RECONSTRUÇÃO DE FASE: (fase mínima + ITD)
+waitbar(0.3, wait, 'Calculating ITD ...');
 % CÁlCULO DO ITD
 new_itd = itd_synthesis(x(1), x(2), out_pos, Fs_sim, 'adapt');
 for k = 1:no_directions
@@ -79,24 +79,27 @@ hrir_final = hrir_final./max(abs(hrir_final(:)));
 
 
 %% EXPORTS
+waitbar(0.4, wait, 'Writing metadata ...');
 Obj = SOFAgetConventions('SimpleFreeFieldHRIR');
 Obj.Data.IR = shiftdim(hrir_final, 1);
 Obj.Data.SamplingRate = Fs_sim; % valor atual 
 Obj.SourcePosition = out_pos;
 Obj = SOFAupdateDimensions(Obj);
 % Obj = SOFAlfe(Obj, 15, 600); % ALFE
+waitbar(0.5, wait, 'Calculating low-frequency extension...');
 Obj = SOFAcalculateLFE(Obj, 15, 500);
 % Add head width to SOFA 
 Obj.ReceiverPosition(3) =  x(1)/2*1e-2;
 Obj.ReceiverPosition(4) = -x(1)/2*1e-2;
 % Resample if necessary
 if Fs_out ~= Fs_sim 
+   waitbar(0.6, wait, 'Resampling ...');
    Obj = sofaResample(Obj, Fs_out);
 end
 
 %%% save SOFA file %%%%
 if sofa_flag 
-    waitbar(0.6,wait,'Assembling SOFA output ....');
+    waitbar(0.7,wait,'Assembling SOFA output ....');
     file_path = ([FileName, '_', num2str(Fs_out/1000), 'kHz.sofa']);
     
     compression = 0;
