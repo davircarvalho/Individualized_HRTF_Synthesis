@@ -1,4 +1,4 @@
-# Individualized HRTF Synthesis
+# EAC - Individualized HRTF Synthesis
 
 <p align="left">
   <a href="https://github.com/davircarvalho/Individualized_HRTF_Synthesis/releases/" target="_blank">
@@ -25,7 +25,7 @@
 **Synthesis of individualized HRTFs based on Neural Networks, Principal Component Analysis and anthropometry.**
 
 
-*This repository was developed as part of a bachelor thesis project for Acoustic Engineering @ Federal University of Santa Maria - Brazil.*
+*This repository was developed as part of a bachelor thesis project for Acoustic Engineering (EAC) @ Federal University of Santa Maria - Brazil.*
 
 The thesis can be found [here](https://drive.google.com/file/d/1JVDNxQreYzg7jfauMwFnK3Sg21aB5ri5/view?usp=sharing)
 
