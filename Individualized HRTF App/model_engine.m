@@ -26,7 +26,8 @@ function model_engine(x1, x3,... % anthro cabeca
                       d1L, d2L, d3L, d5L, d7L, d8L, ...   % antropometria L
                       d1R, d2R, d3R, d5R, d7R, d8R, ...   % antropometria R
                       FileName, hesuvi_flag, sofa_flag, Fs_out, ... % useful inputs
-                      FR, SR, RR, FF, FL, SL, RL)         %HeSuVi angles
+                      FR, SR, RR, FF, FL, SL, RL, ... %HeSuVi angles
+                      custom_pos)        %custom grid output
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load networks
 tic
@@ -85,7 +86,6 @@ Obj.Data.IR = shiftdim(hrir_final, 1);
 Obj.Data.SamplingRate = Fs_sim; % valor atual 
 Obj.SourcePosition = out_pos;
 Obj = SOFAupdateDimensions(Obj);
-% Obj = SOFAlfe(Obj, 15, 600); % ALFE
 waitbar(0.5, wait, 'Calculating low-frequency extension...');
 Obj = SOFAcalculateLFE(Obj, 15, 500);
 % Add head width to SOFA 
@@ -97,9 +97,15 @@ if Fs_out ~= Fs_sim
    Obj = sofaResample(Obj, Fs_out);
 end
 
+% Interpolate for custom grid if required
+if length(custom_pos) > 1
+    waitbar(0.65,wait,'Grid interpolation ....');
+    Obj = sofaFit2Grid(Obj, custom_pos, 'hybrid2');
+end
+
 %%% save SOFA file %%%%
 if sofa_flag 
-    waitbar(0.7,wait,'Assembling SOFA output ....');
+    waitbar(0.7,wait,'Assembling SOFA output .....');
     file_path = ([FileName, '_', num2str(Fs_out/1000), 'kHz.sofa']);
     
     compression = 0;
@@ -109,7 +115,7 @@ end
 
 %%% save HeSuVi %%%%%%%
 if hesuvi_flag 
-    waitbar(0.8,wait, 'Assembling HeSuVi output .....');
+    waitbar(0.8,wait, 'Assembling HeSuVi output ......');
     hesuvi_angles = {FR; SR; RR; FF; FL; SL; RL};
     HeSuViExport(Obj, FileName, Fs_out, hesuvi_angles)
 end

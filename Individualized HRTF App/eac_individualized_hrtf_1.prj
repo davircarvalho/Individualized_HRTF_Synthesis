@@ -30,7 +30,7 @@
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>C:\Program Files\Polyspace\R2020a</root>
+      <root>D:\Matlab</root>
       <toolboxes>
         <toolbox name="matlabcoder" />
         <toolbox name="embeddedcoder" />
