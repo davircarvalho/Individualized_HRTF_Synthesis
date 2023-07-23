@@ -120,7 +120,7 @@ Obj_sim.SourcePosition = out_pos;
 Obj_sim = SOFAupdateDimensions(Obj_sim);
 
 
-plot(new_itd); hold on; plot(SOFAgetITD(Obj_sim, 'samples'));
+plot(new_itd); hold on; plot(abs(SOFAcalculateITD(Obj_sim)*fs));
 %% Preprocessamento do database para comparação
 path_hutubs = dir([pwd '\..\Datasets\HUTUBS\pp*_HRIRs_measured.sofa']);
 Obj_med = SOFAload([path_hutubs(subj).folder '\' path_hutubs(subj).name], 'nochecks');
@@ -134,8 +134,8 @@ Obj = sofaNormalize(Obj_med);
 
 
 
-itdori = SOFAgetITD(Obj_med);
-res = mean(abs(itdori - SOFAgetITD(Obj_sim)))
+itdori = SOFAcalculateITD(Obj_med);
+res = mean(abs(itdori - SOFAcalculateITD(Obj_sim)), "omitnan")
 
 
 %% % SAVE %%%

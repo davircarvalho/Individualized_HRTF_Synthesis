@@ -1,8 +1,8 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="2801323059" file="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Individualized HRTF App\eac_individualized_hrtf.prj" location="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Individualized HRTF App" name="eac_individualized_hrtf" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="3293471305" file="C:\Users\Audioscenic\Documents\Developer\Individualized_HRTF_Synthesis\Individualized HRTF App\eac_individualized_hrtf.prj" location="C:\Users\Audioscenic\Documents\Developer\Individualized_HRTF_Synthesis\Individualized HRTF App" name="eac_individualized_hrtf" target="target.mlapps" target-name="Package App">
     <param.appname>eac_individualized_hrtf</param.appname>
-    <param.authnamewatermark />
-    <param.email />
+    <param.authnamewatermark>Davi Carvalho</param.authnamewatermark>
+    <param.email>r.davicarvalho@gmail.com</param.email>
     <param.company />
     <param.icon>${PROJECT_ROOT}\eac_individualized_hrtf_resources\icon_24.png</param.icon>
     <param.icons>
@@ -11,35 +11,21 @@
       <file>${PROJECT_ROOT}\eac_individualized_hrtf_resources\icon_16.png</file>
     </param.icons>
     <param.summary />
-    <param.description>Generate individualized head related transfer functions based on anthropometric dimensions.</param.description>
-    <param.screenshot>C:\Users\rdavi\AppData\Local\Temp\tp2cea87db_f6c6_414f_9873_1ab8c8eaf914.png</param.screenshot>
-    <param.version>2.12.11</param.version>
-    <param.products.name>
-      <item>MATLAB</item>
-      <item>Deep Learning Toolbox</item>
-      <item>Signal Processing Toolbox</item>
-      <item>Symbolic Math Toolbox</item>
-    </param.products.name>
-    <param.products.id>
-      <item>1</item>
-      <item>12</item>
-      <item>8</item>
-      <item>15</item>
-    </param.products.id>
-    <param.products.version>
-      <item>9.11</item>
-      <item>14.3</item>
-      <item>8.7</item>
-      <item>9.0</item>
-    </param.products.version>
+    <param.description>Synthesis of individualized HRTFs based on Neural Networks, Principal Component Analysis and anthropometry.</param.description>
+    <param.screenshot>C:\Users\Audioscenic\AppData\Local\Temp\tpa523d738_151e_4d54_afb3_9f62c95b1419.png</param.screenshot>
+    <param.version>3.07.08</param.version>
+    <param.products.name />
+    <param.products.id />
+    <param.products.version />
     <param.platforms />
     <param.output>${PROJECT_ROOT}</param.output>
-    <param.guid>ed87d113-d4ba-4f6f-8f88-16963e5b6c7b</param.guid>
+    <param.guid>266fb3b8-8973-4557-908c-c37c11878680</param.guid>
     <unset>
-      <param.authnamewatermark />
-      <param.email />
       <param.company />
       <param.summary />
+      <param.products.name />
+      <param.products.id />
+      <param.products.version />
       <param.platforms />
       <param.output />
     </unset>
@@ -60,39 +46,22 @@
       <file>${PROJECT_ROOT}\photo_helper.m</file>
       <file>${PROJECT_ROOT}\SOFAcalculateLFE.m</file>
       <file>${PROJECT_ROOT}\sofaFit2Grid.m</file>
-      <file>${PROJECT_ROOT}\SOFAgetConventions.m</file>
       <file>${PROJECT_ROOT}\sofaResample.m</file>
       <file>${PROJECT_ROOT}\target_pca_CIPIC_ARI_ITA_3D3A.mat</file>
-      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\netcdf\NETCDFsave.m</file>
-      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAaddVariable.m</file>
-      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAarghelper.m</file>
-      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAcalculateITD.m</file>
-      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAcheckFilename.m</file>
-      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAdbPath.m</file>
-      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAdefinitions.m</file>
-      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAgetVersion.m</file>
-      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAsave.m</file>
-      <file>D:\Documentos\MATLAB\API_MO\SOFAtoolbox\SOFAupdateDimensions.m</file>
     </fileset.depfun>
     <fileset.resources>
-      <file>${PROJECT_ROOT}\SimpleFreeFieldHRIR-a.mat</file>
-      <file>${PROJECT_ROOT}\SimpleFreeFieldHRIR-m.mat</file>
-      <file>${PROJECT_ROOT}\SimpleFreeFieldHRIR-r.mat</file>
-      <file>${PROJECT_ROOT}\SimpleFreeFieldHRIR.csv</file>
+      <file>C:\Users\Audioscenic\Documents\MATLAB\SOFAtoolbox\SOFAtoolbox</file>
     </fileset.resources>
     <fileset.package />
     <build-deliverables>
-      <file location="D:\Documentos\1 - Work\Individualized_HRTF_Synthesis" name="Individualized HRTF App" optional="false">D:\Documentos\1 - Work\Individualized_HRTF_Synthesis\Individualized HRTF App</file>
+      <file location="C:\Users\Audioscenic\Documents\Developer\Individualized_HRTF_Synthesis" name="Individualized HRTF App" optional="false">C:\Users\Audioscenic\Documents\Developer\Individualized_HRTF_Synthesis\Individualized HRTF App</file>
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>D:\Matlab</root>
+      <root>C:\Program Files\MATLAB\R2022b</root>
       <toolboxes>
         <toolbox name="matlabcoder" />
-        <toolbox name="embeddedcoder" />
         <toolbox name="gpucoder" />
-        <toolbox name="fixedpoint" />
-        <toolbox name="matlabhdlcoder" />
         <toolbox name="neuralnetwork" />
       </toolboxes>
       <toolbox>
@@ -101,24 +70,9 @@
         </matlabcoder>
       </toolbox>
       <toolbox>
-        <embeddedcoder>
-          <enabled>true</enabled>
-        </embeddedcoder>
-      </toolbox>
-      <toolbox>
         <gpucoder>
           <enabled>true</enabled>
         </gpucoder>
-      </toolbox>
-      <toolbox>
-        <fixedpoint>
-          <enabled>true</enabled>
-        </fixedpoint>
-      </toolbox>
-      <toolbox>
-        <matlabhdlcoder>
-          <enabled>true</enabled>
-        </matlabhdlcoder>
       </toolbox>
       <toolbox>
         <neuralnetwork>

@@ -57,7 +57,6 @@ end
 
 %% Initialize error
 error = zeros(length(out_pos),1);
-
 meta.pos = Obj_in.SourcePosition;
 idx_adapt = zeros(length(out_pos), 1);
 for zz = 1:length(out_pos) 
@@ -68,8 +67,10 @@ for zz = 1:length(out_pos)
 end
 meta.fittedIR = Obj_in.Data.IR(idx_adapt(:,1), :, :);
 
-thr = 55;
-idx_hybrid = find(out_pos(:, 2)<thr & out_pos(:, 2)>-thr);
+idx_hybrid = find(error > 0.5); % find indexes where the error is "high"
+
+% thr = 55;
+% idx_hybrid = find(out_pos(:, 2)<thr & out_pos(:, 2)>-thr);
 des_hybrid = out_pos(idx_hybrid,:);
 IR_temp = interpolateHRTF(Obj_in.Data.IR, meta.pos(:,[1,2]), des_hybrid(:,[1,2]), ...
                           'Algorithm','bilinear');

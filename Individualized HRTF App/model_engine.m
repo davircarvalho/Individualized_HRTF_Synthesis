@@ -86,6 +86,13 @@ Obj.Data.IR = shiftdim(hrir_final, 1);
 Obj.Data.SamplingRate = Fs_sim; % valor atual 
 Obj.SourcePosition = out_pos;
 Obj = SOFAupdateDimensions(Obj);
+
+% Interpolate for custom grid if required
+if length(custom_pos) > 1
+    waitbar(0.65,wait,'Grid interpolation ....');
+    Obj = sofaFit2Grid(Obj, custom_pos, 'hybrid');
+end
+
 waitbar(0.5, wait, 'Calculating low-frequency extension...');
 Obj = SOFAcalculateLFE(Obj, 15, 500);
 % Add head width to SOFA 
@@ -97,18 +104,14 @@ if Fs_out ~= Fs_sim
    Obj = sofaResample(Obj, Fs_out);
 end
 
-% Interpolate for custom grid if required
-if length(custom_pos) > 1
-    waitbar(0.65,wait,'Grid interpolation ....');
-    Obj = sofaFit2Grid(Obj, custom_pos, 'hybrid2');
-end
+
 
 %%% save SOFA file %%%%
 if sofa_flag 
     waitbar(0.7,wait,'Assembling SOFA output .....');
-    file_path = ([FileName, '_', num2str(Fs_out/1000), 'kHz.sofa']);
+    file_path = ([FileName, '_', num2str(Fs_out), 'Hz.sofa']);
     
-    compression = 0;
+    compression = 9;
     SOFAsave(file_path, Obj, compression);
 end
 
@@ -179,7 +182,7 @@ function HeSuViExport(Obj_in, FileName, Fs_out, angles)
 %     y = circshift(y, 100); % add more silence to the begining
     y = y./max(abs(y(:))) *0.975;
     y = y(:, [1,2,3,4,5,6,7,10,9,12,11,14,13,8]);
-    file_path = ([FileName, '_', num2str(Fs_out/1000), 'kHz.wav']);
+    file_path = ([FileName, '_', num2str(Fs_out), 'Hz.wav']);
     audiowrite(file_path, y, Obj_out.Data.SamplingRate,'BitsPerSample',32)
 end
 

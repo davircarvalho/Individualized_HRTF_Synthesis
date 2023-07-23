@@ -34,8 +34,7 @@ function [Obj_out, error] = sofaFit2Grid(Obj_in, out_pos, varargin)
 %% Parse Arguments
 % Método de processamento
 defaultMethod = 'adapt';
-validMethods = {'adapt', 'hybrid', 'vbap', 'bilinear', 'spherical_harmonics', 'sh', ...
-    'hybrid2'};
+validMethods = {'adapt', 'hybrid', 'vbap', 'bilinear', 'spherical_harmonics', 'sh'};
 checkMethod = @(x) any(validatestring(x,validMethods));
 
 % Opções de taxa de amostragem
@@ -60,7 +59,7 @@ error = zeros(length(out_pos),1);
 
 %% "Interpolation" by nearest position ('ADAPT')
 switch p.Results.method
-    case {validMethods{1}, validMethods{2}, validMethods{7}}              
+    case {validMethods{1}, validMethods{2}}              
         meta.pos = Obj_in.SourcePosition;
         idx_adapt = zeros(length(out_pos), 1);
         meta.fittedPOS = zeros(size(out_pos));
@@ -79,29 +78,23 @@ switch p.Results.method
         %% Modelo Hibrido ('HYBRID') 
         if any(strcmp(validMethods{2}, p.Results.method)) 
             % selecionar apenas valores repetidos 
-            idx_hybrid = idx_adapt;
-            [~,ind_uniq] = unique(idx_adapt(:,1));
-            idx_hybrid = removerows(idx_hybrid, 'ind', ind_uniq);
+%             idx_hybrid = idx_adapt;
+%             [~,ind_uniq] = unique(idx_adapt(:,1));
+             idx_hybrid = find(error > 1);
+             size(idx_hybrid)
              if isempty(idx_hybrid) %sem indice repetido, sem interpolacao
         %         warning('Nenhum índice repetido identificado, método apenas adaptativo.')
              else         
-                meta.fittedIR(idx_hybrid(:,2),:,:) = NaN; % to be filled later           
+%                 meta.fittedIR(idx_hybrid,:,:) = NaN; % to be filled later           
                 % interpolar valores limpos
-                des_hybrid = out_pos(idx_hybrid(:,2),:);
-                IR_temp = interpolateHRTF(Obj_in.Data.IR, meta.pos(:,[1,2]), des_hybrid(:,[1,2]), ...
-                                          'Algorithm','bilinear');   
-                meta.fittedIR(idx_hybrid(:,2),:,:) = IR_temp;
+                des_hybrid = out_pos(idx_hybrid,:);
+                try
+                    IR_temp = interpolateHRTF(Obj_in.Data.IR, meta.pos(:,[1,2]), des_hybrid(:,[1,2]), ...
+                                              'Algorithm','bilinear');   
+                    meta.fittedIR(idx_hybrid,:,:) = IR_temp;
+                catch
+                end
              end
-           if any(strcmp(validMethods{7}, p.Results.method))
-               out_pos(out_pos(:, 1)>180, 1) = out_pos(out_pos(:, 1)>180, 1) - 360;
-               thr = 20;
-               idx_hybrid=find(out_pos(:, 2)<thr & out_pos(:, 2)>-thr);
-               des_hybrid = out_pos(idx_hybrid,:);
-               IR_temp = interpolateHRTF(Obj_in.Data.IR, meta.pos(:,[1,2]), des_hybrid(:,[1,2]), ...
-                                          'Algorithm','bilinear');
-               meta.fittedIR(idx_hybrid,:,:) = IR_temp;
-           end
-
         end
 
 %% Interpolar por 'VBAP' ou 'BILINEAR'
