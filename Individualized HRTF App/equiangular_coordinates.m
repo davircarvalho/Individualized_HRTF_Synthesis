@@ -6,7 +6,7 @@ base_azi = min_azi:azi_re:max_azi-azi_re;
 base_ele = sort([0:ele_res:ele_max, 0-ele_res:-ele_res:ele_min]);
 
 ele = repmat(base_ele, [1, length(base_azi)]);
-azi = repmat(base_azi, [1,length(base_ele)]);
+azi = sort(repmat(base_azi, [1, length(base_ele)]));
 r = ones(length(ele(:)), 1) * radius;
 raw_pos = [azi(:), ele(:), r];
 raw_pos = unique(sortrows(raw_pos, 1), 'rows');
@@ -19,3 +19,6 @@ raw_pos = unique(sortrows(raw_pos, 1), 'rows');
 out_pos = raw_pos(idx, :);
 out_pos = sortrows(out_pos,2);
 end
+% 
+
+% scatter(out_pos(:, 1), out_pos(:, 2))
