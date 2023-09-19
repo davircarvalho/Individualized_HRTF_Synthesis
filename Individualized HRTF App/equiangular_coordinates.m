@@ -21,4 +21,4 @@ out_pos = sortrows(out_pos,2);
 end
 % 
 
-% scatter(out_pos(:, 1), out_pos(:, 2))
+% scatter(o ut_pos(:, 1), out_pos(:, 2))
