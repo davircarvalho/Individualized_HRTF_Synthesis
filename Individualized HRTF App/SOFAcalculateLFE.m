@@ -1,30 +1,24 @@
 function Obj_lfe = SOFAcalculateLFE(Obj, fmin, fmax)
-% Low frequency extention
+%SOFAcalculateLFE - Extend HRTFs towards lower frequencies.
+%   Usage: Obj = SOFAcalculateLFE(Obj, fmin, fmax)
 % 
-% function Obj_lfe = SOFAcalculateLFE(Obj, fmin, fmax)
-% 
-%   Description:
-%                    This function extrapolates low frequency content of 
-%                    SOFA SimpleFreeFieldHRIR objects by considering a
-%                    linear behavior to the low frequency content
-
-%   Usage:           Obj = SOFAcalculateLFE(Obj, fmin, fmax)
+%   SOFAcalculateLFE extrapolates each HRTF in Obj below fmax down to fmin 
+%   by considering a linear extrapolation in the amplitude spectrum
+%   and the minimum-phase version of the phase spectrum.
 %
 %   Input parameters:
-%     Obj:           SOFA object with SimpleFreeFieldHRIR convention.
-%     fmin:          Minimal frequency to be calculated (default: 15Hz)
-%     fmax:          Reference frequency value to be extended until fmin
-%                                                       (default: 500Hz)
+%     Obj  : SOFA object (only SimpleFreeFieldHRIR supported)
+%     fmin : Minimal frequency to be calculated (default: 15 Hz)
+%     fmax : Frequency to be extended down to fmin (default: 500 Hz)
 % 
-%   Output arguments:
-%     Obj:           SOFA object with SimpleFreeFieldHRIR convention.
-
+%   Output parameters:
+%     Obj  : New SOFA object
 
 % #Author: Davi R. Carvalho, UFSM - Acoustical Engineering (07.04.2021)
 % #Author: Michael Mihocic: adapted for SOFA 2.0 release; header documentation updated (20.10.2021)
 
 % SOFA Toolbox - function SOFAcalculateLFE
-% Copyright (C) 2012-2022 Acoustics Research Institute - Austrian Academy of Sciences
+% Copyright (C) Acoustics Research Institute - Austrian Academy of Sciences
 % Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "License")
 % You may not use this work except in compliance with the License.
 % You may obtain a copy of the License at: https://joinup.ec.europa.eu/software/page/eupl
@@ -63,7 +57,6 @@ end
 f500Hz = dsearchn(freq_vec_ext.', fmax); % idx at defined linear part of HRTFs
 
 [~, ~, ~, Obj] = SOFAcalculateITD(Obj, 'samples', 'debug', 1);
-% [~, ObjD] = SOFAcalculateITDdavi(Obj, 'samples');
 
 %% extrap low frequency
 ir_interp = zeros(size(IR, 2), size(IR, 3), N_ext);
@@ -74,7 +67,7 @@ for k = 1:size(IR, 2)
         mag_interp = mag;
         
         % interp 
-        x = [1,   f500Hz];
+        x = [1, f500Hz];
         xq = [1:f500Hz];
         y_mag = [mag(f500Hz); mag(f500Hz)];
         if exist('OCTAVE_VERSION','builtin')
@@ -90,11 +83,10 @@ for k = 1:size(IR, 2)
         ir_interp(k,l,:) = circshift(real(ifft(get_min_phase(abs(H)))), Obj.Data.Delay(k,l));
     end
 end
-
+ir_interp(:, :, N+1:end) = [];
 
 %% OUTPUT
 Obj_lfe = Obj;
-% ir_interp = ir_interp./max(abs(ir_interp(:))) .* max(abs(IR(:)));
 Obj_lfe.Data.IR = ir_interp;
 end
 
@@ -106,6 +98,6 @@ H = [H; flip(H)]; % back to double sided spectrum
 
 %% Get minimum_phase
 phi_min = imag(hilbert(-(log(abs(H)+eps)))); % eps makes avoids log(0) = -inf
-% Filtro inverso complexo (cria fase)
+% Complex inverse filtering to consider the phase
 Hmin = abs(H).*exp(1i*(phi_min));
 end

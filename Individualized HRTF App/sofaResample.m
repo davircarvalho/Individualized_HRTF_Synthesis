@@ -44,11 +44,11 @@ function IR = resample_this(X, Fs_in, Fs_out)
     lpFilt = lpFilt .* kaiser(order+1,beta)';
     lpFilt = lpFilt / sum(lpFilt);
     lpFilt = p * lpFilt;
-
+    
     % Initializar matriz
     N_pos = size(X, 1);
     N_ch = size(X, 2);
-    N_samples = floor((Fs_out/Fs_in) * size(X, 3)); % length after resample
+    N_samples = ceil((Fs_out/Fs_in) * size(X, 3)); % length after resample
     IR=zeros(N_pos, N_ch, N_samples);
 
     % Actual Resample
